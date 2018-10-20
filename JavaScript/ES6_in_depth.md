@@ -65,54 +65,33 @@ for-of 구문은 다른 언어와 비슷하게 콜렉션에 내장된 iterator �
 
 예제코드  
 
-\```javascript 
-
+```javascript 
 var zeroesForeverIterator = {  
-
-​    [Symbol.iterator]: function () {  
-
-​        return this;  
-
-​    },
-
-​    next: function () {  
-
-​        return {done: false, value: 0};  
-
-​    } 
-
+	[Symbol.iterator]: function () {  
+		return this;  
+	},
+	next: function () {  
+		return {done: false, value: 0};  
+	} 
 };
-
-\```
-
+```
 
 
-\```javascript
 
+```javascript
 for (VAR of ITERABLE) {  
-
-​    STATEMENTS 
-
+	STATEMENTS 
 }
-
-\```
-
+```
 
 
-\```javascript 
 
+```javascript 
 var $iterator = ITERABLE[Symbol.iterator]();  
-
 var $result = $iterator.next();  
-
 while (!$result.done) {  
-
-​    VAR = $result.value; 
-
-​    STATEMENTS 
-
-​    $result = $iterator.next(); 
-
+	VAR = $result.value; 
+	STATEMENTS 
+	$result = $iterator.next(); 
 }
-
-\``` 
+```
