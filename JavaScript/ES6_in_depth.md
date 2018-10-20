@@ -12,7 +12,7 @@ ECMAScript 란 JavaScript의 표준. ES5 는 2009년에 ES6 는 2015년에 제�
 
 
 
-\### 2.1 for-of 
+### 2.1 for-of 
 
 기존에 순회하는 내장 함수는 for-in 과 es5에서 추가된 foreEach() 
 
