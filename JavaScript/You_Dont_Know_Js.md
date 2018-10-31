@@ -601,3 +601,78 @@ arguments 배열은 비권장 사항이 되었지만 (구멍난 추상화)
 es6 의 등장 전에는 파라미터를 배열로 받을 유일한 방법. 
 
 파라미터와 파라미터에 해당하는 arguments 슬롯을 섞어쓰지만 않는다면 아직도 쓸만 하다. 
+
+
+
+### 5.6 try-finally 
+
+
+
+try 에 return 이나 throw 가 존재하면 finally 의 로직을 전부 처리하고 반환된다. 
+
+try {} 에서 반환값 결정 finally {} 로직 수행 결정된 값 반환 이런 로직 
+
+그래서 finally 에서 throw 를 하게 되면 앞의 값은 사장되어 버린다. 
+
+```javascript
+for (var i = 0 ; i < 10 ; i++){ 
+	try {
+		continue;
+	} finally {
+		console.log(i);
+	}
+} 
+```
+
+
+
+를 돌리면 0….9 가 출력되는걸 알수있는데 한 iteration 이 끝나기 전에 (continue 가 반환되기 전에) finally 블럭이 실행된다는걸 알 수 있다. 
+
+
+
+return 도 마찬가지. 다만 자바스크립트에서 함수에 return 이 없을 경우 return undefined 로 인식하지만 당연히 finally 에선 try 에서의 반환값을 존중한다. 
+
+
+
+### 5.7 switch 
+
+
+
+switch 에 값을 써두면 엄격한 비교를 한다 (===) 
+
+강제변환에 의한 느슨한 비교를 하려면 다음과 같이 작성 
+
+
+
+```javascrip
+var a = “42”; 
+switch(true) { 
+	case a == 42 : 
+}  
+```
+
+
+
+근데 case 의 평가 표현식이 true 가 아닌 truthy 라면 비교를 제대로 못하는데 
+
+```javascript
+var a = “hello word”; 
+var b = 10; 
+
+swtich (true) { 
+	case (a || b == 10) : // 절대 안들어옴 a || b == 10 의 결과는 “hello word” 다..
+} 
+```
+
+
+
+그래서 이런 트릭으로 해결 가능하다. 흠.. 
+
+```javascript
+swtich (true) { 
+	case !!(a || b == 10) : // 절대 안들어옴 a || b == 10 의 결과는 “hello word” 다.. 
+} 
+```
+
+
+
