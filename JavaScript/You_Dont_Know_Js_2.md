@@ -328,3 +328,77 @@ bar (3); // a : 2, b : 3
 
 
 
+그치만 `null` 을 애요하는건 예기치 못한 기본바인딩을 일으켜 전역객체를 참조하거나 변경하는 돌발 상황이 일어날 수 있다. 
+
+
+
+##### 더 안전한 this 
+
+
+
+더 안전하게 가자면 side-effect 가 전혀 없는 DMZ 객체. 즉 내용이 하나도 없으면서 전혀 위임되지 않은 객체가 필요하다. 
+
+
+
+DMZ 객체를 만드는 가장 쉬운 방법은 `Object.create(null)` 을 사용하는것 `{}` 는 `Object.prototyp`으로 위임하기 때문에 이보다 더 비어있는 객체라고 할 수 있겠다. 
+
+
+
+#### 2.4.2 간첩 레퍼런스 
+
+
+
+의도적이든 아니든 한가지 더 유의할 것은 간접 레퍼런스 Indirect Reference 를 생성하는 경우로, 함수를 호출하게 되면 무조건 기본 바인딩 규칙이 적용된다. 
+
+
+
+간접레퍼런스는 함수 할당문에서 빈번하게 나타난다. 
+
+
+
+```javascript 
+function foo() { 
+	console.log(this.a);
+} 
+
+var a = 2; 
+var o = {a: 3, foo: foo}; 
+var p = {a:4}; 
+
+o.foo(); // 3 
+(p.foo = o.foo)() // 2 
+```
+
+
+
+p.foo = o.foo 의 결과는 원함수 객체의 레퍼런스이므로 p.foo() / o.foo()가 아니라 foo() 가 실행된다.
+
+
+
+#### 2.4.3 소프트 바인딩
+
+
+
+하드 바인딩은 함수의 유연성을 많이 떨어뜨리기 때문에 사람들은 소프트 바인딩 유틸리티를 고안했다
+
+
+
+```javascript
+if (!Function.prototype.softBind) {
+	Function.prototype.softBind = function (oj) {
+		var fn = this;
+		// 커링된 인자는 죄다 포착한다
+		var curried = [].slice.call(arguments, 1);
+		var bound = function() {
+			return fn.apply(
+				(!this || this === (window || global)) ?
+					obj : this
+				curried.concat.apply(curried, arguments);
+			);
+		};
+		bound.prototype = Object.create(fn.prototype);
+		return bound;
+	};
+}
+```
+
