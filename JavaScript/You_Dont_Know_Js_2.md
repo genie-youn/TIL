@@ -569,3 +569,103 @@ var symbolObj = {
 
 ES6 부터는 `Object.assign()` 메소드를 사용하여 얕은 복사를 할 수 있다, ( 순회하며 = 할당을 하기 때문에 writable 같은 특수한 프로퍼티의 속성은 복사되지 않는다,) 
 
+
+
+#### 3.3.5 프로퍼티 서술자 
+
+
+
+ES5 부터 모든 프로퍼티는 프로퍼팉 서술자로 표현된다. 
+
+
+
+```javascript
+var myObject = { 
+	a : 2
+}
+
+Object.getOwnPropertyDescriptor(myObject, “a”);
+
+
+// {
+//     value : 2,
+//     writable : true,
+//     enumerable : true,
+//     configurable: true
+// }
+```
+
+
+
+`Object.defineProperty()` 로 새로운 프로퍼티를 추가하거나 기존의 프로퍼티의 특성을 변경할 수 있다 (configurable 이 ture 일 경우)
+
+
+
+##### 쓰기가능
+
+
+
+프로퍼티의 쓰기가능 여부는 `writable` 로 조정한다. 쓰기 금지된 값을 수정하면 조용히 실패하며 엄격 모드에서는 TypeError 를 뱉는다.
+
+
+
+##### 설정가능
+
+
+
+`configurable` 이 true 는 `Object.defineProperty()` 로 프로퍼티 서술자를 변경할 수 있다. 한번 false 로 설정되면 돌이킬 수 없으며 `delete` 도 불가능 하다.
+
+
+
+
+
+##### 열거가능성 
+
+
+
+`for..in` 구문에서 노출되게 하냐 마냐 
+
+
+
+##### 불변성 
+
+
+
+자바스크립트에서 뼛속까지 고정된 불변객체를 쓸 일은 거의 없다. 필요한 경우도 있겠지만, 객체를 봉인 또는 동결 해야하는 상황이라면 객체값이 변경되어도 문제가 없는 견고한 프로그램을 설계할 수 있는 다른 방법은 없는지 디자인 패턴 관점에서 재고해라
+
+
+
+##### 객체상수
+
+
+
+`writable : false` 와 `configurable : false` 이면 객체 프로퍼티를 상수처럼 쓸 수 있다.
+
+
+
+##### 확장금지
+
+
+
+`Object.preventExtension()` 을 호출하면 객체에 더는 프로퍼티가 추가되지 않는다.
+
+
+
+##### 봉인
+
+
+
+`Object.seal() = Object.preventExtension() + configurable : false`
+
+
+
+##### 동결
+
+
+
+`Object.freeze() = Object.seal() + writable : false` 
+
+
+
+`Object.freeze()` 를 호출하면 지금까지 영향을 받지 않았던 해당객체가 참조하는 모든 객체를 재귀순회하며  `Object.freeze()` 를 호출해 깊숙히 동결한다. 의도치 않은 공유된 다른 객체까지 동결시키지 않도록 조심할것. 
+
