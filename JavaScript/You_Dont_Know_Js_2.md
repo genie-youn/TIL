@@ -714,3 +714,91 @@ myObject.a; // 2
 ES5 부터는 게터/세터를 통해 객체 수준이 아닌 프로퍼티 수준에서 값을 셋팅하고/조회하는 기본로직을 오버라이딩 할 수 있다. 
 
 프로퍼티가 게터/세터 가 될 수 있게 정의한것을 접근 서술자 `Access Descriptor` 라고 한다. 
+
+
+
+```javascript
+var myObject = { 
+	get a() {
+		return 2;
+	}
+} 
+
+Object.defineProperty( 
+	myObject,
+	“b”,
+	{
+		get: function() {
+			return this * 2;
+		},
+		enumerable: true
+	}
+); 
+
+myObject.a; // 2 
+myObject.b; // 4 
+```
+
+
+
+당연하지만 게터/세터 한쪽만 선언하면 예상외의 결과를 얻을 수 있다. 
+
+
+
+#### 3.3.10 존재확인 
+
+
+
+```javascript
+var myObject = { 
+	a : 2
+} 
+
+// in 은 이 객체와 [[Prototype]] 체인까지 참조 
+(“a” in myObject );  // ture 
+(“b” in myObject);  // false 
+
+// hasOwnProperty 는 해당 객체만 참조 
+myObject.hasOwnProperty(“a”) // true 
+myObject.hasOwnProperty(“b”) // true 
+```
+
+
+
+in 은 프로퍼티 명이 존재하는 지만 확인한다. 즉 4 in [2,3,4] 는 실행되지 않는다. 
+
+
+
+##### 열거가능 
+
+
+
+열거가능하다는건 객체 프로퍼티 순회 리스트에 포함된다는걸 의미한다. 
+
+
+
+```javascript
+var myObject = {}; 
+
+Object.defineProperty( 
+	myObject,
+	“a”,
+	{enumerable : true, value : 2}
+); 
+
+Object.defineProperty( 
+	myObject,
+	“b”,
+	{enumerable : false, value : 3}
+); 
+
+// 해당 객체만 
+myObject.propertyIsEnumerable(“a”); // true 
+myObject.propertyIsEnumerable(“b”); // false 
+
+// 주어진 객체만 
+Object.keys(myObject); // [“a”] 
+Object.getOwnPropertyNames(myObject); // [“a”, “b”] 
+```
+
+in 연산자 결과와 동일한 프로퍼티 리스트를 조회하는 기능은 아직 없다. 
