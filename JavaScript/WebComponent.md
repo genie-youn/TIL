@@ -14,5 +14,8 @@
 3. HTML 템플릿
   : `<template>` 와 `<slot>` 엘리먼트 렌더링된 페이지에 나타나지 않는 마크업 템플릿을 작업하게 해준다.
 
-
+https://developer.mozilla.org/ko/docs/Web/Web_Components#%EB%AA%85%EC%84%B8
+https://www.html5rocks.com/ko/tutorials/webcomponents/shadowdom/
+https://www.html5rocks.com/ko/tutorials/webcomponents/shadowdom-201/
+https://html.spec.whatwg.org/multipage/scripting.html#the-template-element
 태그 : 웹컴포넌트
