@@ -984,3 +984,67 @@ ES6 이전에 자바스크립트는 상대적 다형성을 제공하지 않는�
 따라서 `drive()` 란 이름의 함수가 Vehicle 과 Car 양쪽에 모두 존재한다면 
 
 (상대적이 아닌) 절대적 레퍼런스를 사용할 수 밖에 없다 ( Vehicle.drive.call( this ) ) 
+
+
+
+명시적 다형성은 더 복잡하고 더 읽기 어려운 코드가 된다. 장점보다는 비용이 훨씬 더 많이 들기 때문에 가능한 한 쓰지 않는게 좋다. 
+
+
+
+자바스크립트 함수는 복사할 수 없다. 복사되는건 함수 공유 객체를 가리키는 사본 레퍼런스이다.  
+
+
+
+명시적 믹스인은 코드 가독성에 도움이 될 때만 사용하되, 점점 코드를 추적하기 어렵고 객체간 관계가 난해해진다면 사용을 중단해라. 
+
+
+
+##### 기생상속 [^parastic inheritance] 
+
+
+
+기생상속은 더글라스 크록포드가 작성한 명시적 믹스인 패턴의 변형으로 명시적 / 암시적 요소를 모두 갖고 있다. 
+
+
+
+```javascript
+function Vehicle() { 
+	this.engines = 1;
+} 
+
+
+
+Vehicle.prototype.ignition = function() { 
+	console.log(“엔진을 켠다”);
+} 
+
+
+
+Vehicle.prototype.drive = function() { 
+	this.ignition();
+	console.log(“방향을 맞추고 앞으로 간다”);
+} 
+
+
+
+function Car() { 
+	var car = new Vehicle();
+	car.wheels = 4;
+	
+    // Vehicle::drive() 의 내부 레퍼런스 생성
+	var vehDrive = car.drive;
+
+	// Vehicle::drive() 오버라이드
+	car.drive = function() {
+		vehDrive.call( this );
+		console.log(this.wheels + “개의 바퀴로 굴러간다.”);
+	}
+	return car;
+} 
+
+var car = enw Car(); // new 없이 호출해도 똑같다. 저 함수가 새 객체를 반환하므로.. 오히려 불필요한 객체생성과 가비지컬렉션을 유발한다 
+myCar.drive(); 
+```
+
+
+
