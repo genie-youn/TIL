@@ -14,6 +14,14 @@
 3. HTML 템플릿
   : `<template>` 와 `<slot>` 엘리먼트 렌더링된 페이지에 나타나지 않는 마크업 템플릿을 작업하게 해준다.
 
+다음과 같이 구현한다.
+
+1. ES6의 `Class` 를 사용해 커스텀 엘리먼트의 기능을 명시한 클래스를 생성한다.
+2. `CustomElementRegistry.define()` 함수를 이용해 커스텀 엘리먼트를 등록하고, 정의할 엘리먼트 이름, 기능을 정의한 클래스, 상속할 엘리먼트를 전달한다.
+3. 필요한 경우 `Element.attachShadow()` 를 사용해 `ShadowDom` 을 커스텀 엘리먼트에 추가한다. 일반적인 DOM 메소드를 사용해 자식 엘리먼트, 이벤트 리스너 등을 shadow DOM 에 추가한다.
+4. 필요한 경우 `<template>` 과 `<slot>` 을 사용해 HTML 템플릿을 정의한다. 다시 일반적인 DOM 메소드를 사용해 템플릿을 클론하고 shadow DOM 에 추가한다.
+5. 일반적인 HTML element 처럼 사용한다.
+
 https://developer.mozilla.org/ko/docs/Web/Web_Components#%EB%AA%85%EC%84%B8
 https://www.html5rocks.com/ko/tutorials/webcomponents/shadowdom/
 https://www.html5rocks.com/ko/tutorials/webcomponents/shadowdom-201/
