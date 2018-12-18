@@ -22,6 +22,27 @@
 4. 필요한 경우 `<template>` 과 `<slot>` 을 사용해 HTML 템플릿을 정의한다. 다시 일반적인 DOM 메소드를 사용해 템플릿을 클론하고 shadow DOM 에 추가한다.
 5. 일반적인 HTML element 처럼 사용한다.
 
+##### 커스텀 엘리먼트 생성하기
+
+커스텀 엘리먼트의 컨트롤러는 [CustomElementRegistry](https://developer.mozilla.org/ko/docs/Web/API/CustomElementRegistry) 객체를 사용한다.
+`customElements.define(name, constructor, options);` 함수를 통해 새로운 커스텀 엘리먼트를 등록할 수 있다.
+> `customElements.define(name, constructor, options);`
+>
+> name : 커스텀 엘리먼트 태그의 이름. 반드시 하이픈(-)을 포함해야 한다. (한 단어가 될 수 없음) <br>
+> constructor : 커스텀 엘리먼트의 기능을 캡슐화한 (ES6의) 클래스 <br> // 이거 ES6 클래스만 되나? 일반 생성자 함수는 안되고?
+> options(optional) : 옵션을 주입할 객체, 현재는 `extends` 하나의 속성만 지원. 어떤 엘리먼트를 상속할 지 옵션으로 줄 수 있다.
+
+```Javascript
+class WordCount extends HTMLParagraphElement {
+  constructor() {
+    // 항상 생성자에서 super는 처음으로 호출됩니다
+    super();
+    // 엘리먼트의 기능들은 여기에 작성합니다.
+    ...
+  }
+}
+```
+
 https://developer.mozilla.org/ko/docs/Web/Web_Components#%EB%AA%85%EC%84%B8
 https://www.html5rocks.com/ko/tutorials/webcomponents/shadowdom/
 https://www.html5rocks.com/ko/tutorials/webcomponents/shadowdom-201/
