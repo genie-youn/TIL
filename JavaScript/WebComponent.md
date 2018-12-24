@@ -72,7 +72,49 @@ class PopUpInfo extends HTMLElement {
 
 
 
-HTMLElement ??
+```javascript
+// Create a shadow root
+// https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow
+var shadow = this.attachShadow({mode : 'open'});
+
+// Create Spans
+var wrapper = document.createElement('span');
+wrapper.setAttribute('class', 'wrapper');
+var icon = document.createElement('span');
+icon.setAttribute('class', 'icon');
+icon.setAttribute('tabindex', 0);
+var info = document.createElemennt('span');
+info.setAttribute('class', 'info');
+
+// Take attribute content and put it inside the info span
+var text = this.getAttribute('text');
+info.textContent = text;
+
+// Insert icon
+var imgUrl;
+if (this.hasAttribute('img')) {
+	imgUrl = this.getAttribute('img');
+} else {
+    imgUrl = 'img/default.png';
+}
+
+var img = document.createElement('img');
+img.src = imgUrl;
+icon.appendChild(img);
+
+// Create some css to apply to the shadow dom
+var style = document.createElement('style');
+style.textContent = '.wrapper {}'
+
+shadow.appendChild(style);
+shadow.appendChild(wrapper);
+wrapper.appendChild(icon);
+wrapper.appendChild(info);
+```
+
+
+
+
 
 https://developer.mozilla.org/ko/docs/Web/Web_Components#%EB%AA%85%EC%84%B8
 https://www.html5rocks.com/ko/tutorials/webcomponents/shadowdom/
