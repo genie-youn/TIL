@@ -114,6 +114,31 @@ wrapper.appendChild(info);
 
 
 
+마지막으로 `CustomElementRegistry#define()` 함수를 이용해서 커스텀 엘리먼트를 등록하면 된다.
+
+```javascript
+customElements.define('popup-info', PopUpInfo);
+```
+
+
+
+##### Customized built-in elements
+
+커스텀 엘리먼트중 표준 HTML 엘리먼트를 상속하는 Customized built-in elements 를 만들어보자.
+메뉴를 열고 접을 수 있는 순서없는 리스트 엘리먼트를 구현할 것이다.
+
+```javascript
+class ExpandingList extends HTMLUListElement {
+    constructor () {
+        super();
+        
+        // write element functionaliy in here
+    }
+}
+```
+
+
+
 
 
 https://developer.mozilla.org/ko/docs/Web/Web_Components#%EB%AA%85%EC%84%B8
