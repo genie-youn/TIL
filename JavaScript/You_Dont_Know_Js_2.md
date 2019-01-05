@@ -1124,5 +1124,34 @@ myObject.foo = "bar";
 
 3. [[Prototype]] 체인의 상위 수준에서 발견된 foo가 세터일 경우 항상 이 세터가 호출된다. myObject에 가려짐 프로퍼티 foo 를 추가하지 않으며 foo 세터를 재정의 하는일 또한 없다.
 
-아니 그럼 일반 데이터 접근 프로퍼티가 아닌것도 있어?
-가려짐이 중첩될 때는 가장 하위에서 만나는 아이만 유효한거겠지? > 이거 테스트해보자
+2번이 조금 특이한데, 프로토타입 체인의 상위에 읽기 전용으로 선언된 프로퍼티가 존재하면 하위수준에서 생성되지 못하게 한다. (가려지지 않게 한다) 이는 지극히 클래스 지향 프로퍼티라는 환상을 강화하려는 의도에서 비롯되었다. 마치 프로토타입 체인 상위 객체로부터 상속받은 프로퍼티를 굳히는 것은 타당해보이나, 자바스크립트에서 상속에 따른 복사따위는 전혀 일어나지 않는다는것을 고려하면 ([[Prototype]] 이라는 프로퍼티로 상위 객체를 단순히 참조할 뿐이다) 다소 억지스럽다. 그나마 = 할당에만 이런 제약이 있을 뿐 `Object.defineProperty` 로 가릴려면 충분히 가릴 수 있다.
+
+메서드 간 위임이 필요한 상황이면 메서드 가려짐으로 인해 보기 안 좋은 명시적 의사다형성이 유발된다. 가려짐은 그 이용 가치에 비해 지나치게 복잡하고 애매하니 될 수 있으면 사용하지 말것. **작동 위임 패턴** 을 적용하면 좀 더 깔끔하게 가려짐을 대체할 수 있다.
+
+가려짐은 미묘하게 암시적으로 발생할 수 있으니 이런 경우는 더 유의해야 한다.
+
+```javascript
+var anotherObject = {
+  a : 2
+};
+
+var myObject = Object.create( anotherObject );
+
+anotherObject.a;   // 2
+myObject.a;        // 2
+
+anotherObject.hasOwnProperty("a"); // true
+myObject.hasOwnProperty("a");      // false
+
+myObject.a++;      // 암시적 가려짐
+
+anotherObject.a;   // 2
+myObject.a         // 3
+
+myObject.hasOwnProperty("a");   // true
+```
+
+겉보기엔 `myObject.a++` 가 `anotherObject.a` 를 찾아서 1을 증가시킬것 같지만 이 연산을 풀어쓰면
+`myObject.a = myObject.a + 1` 일 뿐이다. 즉 [[Get]]으로 프로토타입 체인을 뒤져서  anotherObject.a 의 값인 1을 가져오고 여기에 1을 더해서 [[Put]] 으로 myObject에 가려짐 프로퍼티인 a를 새로 생성한 뒤 할당한다.
+
+그러므로 위임을 통해서 프로퍼티를 수정하려고 할 땐 조심해야한다. anotherObject.a 를 1 증가시키려면 `anotherObject.a++` 밖에 방법이 없다.
