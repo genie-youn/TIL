@@ -1242,3 +1242,59 @@ a.constructor === Foo; // true
 
 자바스크립트는 관례로 '클래스' 를 대문자로 시작하니 `foo` 가 아닌 `Foo` 로 표기한건 처음부터 클래스를 의도했다는 단서다.
 > es6 부턴 class 문법이 생겼으니 이제 이렇게 안쓰려나?
+
+##### 생성자냐 호출이냐?
+
+위 예제에서 Foo 를 호출하는 순간 객체가 툭 하게 생겼으니 생성자로 믿고 싶을것이다. 하지만 Foo 는 단순한 함수일 뿐이다. 함수는 결코 생성자가 아니지만 앞에 new 지시자를 붙여 호출하는 순간 이 함수는 '생성자 호출'을 한다. new 키워드가 일반 함수 호출을 도중에 가로채서 원래 수행할 작업 외에 객체 생성이라는 추가적인 작업을 지시하는 지시자다.
+
+```javascript
+function NothingSpecial() {
+  console.log("신경쓰지마");
+}
+
+var a = new NothingSpecial();
+a; // {}
+```
+
+`NothingSpecial` 은 평범한 함수이다. 그런데 이 함수를 new 로 호출하면서 객체를 생성하고 부수효과로 생성된 객체를 a 에 할당하는 '생성자 호출' 을 하게 되는것이다. 즉, 자바스크립트 함수 앞에 new 를 붙이면 모두 '생성자' 라고 할 수 있지만 new 뒤에 오는 함수는 단순한 함수일 뿐이다.
+
+#### 5.2.3 체계
+
+이 외에도 클래스를 흉내내기 위한 노력은 더 존재한다.
+
+```javascript
+function Foo(name) {
+  this.name = name;
+}
+
+Foo.prototype.myName = function () {
+  return this.name;
+}
+
+var a = new Foo("a");
+var b = new Foo("b");
+
+a.myName(); // "a"
+b.myName(); // "b"
+```
+
+Foo.prototype 객체에 myName 이라는 프로퍼티(함수) 를 추가하고 a.myName 을 호출하면 마치 프로토타입의 프로퍼티가 a 라는 객체로 복사된것 처럼 보이지만 사실은 프로토타입 체인을 타고 올라가서 Foo.prototype.myName 에게 실행을 위임한것이다.
+
+##### 돌아온 '생성자'
+
+앞서 .constructor 프로퍼티를 소유하고 있는것이 아닌 해당 객체의 prototype 객체가 갖고 있는 .constructor 프로퍼티에게 위임된다고 했다. 이는 편리해 보이지만 .constructor 프로퍼티가 "~에 의해 생성됨" 을 의미한다고 가정한다면 큰 혼란에 빠지게 된다. 몇가지 경우의 수를 보자
+
+1. `.constructor` 프로퍼티는 기본으로 선언된 함수에 의해 생성된 프로토타입 객체에만 존재한다. 새로운 객체를 생성한뒤 기본 프로토타입 객체 레퍼런스를 변경하면 변경된 레퍼런스에 옮겨 붙진 않는다.
+
+```javascript
+function Foo() {
+  //
+}
+Foo.prototype = {
+  //
+};
+
+var a1 = new Foo();
+a1.constructor === Foo; // false
+a1.constructor === Object; // true
+```
