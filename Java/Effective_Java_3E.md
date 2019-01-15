@@ -44,3 +44,96 @@ BufferReader br = Files.newBufferReader(~~);
 
 ##### 결론
 상황에 따라 생성자와 정적 팩터리 메서드를 사용하되, 일반적인 경우 정적 팩터리 메서드를 사용하는 것이 유리할 때가 많다.
+
+### ITEM 2. 생성자에 매개변수가 많으면 빌더를 고려해라
+
+점층적 생성자 패턴 :
+  생성자에 variation 을 주어 다양하게 만든다.
+  읽기가 힘듬
+
+자바빈즈 패턴 :
+  파라미터가 없는 생성자로 객체를 만들고 `setter` 를 호출하여 값을 설정한다.
+  필요한 모든 `setter`가 호추링 끝나기 전까지 객체는 일관성 [^consistency] 이 무너진 상태에 놓인다.
+  불변객체를 만들수 없어 스레드 안전성을 확보하기가 번거롭다.
+
+그래서 빌더패턴을 써야한다.
+계층적으로 설계된 클래스와 사용하면 더 진가를 발휘한다.
+
+```java
+public abstract class Pizza {
+  abstract static class Builder<T extends Builder<T>> {
+    public T addTopping(Topping topping) {
+      toppings.add(Objects.requireNotNull(topping));
+      return self();
+    }
+
+    abstract Pizza build();
+    // 하위클래스는 이 메소드를 재정의하여
+    // this를 반환하게 해야함
+    protected abstract T self();
+  }
+
+  Pizza(Builder<?> builder) {
+    toppings = builder.toppings.clone();
+  }
+}
+```
+여기서 `self()` 는 self 타입이 없는 자바에서 하위타입에서도 형변환을 하지 않고 메서드 체인을 만들기 위한 방법으로 `Simulated Self-Type` 이라고 부른다.
+
+사용하는 클라이언트의 코드는 다음과 같다.
+
+```java
+public class NyPizza extends Pizza {
+  public static Builder extends Pizza.Builder<Builder> {
+    @Override
+    public NyPizza build() {
+      return new NyPizza(this);
+    }
+    @Override
+    public protected Builder self() {
+      return this;
+    }
+  }
+}
+```
+
+#### 결론
+생성자나 정적 팩터리 메서드가 처리해야할 인자가 많다면 빌더패턴이 좋은 해답이다.
+매개변수중 다수가 필수가 아니거나 타입이 같다면 더욱 진가를 발휘한다.
+빌더는 점층적 생성자보다 코드를 읽고 쓰기가 훨씬 수월하고 자바 빈즈보다 훨씬 안전하다.
+
+### ITEM 3. private 생성자나 열거타입으로 싱글턴을 보장하라
+
+싱글턴을 만드는 방법은 세가지다
+
+```java
+public static final Elvis INSTANCE = new Elvis();
+private Elvis() {...}
+```
+
+API상 싱글턴임이 명확하고 간결하다. 리플렉션을 방어해야 한다.
+
+```java
+private static final Elvis INSTANCE = new Elvis();
+private Elvis() {...}
+public static Elvis getInstance() {
+  return INSTANCE;
+}
+```
+
+유연하다. API를 바꾸지 않아도 싱글턴이 아니게 할 수 있다. 정적 펙터리 메서드를 `Supplier`로 사용할 수 있다.
+리플렉션을 방어해야한다.
+
+어쨋든 둘자 직렬화 하려면 인스턴스의 모든 필드를 `transient` 로 선언하고 `readResolve` 메소드를 제공해야한다. 그렇지 않으면 역직렬화 할 때 새로운 인스턴스를 생성하게 된다.
+
+위 단점을 모두 해결할 수 있는 방법이 원소가 하나인 Enum 타입의 객체를 싱글턴으로 사용하는 것이다.
+
+대부분 상황에서 제일 좋은 해결책이 될 수 있지만, Enum 외의 클래스를 상속받을 수 없다.
+
+### ITEM 4. 인스턴스화를 막으려면 private 생성자를 사용해라
+
+### ITEM 5. 
+
+
+--- 봐야해
+어쨋든 둘자 직렬화 하려면 인스턴스의 모든 필드를 `transient` 로 선언하고 `readResolve` 메소드를 제공해야한다. 그렇지 않으면 역직렬화 할 때 새로운 인스턴스를 생성하게 된다.
