@@ -382,3 +382,110 @@ static Comparator<Object> hashCodeOrder = Comparator.comparingInt(o -> o.hashCod
 ##### 결론
 
 순서를 고려해야 하는 값 클래스를 작성한다면 꼭 `Comparable` 인터페이스를 구현하여, 그 인스턴스를 쉽게 정렬하고, 검색하고, 비교 기능을 제공하는 컬렉션과 어우러지도록 해야한다. `compareTo` 메서드에서 필드의 값을 비교할 때 <와 >연산자는 쓰지 말아야한다. 그 대신 박싱된 기본 타입 클래스가 제공하는 정적 `compare` 메서드나 `Comparator` 인터페이스가 제공하는 비교자 생성 메서드를 사용하자.
+
+## 클래스와 인터페이스
+
+### ITEM 15 클래스와 멤버의 접근 권한을 최소화하라
+
+내부 데이터와 내부 구현은 외부로부터 완벽히 숨겨 구현과 API 를 분리하고, 외부에서는 이 API 를 통해서만 소통해야한다.
+- 시스템 개발 속도를 높인다.
+- 시스템 관리 비용을 낮춘다.
+- 성능 최적화에 도움을 준다.
+- 소프트웨어 재사용성을 높인다.
+- 제작의 난이도를 낮춰준다.
+
+public 클래스의 인스턴스 필드는 되도록 public 이 아니여야 한다.
+- 스레드 안전 불가
+- 길이가 0이 아닌 배열을 주의할 것
+- static 이더라도 참조하는 객체가 가변객체면 말짱 도로묵
+
+```Java
+private static final Thing[] PRIVATE_VALUES = {...};
+public static final List<Thing> VALUES =
+  Collections.unmodifiableList(Arrays.asList(PRIVATE_VALUES));
+```
+
+```Java
+private static final Thing[] PRIVATE_VALUES = {...};
+public static final Thing[] values() {
+  return PRIVATE_VALUES.clone();
+};
+```
+Java9 모듈?
+
+##### 결론
+프로그램 요소의 접근성은 가능한 최소한으로 하라. 꼭 필요한 것만 골라 최소한의 public API 를 설계하자. 그 외에는 클래스, 인터페이스, 멤버가 의도치 않게 API로 공개되는 일이 없도록 해야한다. public 클래스는 상수용 public static final 필드 외에는 어떠한 public 필드도 가져서는 안 된다. public static final 필드가 참조하는 객체가 불변인지 확인하라.
+
+### ITEM 16. public 클래스에서는 public 필드가 아닌 접근자 메서드를 사용하라
+
+접근자를 제공하고 필드는 private 로 선언할것
+
+##### 결론
+public 클래스는 절대 가변 필드를 직접 노출해서는 안 된다. 불변 필드라면 노출해도 덜 위험하지만 완전히 안심할 수는 없다. 하지만 package-private 클래스나 private 중첩 클래스에서는 종종 필드를 노출하는 편이 나을 때도 있다.
+
+### ITEM 17. 변경 가능성을 최소화하라
+
+불변 클래스는 가변 클래스보다 설계하고 구현하고 사용하기 쉬우며, 오류가 생길 여지도 적고 훨씬 안전하다.
+
+- 객체의 상태를 변경하는 메서드를 제공하지 않는다.
+- 클래스를 확장할 수 없도록 한다.
+- 모든 필드를 final 로 선언한다.
+- 모든 필드를 private 로 선언한다.
+- 자신 외에는 내부의 가변 컴포넌트에 접근할 수 없도록 한다. (방어적 복사)
+
+불변 객체는 근본적으로 스레드 안전하여 따로 동기화할 필요 없다.
+그러므로 안심하고 공유할 수 있고, 최대한 재활용 하기를 권한다.
+
+방어적 복사도 필요없다. 아무리 복사해봐야 원본과 똑같으니 복사 자체가 의미가 없다.
+불변 객체는 자유롭게 공유할 수 있음은 물론, 불변 객체끼리는 내부 데이터를 공유할 수 있다.
+불변 객체는 그 자체로 실패 원자성을 제공한다.
+> 메서드에서 예외가 발생한 후에도 그 객체는 여전히 유효한 상태여야 하낟.
+
+단점 -> 값이 다르면 반드시 독립된 객체로 만들어야 한다.
+
+- 흔히 쓰일 다단계 연산을 예측하여 기본 기능으로 제공한다. (package-private 의 가변 동반클래스를 사용한다.)
+
+```Java
+// Compute the modular inverse
+int inv = -MutableBigInteger.inverseMod32(mod[modLen-1]);
+
+// Convert base to Montgomery form
+int[] a = leftShift(base, base.length, modLen << 5);
+
+MutableBigInteger q = new MutableBigInteger(),
+a2 = new MutableBigInteger(a),
+b2 = new MutableBigInteger(mod);
+
+MutableBigInteger r= a2.divide(b2, q);
+table[0] = r.toIntArray();
+
+// Pad table[0] with leading zeros so its length is at least modLen
+if (table[0].length < modLen) {
+  int offset = modLen - table[0].length;
+  int[] t2 = new int[modLen];
+  for (int i=0; i < table[0].length; i++)
+  t2[i+offset] = table[0][i];
+  table[0] = t2;
+}
+
+// Set b to the square of the base
+int[] b = squareToLen(table[0], modLen, null);
+b = montReduce(b, mod, modLen, inv);
+// 생략
+return new BigInteger(1, t2);
+```
+
+- 만약 정확한 예측이 안되면 동반 가변클래스를 같이 제공해라 (String / StringBuilder)
+
+생성
+
+자신을 상속하지 못하게 하는 가장 쉬운 방법은 final 클래스로 선언하는 것이지만, 모든 생성자를 private 나 package-private 로 두고 public 정적 팩터리 메서드를 제공하는 방법이 더 유연하다.
+
+BigInteger 와 BigDecimal 을 설계할땐 불변 객체가 사실상 final 이어야 하는 인식이 널리 퍼지지 않았다. 그래서 이 두 클래스 모두 재정의할 수 있게 설계되었고, 안타깝게도 하위호환성이 발목을 잡아 지금까지도 이 문제를 고치지 못했다. 만약 신뢰할 수 없는 클라이언트로 부터 이 두 클래스의 인스턴스를 인수로 받는다면 주의해야한다.
+신뢰할 수 없는 하위클래스라고 생각된다면 가변이라 가정하고 방어적으로 복사해서 사용해야한다.
+
+##### 결론
+게터가 있다고 무조건 세터를 만들지 마라. 클래스는 꼭 필요한 경우가 아니라면 불변이어야 한다.
+String과 BigInteger 처럼 무거운 값 객체도 불변으로 만들 수 있는지 고심해야 한다. 어쩔 수 없다면 불변 클래스와 쌍을 이루는 가변 동반 클래스를 제공해라
+불변으로 만들 수 없는 클래스라도 변경할 수 있는 부분을 최소한을 ㅗ줄이자.
+생성자는 불변식 설정이 모두 완료된, 초기화가 완벽히 끝난 상태의 객체를 생성해야한다. 
