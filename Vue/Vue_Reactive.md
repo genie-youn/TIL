@@ -29,6 +29,7 @@ Vue에서 반응형 ^Reactivity^ 이란 Vue 인스턴스에 `data` 옵션으로 
 
 Vue 인스턴스에서 반응형은 이벤트와 라이프사이클이 초기화 된 이후 설정된다.
 
+core/instance/init.js
 ```javascript
 // expose real self
 vm._self = vm
@@ -36,12 +37,13 @@ initLifecycle(vm)
 initEvents(vm)
 initRender(vm)
 callHook(vm, 'beforeCreate')
-initInjections(vm) // resolve injections before data/props
+initInjections(vm) // resolve injections before data/props 여기서 반응형 설정이 이루어진다.
 initState(vm)
 initProvide(vm) // resolve provide after data/props
 callHook(vm, 'created')
 ```
 
+core/observer/index.js
 ```javascript
 /**
  * Define a reactive property on an Object.
@@ -106,4 +108,40 @@ export function defineReactive (
     }
   })
 }
+```
+
+```javascript
+/**
+ * Attempt to create an observer instance for a value,
+ * returns the new observer if successfully observed,
+ * or the existing observer if the value already has one.
+ */
+export function observe (value: any, asRootData: ?boolean): Observer | void {
+  if (!isObject(value) || value instanceof VNode) {
+    return
+  }
+  let ob: Observer | void
+  if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    ob = value.__ob__
+  } else if (
+    shouldObserve &&
+    !isServerRendering() &&
+    (Array.isArray(value) || isPlainObject(value)) &&
+    Object.isExtensible(value) &&
+    !value._isVue
+  ) {
+    ob = new Observer(value)
+  }
+  if (asRootData && ob) {
+    ob.vmCount++
+  }
+  return ob
+}
+```
+
+```javascript
+shouldObserve &&
+    !isServerRendering() &&
+    (Array.isArray(value) || isPlainObject(value)) &&
+    Object.isExtensible(value) &&
 ```
