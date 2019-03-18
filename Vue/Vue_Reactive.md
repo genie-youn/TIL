@@ -27,7 +27,7 @@ Vue에서 반응형 ^Reactivity^ 이란 Vue 인스턴스에 `data` 옵션으로 
 
 ### 반응형이 적용되는 과정
 
-Vue 인스턴스에서 반응형은 이벤트와 라이프사이클이 초기화 된 이후 설정된다.
+Vue 인스턴스에서 반응형은 이벤트와 라이프사이클이 초기화 된 이후 설정된다. (`beforeCreate` 와 `created` 사이)
 
 core/instance/init.js
 ```javascript
@@ -143,5 +143,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 shouldObserve &&
     !isServerRendering() &&
     (Array.isArray(value) || isPlainObject(value)) &&
-    Object.isExtensible(value) &&
+    Object.isExtensible(value) && !value._is
 ```
+
+props 객체도 반응형으로 도는데 왜 Observer 가 없지
