@@ -40,7 +40,7 @@ callHook(vm, 'created')
 
 해당 시점에 `props`, `methods`, `data`, `computed`, `watch` 에 대한 초기화가 이루어 진다.
 
-`data` 객체의 각 `key` 들을 순회하면서 해당 프로퍼티가 수정 가능하다면 (`configurable`) `reactiveGetter`, `reactiveSetter` 를 각각 프로퍼티의 getter 와 setter 로 등록한다.
+`data` 객체에 `__ob__` 라는 이름의 옵저버 객체를 프로퍼티로 등록한 후 각 `key` 들을 순회하면서 해당 프로퍼티가 수정 가능하다면 (`configurable`) `reactiveGetter`, `reactiveSetter` 를 각각 프로퍼티의 getter 와 setter 로 등록한다.
 
 core/observer/index.js
 ```javascript
@@ -54,6 +54,32 @@ Object.defineProperty(obj, key, {
     // ...
   }
 })
+```
+
+이후 `mount` 하는 과정에서 새로운 `Watcher` 객체를 생성하고 `vm._watcher` 프로퍼티에 이 객체를 등록한다.
+
+```javascript
+new Watcher(vm, updateComponent, noop, {
+    before () {
+      if (vm._isMounted && !vm._isDestroyed) {
+        callHook(vm, 'beforeUpdate')
+      }
+    }
+  }, true /* isRenderWatcher */)
+
+// Watcher constructor
+constructor (
+    vm: Component,
+    expOrFn: string | Function,
+    cb: Function,
+    options?: ?Object,
+    isRenderWatcher?: boolean
+) {
+  this.vm = vm
+  if (isRenderWatcher) {
+        vm._watcher = this
+  }
+}
 ```
 
 ```javascript
