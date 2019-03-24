@@ -40,10 +40,12 @@ callHook(vm, 'created')
 
 해당 시점에 `props`, `methods`, `data`, `computed`, `watch` 에 대한 초기화가 이루어 진다.
 
-`data` 객체에 `__ob__` 라는 이름의 옵저버 객체를 프로퍼티로 등록한 후 각 `key` 들을 순회하면서 해당 프로퍼티가 수정 가능하다면 (`configurable`) `reactiveGetter`, `reactiveSetter` 를 각각 프로퍼티의 getter 와 setter 로 등록한다.
+`data` 객체에 `__ob__` 라는 이름의 옵저버 객체를 프로퍼티로 등록한 후 각 `key` 들을 순회하면서 해당 프로퍼티가 수정 가능하다면 (`configurable`) `reactiveGetter`, `reactiveSetter` 를 각각 프로퍼티의 getter 와 setter 로 등록한다. 또한 각각의 프로퍼티는 클로저로 `Dep` 이라는 다수의 Subscriber 를 가질 수 있는 객체를 가지게 되고 템플릿의 디렉티브는 이 `Dep` 객체를 구독하게 된다.
 
-core/observer/index.js
+core/observer/index.js defineReactive()
 ```javascript
+const dep = new Dep()
+
 Object.defineProperty(obj, key, {
   enumerable: true,
   configurable: true,
@@ -56,31 +58,78 @@ Object.defineProperty(obj, key, {
 })
 ```
 
-이후 `mount` 하는 과정에서 새로운 `Watcher` 객체를 생성하고 `vm._watcher` 프로퍼티에 이 객체를 등록한다.
+이후 `mount` 하는 과정에서 새로운 `Watcher` (Subscriber) 객체를 생성하고 뷰 인스턴스를 업데이트 하는 `vm._update()` 함수를 변경이 생겼을 때 실행할 함수로 넣어둔다. `vm._update()` 는 `vm._render()` 함수를 실행한 결과인 `vnode` 객체를 받아서 DOM 을 업데이트한다.
 
 ```javascript
 new Watcher(vm, updateComponent, noop, {
-    before () {
-      if (vm._isMounted && !vm._isDestroyed) {
-        callHook(vm, 'beforeUpdate')
-      }
+  before () {
+    if (vm._isMounted && !vm._isDestroyed) {
+      callHook(vm, 'beforeUpdate')
     }
-  }, true /* isRenderWatcher */)
+  }
+}, true /* isRenderWatcher */)
 
 // Watcher constructor
 constructor (
-    vm: Component,
-    expOrFn: string | Function,
-    cb: Function,
-    options?: ?Object,
-    isRenderWatcher?: boolean
+  vm: Component,
+  expOrFn: string | Function,
+  cb: Function,
+  options?: ?Object,
+  isRenderWatcher?: boolean
 ) {
   this.vm = vm
   if (isRenderWatcher) {
-        vm._watcher = this
+    vm._watcher = this
   }
 }
 ```
+
+이 객체를 `vm._watcher` 프로퍼티에 등록하고 `Watcher.get()` 을 통해 뷰 인스턴스를 한번 업데이트를 한다. 렌더링 함수를 호출해 `template` 내의 구문을 컴파일하고 템플릿의 디렉티브에서 참조하고 있는 `data` 프로퍼티의 `getter`를 호출하게 된다. `getter` 로 등록된 `reactiveGetter`를 자세히 보면
+
+```javascript
+get: function reactiveGetter () {
+  const value = getter ? getter.call(obj) : val
+  if (Dep.target) {
+    dep.depend()
+    if (childOb) {
+      childOb.dep.depend()
+      if (Array.isArray(value)) {
+        dependArray(value)
+      }
+    }
+  }
+  return value
+},
+```
+
+`Dep.target` 에는 앞서 뷰 인스턴스를 업데이트 하는 함수를 담고있는 `Watcher` 객체가 들어있다. 그래서 프로퍼티가 참조하고 있는 `Dep` 객체에 `depend()` 함수를 호출하게 된다.
+
+```javascript
+// Dep (Observable) 객체의 함수다.
+depend () {
+  if (Dep.target) {
+    Dep.target.addDep(this)
+  }
+}
+
+// 앞서 등록된 `Watcher` (Subscriber) 객체의 함수다
+addDep (dep: Dep) {
+  const id = dep.id
+  if (!this.newDepIds.has(id)) {
+    this.newDepIds.add(id)
+    this.newDeps.push(dep)
+    if (!this.depIds.has(id)) {
+      dep.addSub(this)
+    }
+  }
+}
+```
+
+위와 같은 핑퐁을 거쳐 해당 프로퍼티의 `Dep(Observable)` 을 뷰 인스턴스를 업데이트 하는 함수를 가진 `Wathcer(Subscriber)` 의 구독이 등록되게 된다.
+
+> 이런식으로 Dep 과 Wathcer 가 서로 핑퐁을 하면서 구독 등록의 과정이 이루어 지는데 중간에 this 가 계속 인자로 주어지다 보니 코드가 읽기가 많이 헷갈렸던것 같다..
+
+
 
 ```javascript
 shouldObserve &&
@@ -88,5 +137,3 @@ shouldObserve &&
 (Array.isArray(value) || isPlainObject(value)) &&
 Object.isExtensible(value) && !value._is
 ```
-
-props 객체도 반응형으로 도는데 왜 Observer 가 없지
