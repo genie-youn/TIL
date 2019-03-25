@@ -23,3 +23,5 @@ module.exports = {
 해결책은 간단하다. intellij 에 해당 웹팩 설정파일 경로를 잡아주면 된다.
 
 `Preference` > `Languages&Frameworks` > `Javascript` > `Webpack` 에 `webpack.config.js` 파일의 경로를 넣어주면 잘 찾아준다.
+
+![image](https://user-images.githubusercontent.com/16642635/54926134-0cf87480-4f53-11e9-9dfa-266c06b50d03.png)
