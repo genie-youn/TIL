@@ -61,6 +61,11 @@ Object.defineProperty(obj, key, {
 이후 `mount` 하는 과정에서 새로운 `Watcher` (Subscriber) 객체를 생성하고 뷰 인스턴스를 업데이트 하는 `vm._update()` 함수를 변경이 생겼을 때 실행할 함수로 넣어둔다. `vm._update()` 는 `vm._render()` 함수를 실행한 결과인 `vnode` 객체를 받아서 DOM 을 업데이트한다.
 
 ```javascript
+
+updateComponent = () => {
+  vm._update(vm._render(), hydrating)
+}
+
 new Watcher(vm, updateComponent, noop, {
   before () {
     if (vm._isMounted && !vm._isDestroyed) {
@@ -129,6 +134,34 @@ addDep (dep: Dep) {
 
 > 이런식으로 Dep 과 Wathcer 가 서로 핑퐁을 하면서 구독 등록의 과정이 이루어 지는데 중간에 this 가 계속 인자로 주어지다 보니 코드가 읽기가 많이 헷갈렸던것 같다..
 
+이후 `message` 의 값을 변경하게 되면 setter 로 등록해 두었던 `reactiveSetter` 함수가 호출되게 된다.
+
+```javascript
+set: function reactiveSetter (newVal) {
+  const value = getter ? getter.call(obj) : val
+  /* eslint-disable no-self-compare */
+  if (newVal === value || (newVal !== newVal && value !== value)) {
+    return
+  }
+  /* eslint-enable no-self-compare */
+  if (process.env.NODE_ENV !== 'production' && customSetter) {
+    customSetter()
+  }
+  // #7981: for accessor properties without setter
+  if (getter && !setter) return
+  if (setter) {
+    setter.call(obj, newVal)
+  } else {
+    val = newVal
+  }
+  childOb = !shallow && observe(newVal)
+  dep.notify()
+}
+```
+
+새로 받은 값을 set 하고 나면 프로퍼티의 `dep (Observable)` 객체에 `notify` 를 호출하여 상태의 전파를 일으킨다.
+
+이 객체를 구독하고 있던 `Watcher` 객체가 `updateComponent` 함수를 실행시켜 변경된 `message` 의 값을 읽어가고 virtual dom 을 계산하고 변경된 부분을 다시 렌더링 함으로써 `message` 의 값에 템플릿 내 디렉티브가 반응형으로 동작하게 된다.
 
 
 ```javascript
