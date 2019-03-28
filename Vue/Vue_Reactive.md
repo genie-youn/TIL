@@ -163,6 +163,41 @@ set: function reactiveSetter (newVal) {
 
 이 객체를 구독하고 있던 `Watcher` 객체가 `updateComponent` 함수를 실행시켜 변경된 `message` 의 값을 읽어가고 virtual dom 을 계산하고 변경된 부분을 다시 렌더링 함으로써 `message` 의 값에 템플릿 내 디렉티브가 반응형으로 동작하게 된다.
 
+객체를 초기화 하는 과정에서 `data` 객체에 있는 프로퍼티를 순회하며 반응형을 설정하기 때문에 이 시점에 존재하지 않았던 프로퍼티에 대해서는 반응형으로 동작하지 않게 된다. 초기화 이후 `data` 객체에 프로퍼티를 아무리 추가해봤자 변경을 감지하지 못한다는 이야기다. 그렇기 때문에 빈 값으로라도 초기에 선언하여 인스턴스를 초기화 해야 하는 것이다.
+
+루트 수준 (`data` 객체의 직접적인 프로퍼티) 에 반응형을 추가하는 방법은 존재하지 않지만, 초기화시 존재했던 중첩된 프로퍼티 객체에 새로운 프로퍼티를 추가할 수 있는 API 는 제공한다.
+
+```javascript
+var vm = new Vue({
+  data: {
+    a: {
+      b: 1,
+    }
+  }
+})
+
+Vue.set(vm.a, 'c', 2);
+vm.$set(vm.a, 'c', 2); // 또는
+```
+
+마찬가지로 다음과 같은 케이스도 반응형으로 동작하지 않는다.
+
+```javascript
+Object.assign(this.userProfile, {
+  age: 27,
+  favoriteColor: 'Vue Green'
+})
+```
+
+setter 를 명시적으로 호출해주어야 한다.
+
+```javascript
+this.userProfile = Object.assign({}, this.userProfile, {
+  age: 27,
+  favoriteColor: 'Vue Green'
+})
+```
+
 
 ```javascript
 shouldObserve &&
