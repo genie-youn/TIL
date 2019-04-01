@@ -1,10 +1,10 @@
-# Vue 와 반응형
+# Vue 와 반응형 (Data)
 
-얼마 전 특정 유저의 상태에 따라 알림 레이어를 노출해야 하는 스펙을 구현중에 의도한 대로 동작하지 않아 한참을 해맸다. Vue 의 반응형이 어떻게 동작하는지, 제대로 이해하고 있지 않아 생긴 문제였고 이 기회에 Vue와 반응형에 대하여 정리하려 한다.
+얼마 전 특정 유저의 상태에 따라 알림 레이어를 노출해야 하는 스펙을 구현중에 의도한 대로 동작하지 않아 한참을 해맸다. Vue 의 반응형이 어떻게 동작하는지 제대로 이해하고 있지 않아 생긴 문제였고 이 기회에 Vue와 반응형에 대하여 정리하려 한다.
 
 ### 반응형?
 
-Vue에서 반응형 ^Reactivity^ 이란 Vue 인스턴스에 `data` 옵션으로 자바스크립트 객체를 전달하면 이 객체의 변경을 감지하여 전파하는것을 일컫는다.
+Vue에서 반응형 ^Reactivity^ 이란 Vue 인스턴스에 `data` 프로퍼티로 자바스크립트 객체를 전달하면 이 객체의 변경을 감지하여 전파하는것을 일컫는다.
 
 ```html
 <template>
@@ -27,7 +27,7 @@ export default {
 
 ### 반응형이 적용되는 과정
 
-Vue 인스턴스에서 반응형은 이벤트와 라이프사이클이 초기화 된 이후 설정된다. (`beforeCreate` 훅과 `created` 사이)
+Vue 인스턴스에서 반응형은 이벤트와 라이프사이클이 초기화 된 이후 설정된다. (`beforeCreate` 훅과 `created` 훅 사이)
 
 core/instance/init.js
 ```javascript
@@ -198,10 +198,6 @@ this.userProfile = Object.assign({}, this.userProfile, {
 })
 ```
 
+### 놓치기 쉬운것들
 
-```javascript
-shouldObserve &&
-!isServerRendering() &&
-(Array.isArray(value) || isPlainObject(value)) &&
-Object.isExtensible(value) && !value._is
-```
+#### 중첩된 객체
