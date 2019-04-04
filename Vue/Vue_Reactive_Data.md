@@ -187,7 +187,7 @@ var vm = new Vue({
 
 그 이유는 단순하게 자바스크립트에서 `a.c = 4` 를 주었을 때 a 의 setter 가 호출되지 않는다. c 에 대한 setter 를 호출할뿐..
 
-위 상황에서는 a 와 b 모두 재귀적으로 `reactiveSetter` 가 등록되어 있으니 `data.a.b = 3` 은 반응형을 타겠지만 `data.a.c = 3` 은 c 에 대한 `reactiveSetter` 가 등록되어 있지 않으니 반응형을 타지 않는다.
+위 상황에서는 a 와 b 모두 재귀적으로 `reactiveSetter` 가 등록되어 있으니 `data.a.b = 3` 은 반응형을 타겠지만 `data.a.c = 3` 은 c 에 대한 `reactiveSetter` 가 등록되어 있지 않으니 반응형을 타지 않는다. 이럴때 사용하기위해 만들어둔 API 가 `Vue.set` 이다.
 
 루트 수준 (`data` 객체의 직접적인 프로퍼티) 에 반응형을 추가하는 방법은 존재하지 않지만, 초기화시 존재했던 중첩된 프로퍼티 객체에 새로운 프로퍼티를 추가할 수 있는 API 는 제공한다.
 
@@ -219,5 +219,47 @@ setter 를 명시적으로 호출해주어야 한다.
 this.userProfile = Object.assign({}, this.userProfile, {
   age: 27,
   favoriteColor: 'Vue Green'
+})
+```
+
+#### 배열
+
+두번째로 놓치기 쉬운게 배열이다. 뷰가 일반 객체의 setter 를 조작해 반응형을 태우는것 처럼 배열도 배열의 몇가시 함수를 조작해 반응형을 태운다.
+
+```javascript
+const methodsToPatch = [
+  'push',
+  'pop',
+  'shift',
+  'unshift',
+  'splice',
+  'sort',
+  'reverse'
+]
+
+/**
+ * Intercept mutating methods and emit events
+ */
+methodsToPatch.forEach(function (method) {
+  // cache original method
+  const original = arrayProto[method]
+  def(arrayMethods, method, function mutator (...args) {
+    const result = original.apply(this, args)
+    const ob = this.__ob__
+    let inserted
+    switch (method) {
+      case 'push':
+      case 'unshift':
+        inserted = args
+        break
+      case 'splice':
+        inserted = args.slice(2)
+        break
+    }
+    if (inserted) ob.observeArray(inserted)
+    // notify change
+    ob.dep.notify()
+    return result
+  })
 })
 ```
