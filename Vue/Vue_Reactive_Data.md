@@ -224,9 +224,15 @@ this.userProfile = Object.assign({}, this.userProfile, {
 
 #### 배열
 
-두번째로 놓치기 쉬운게 배열이다. 뷰가 일반 객체의 setter 를 조작해 반응형을 태우는것 처럼 배열도 배열의 몇가시 함수를 조작해 반응형을 태운다.
+두번째로 놓치기 쉬운게 배열이다. 뷰가 일반 객체의 setter 를 조작해 반응형을 태우는것 처럼 배열도 배열의 몇가지 함수를 조작해 반응형을 태운다.
+
+우선 반응형의 대상이 되는 객체의 타입이 `Array` 일 경우 이 객체의 프로토타입을 기존의 `Array.prototype` 객체를 확장한 커스텀 객체로 변경한다
 
 ```javascript
+
+const arrayProto = Array.prototype
+export const arrayMethods = Object.create(arrayProto)
+
 const methodsToPatch = [
   'push',
   'pop',
@@ -263,3 +269,7 @@ methodsToPatch.forEach(function (method) {
   })
 })
 ```
+
+확장된 `Array.prototype` 객체는 `push`,`pop`,`shift`,`unshift`,`splice`,`sort`,`reverse` 함수들에 대하여 호출될 때마다 변경사항을 구독자들에게 전파하고 특히 `push`, `unshift`, `splice` 의 경우 새롭게 배열에 추가된 객체에 대하여 반응형을 설정한다. 즉 위 함수외에는 배열이 변경되어도 변경된 내용이 반응형으로 동작하지 않게된다.
+
+`arr[1] = "abc";` 와 같은 방법으로 배열을 변경하지 않도록 하자
