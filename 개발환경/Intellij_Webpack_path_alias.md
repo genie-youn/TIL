@@ -25,3 +25,9 @@ module.exports = {
 `Preference` > `Languages&Frameworks` > `Javascript` > `Webpack` 에 `webpack.config.js` 파일의 경로를 넣어주면 잘 찾아준다.
 
 ![image](https://user-images.githubusercontent.com/16642635/54926134-0cf87480-4f53-11e9-9dfa-266c06b50d03.png)
+
+#### with Vue-cli
+
+vue-cli 와 함께 사용할 경우 설정파일로 `vue.config.js` 파일을 사용하게 되어 있다. 이때 alias 설정은 그대로 `vue.config.js` 파일에 하고 인텔리제이에게만 `node_modules/@vue/cli-service/webpack.config.js` 파일을 잡아주면 된다.
+
+> https://cli.vuejs.org/guide/webpack.html#using-resolved-config-as-a-file 를 참고한다.
