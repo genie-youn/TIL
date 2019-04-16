@@ -19,4 +19,10 @@
 
 ### 문제
 
-예를 들어 숫자가 들어있는 `Array` 를 받아서 중간에 "+" 를 넣어 문자열로 늘어뜨려 엘리먼트의 `innerText` 로 표현해주는 디렉티브가 필요하다고 해보자. 아마 이런식으로 구현할 수 있을 것이다.
+Vue는 주어진 문자열을 `innerHTML` 에 넣어 HTML 렌더링 하는 디렉티브로 `v-html` 디렉티브를 제공한다. 다만 기본적인 XSS 를 방어할 수 있는 디렉티브는 따로 제공하지 않고, 그럴 생각도 없다고 한다.
+
+ > https://github.com/vuejs/vue/issues/7860
+
+ 문제가 되는 경우는 NCR 을 렌더링 해야 하는 경우인데, 렌더링은 해야겠고 XSS는 막아야겠으니 `<` 와 `>` 만 escape 하는 커스텀 디렉티브를 만들어야겠다고 결심한다.
+
+ > NCR (Numeric Character Reference) 에 대해서는 다음을 참고하자. https://en.wikipedia.org/wiki/Numeric_character_reference
