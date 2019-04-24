@@ -21,8 +21,26 @@
 
 Vue는 주어진 문자열을 `innerHTML` 에 넣어 HTML 렌더링 하는 디렉티브로 `v-html` 디렉티브를 제공한다. 다만 기본적인 XSS 를 방어할 수 있는 디렉티브는 따로 제공하지 않고, 그럴 생각도 없다고 한다.
 
- > https://github.com/vuejs/vue/issues/7860
+> https://github.com/vuejs/vue/issues/7860
 
- 문제가 되는 경우는 NCR 을 렌더링 해야 하는 경우인데, 렌더링은 해야겠고 XSS는 막아야겠으니 `<` 와 `>` 만 escape 하는 커스텀 디렉티브를 만들어야겠다고 결심한다.
+문제가 되는 경우는 NCR 을 렌더링 해야 하는 경우인데, 렌더링은 해야겠고 XSS는 막아야겠으니 `<` 와 `>` 만 escape 하는 커스텀 디렉티브를 만들어야겠다고 결심한다.
 
- > NCR (Numeric Character Reference) 에 대해서는 다음을 참고하자. https://en.wikipedia.org/wiki/Numeric_character_reference
+> NCR (Numeric Character Reference) 에 대해서는 다음을 참고하자. https://en.wikipedia.org/wiki/Numeric_character_reference
+
+아마 다음과 같이 구현할 수 있을 것이다.
+
+```javascript
+function escapeTag(el, binding) {
+  const fakeElement = document.createElement('div');
+  fakeElement.innerHTML = binding.value;
+  el.innerText = fakeElement.innerHTML;
+}
+
+Vue.directive('escape-tag', escapeTag);
+```
+
+```HTML
+<span v-escape-tag='"&#9822"'></span>
+```
+
+`v-escape-tag`에 `&#9822` 를 넣으면 의도한대로 `♞` 가 출력되는걸 볼 수 있다.
