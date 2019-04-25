@@ -40,7 +40,27 @@ Vue.directive('escape-tag', escapeTag);
 ```
 
 ```HTML
-<span v-escape-tag='"&#9822"'></span>
+<div>
+  <span class="test" v-escape-tag='"&#9822"'></span>
+</div>
 ```
 
 `v-escape-tag`에 `&#9822` 를 넣으면 의도한대로 `♞` 가 출력되는걸 볼 수 있다.
+
+이 디렉티브가 virtual dom 과 만나면 굉장히 기묘한 일이 발생하게 된다.
+
+```HTML
+<div>
+  <span v-if="!a" class="test" v-escape-tag="'&#9822'"></span>
+  <span v-if="a" class="test">기본 텍스트</span>
+</div>
+```
+
+다음과 같이 `a`의 값에 따라서 두 `<span>` 중 하나를 노출한다고 가정해보자.
+
+`a` 가 처음에 false 일때는 '♞' 만 보이다가 true로 바뀌는 순간 '♞기본 텍스트' 로 노출되게 된다.
+분명 다른 element 로 변경되었는데 기존에 있던 '♞'가 지워지지 않게 된것.
+
+그 이유는 첫번째 `span` 에서 두번째 `span` 으로 변경될 때 뷰의 virtual dom 이 해당 element 를 재활용하기 때문인데, 디렉티브가 `unbind` 될 때의 훅이 설정되어 있지 않아서 ♞가 지워지지 않고 남아있게 되는것이다.
+
+해결책은 간단한데, `Vue.directive(...)`의 인자로 함수가 아니라 각 훅마다 동작할 콜백이 정의된 객체를 넘기는 것이다.
