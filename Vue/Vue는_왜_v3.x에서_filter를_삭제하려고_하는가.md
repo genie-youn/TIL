@@ -6,3 +6,83 @@
 > 추가로 본래 이슈는 https://github.com/vuejs/rfcs/pull/6 여기를 참고하면 된다.
 
 무려 9개월간 논의된 이 쓰레드에는 v2.0 에서 `filter`의 삭제를 두고 의견이 팽팽히 대립되는걸 볼 수 있었다.
+
+과거 (2.0 이전) 뷰의 필터는 다음과 같은 파이프 라인 문법을 지원하였음. 
+
+`thing in things | filterBy 'foo' | orderBy 'bar' | limitBy 5`
+
+뷰 코어 팀이 필터를 삭제한 이유는 다음과 같다.
+
+- 초보자에게 직관적이지가 않다.
+  + 필터는 기본적으로 함수이다. 
+  + 그렇지만 일반적인 함수 호출과는 그 생김새가 다르다 `foo()` 처럼 괄호로 호출할 수 없다.
+  + 계산된 속성등의 다른곳에서 사용이 불가능하고 오로지 템플릿안에서 파이프라인 문법을 통한 사용만이 가능하다.
+  + 초보자에게 예외사항은 허들이 된다. 필터는 함수임에도 불구하고 특별한 문법과 어느 상황에서나 사용할 수는 없다는 제약이 있다.
+- 파이프라인 문법에 대한 [초안](http://tc39.github.io/proposal-pipeline-operator/)이 tc39 에 올라온 상태. 정식 문법으로 채택되면 현재 필터에서 사용하는 파이프라인 문법과 헷갈릴 여지가 있으며, 이때 자바스크립트 표준을 따르는게 옳지 않을까?
+- 뷰는 유틸리티 라이브러리가 아니다.
+  + 통화와 날짜를 다루고, 배열을 필터링하는건 뷰의 관심도 아니고, 뷰보다 훨씬 더 좋은 라이브러리들이 많다.
+  + Accounting.js를 통해 통화를 다루고 Moment.js로 날짜를 다루고 pluralize로 복수화를 하고 json을 통해 직렬화를 해라.
+ - 필터를 사용하는 대신 계산된 속성을 사용할것
+  + 계산된 속성의 값은 컴포넌트의 어디서나 쉽게 재사용될 수 있다.
+  + 필터와 마찬가지로 템플릿으로부터 구현의 상세내용을 분리시켜 깔끔한 상태를 유지할 있다.
+  + 필터는 전역으로 선언되어 이 필터가 어떻게 동작하는지 확인하려면 해당 함수가 선언된 파일을 열어서 찾아봐야하지만, 계산된 속성은 해당 관심이 컴포넌트내에 명확하게 존재한다.
+  + 배열에서 `map`과 `filter` 를 통해 체이닝 하는것이 파이프라인 문법과 똑같은 역할을 하면서도 더 선언적이고 쉽게 조작할 수 있다.
+- 글로벌 선언의 유용성
+  + 만약 글로벌 선언이 필터를 사용하는 큰 이유라면 뷰 인스턴스에 선언하면 된다.
+  + `Vue.prototype.whateverIWant = mySuperCoolFunction` 이렇게
+  + 하지만 이 방식은 그다지 추천하지 않는다. 헬퍼 메소드를 모듈로 분리하여 이것을 `import` 하여 사용할 것을 권장한다.
+  + 하지만 핵심은 필터없이도 글로벌한게 선언하는것이 어렵지 않다는것을 설명하는 것이다.
+ 
+필터가 유용한것은 사실이지만 순수 javascript의 함수와 같은 일을 하면서도 함수처럼 유연한 사용이 불가능한점, 표준으로 파이프라인 문법이 `draft`로 올라와 있는점이 filter를 삭제하려는 가장 큰 이유라고 할 수 있다.
+
+
+
+
+필터를 다시 살려달라!
+필터는 재사용성이 뛰어남
+
+필터를 안쓰면 이렇게 작성해야해
+
+```html
+<ul>
+    <li v-for="item in filteredItems">{{ item }}</li>
+</ul>
+```
+
+```javascript
+new Vue({
+    el: 'body',
+
+    data: {
+        items: [],
+        filter: ''
+    },
+
+    computed: {
+        filteredItems() {
+            var self = this
+            return this.items.filter(function(item) {
+                return item.indexOf(self.filter) > -1
+            })
+        }
+    }
+})
+```
+
+매번 이렇게 쓸려면 얼마나 번거롭겠어
+
+파이프 라인 문법이 없으면 이렇게 써야해
+
+```html
+<ul v-for="word in filters.limitBy(filters.orderBy(filters.filterBy(words, userInput), column, -1), limit)">
+    <li>{{word}}</li>
+ </ul>
+```
+
+얼마나 번거롭겠어!
+
+-> `filters.limitBy(filters.orderBy(filters.filterBy(words, userInput), column, -1), limit)` 이만큼을 계산된 속성으로 빼야지!
+
+
+
+그치만 우린 삭제할꺼니 `global Mixin` 을 쓰거나, 메소드를 모듈로 분리하거나, 계산된 속성 함수로 모듈을 분리하거나..
