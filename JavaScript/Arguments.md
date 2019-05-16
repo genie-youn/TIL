@@ -98,7 +98,6 @@ sillyFunction();
 
 
 참고
-
 https://stackoverflow.com/questions/103598/why-was-the-arguments-callee-caller-property-deprecated-in-javascript
-
 http://bonsaiden.github.io/JavaScript-Garden/ko/#function.arguments
+https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Functions/arguments/callee
