@@ -70,6 +70,52 @@ app.mount('#app')
 
 #### Functional Component
 - 함수형 컴포넌트는 마침내 단어 그대로의 함수가 된다. - 하지만 이제 비동기 컴포넌트는 헬퍼 함수를 통해 명시적으로 생성해야 한다.
+
+기존에 다음과 같이 사용하던 Functional Component를 
+
+```javascript
+const FunctionalComp = {
+  functional: true,
+  render(h) {
+    return h('div', `Hello! ${props.name}`)
+  }
+}
+```
+
+다음과 같이 변경한다.
+
+```javascript
+import { h } from 'vue'
+
+const FunctionalComp = props => {
+  return h('div', `Hello! ${props.name}`)
+}
+```
+
+AsyncFunctionalComponent는 어쩔수 없이..
+
+```javascript
+import { createAsyncComponent } from 'vue'
+
+const AsyncComp = createAsyncComponent(() => import('./Foo.vue'))
+```
+ 
 > 연관된 RFC [Functional and async components API change](https://github.com/vuejs/rfcs/pull/27)
+
+#### Virtual DOM format
+가장 큰 변화를 겪는 부분은 렌더 함수에서 사용되는 가상 돔의 형식이다. 여러 주요 라이브러리들의 저자들에게 피드백을 구하는 중이며, 하위호환성을 지킬 수 있도록 신경쓸께
+
+### Source Code Architecture
+내부적으로 모듈관의 결합도를 낮추고, 코드베이스를 기여하기 더 쉽게 하도록 하기 위해 타입스크립트로 다시 작성한다.
+타입스크립트의 타입 정보를 통해 IDE의 더 강력한 지원에 힘입어 새로운 컨트리뷰터가 의미있는 기여를 할 수 있도록 도울것이라 확신한다.
+
+`observer` 모듈과 `scheduler` 모듈을 패키지를 분리해 다른 구현체로 대체하기 쉽게 만들 예정이다 . 
+예를들어, IE11만을 위한 `observer` 구현체를 작성한다거나..
+
+### Observation Mechanism
+더 완전하고, 정확하고 효율적이면서 디버깅하기 용이한 반응형 추적과 `observable`을 만들기 위한 API들을 제공합니다.
+
+3.0에서는 Proxy에 기반을 둔 반응형 추적을 제공하는 옵저버 구현체로 변경됩니다.
+`Object.defineProperty`로 구현되는 현재의 반응형 시스템에는 몇가지 문제가 존재합니다.
 
 출처 : [Plans for the Next Iteration of Vue.js](https://medium.com/the-vue-point/plans-for-the-next-iteration-of-vue-js-777ffea6fabf)
