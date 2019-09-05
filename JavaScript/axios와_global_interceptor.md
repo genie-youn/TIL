@@ -33,6 +33,27 @@ instance.interceptors.request.use(function () {/*...*/});
 ```
 
 ## 문제
-문제는 HTTPRequest를 보낼 서버가 여러개고 이 응답들을 내부적인 프로토콜을 따르고 있어 동일한 인터셉터로 처리할 수 있을 때이다. 글로벌 스코프의 인터셉터가 인스턴스로 상속이 되지 않기 때문에 Axios 인스턴스를 생성할 때마다 인터셉터를 생성해주어야 한다.
+문제는 HTTPRequest를 보낼 서버가 여러개고 이 응답들을 내부적인 프로토콜을 따르고 있어 동일한 인터셉터로 처리할 수 있을 때이다. `axios`의 기본 설정 객체인 `defaults`는 글로벌 스코프에 선언하면 인스턴스 생성시 상속받게 된다.
+
+```javascript
+axios.defaults.baseURL = "http://a.com";
+const instance1 = axios.create();
+const instance2 = axios.create();
+console.log(instance1.defaults.baseURL);  // 'http://a.com'
+console.log(instance2.defaults.baseURL);  // 'http://a.com'
+instance1.defaults.baseURL = "http://b.com";
+console.log(instance1.defaults.baseURL);  // 'http://b.com'
+console.log(instance2.defaults.baseURL);  // 'http://a.com'
+```
+
+하지만 인터셉터의 경우 상황이 조금 다르다. 글로벌 스코프의 인터셉터가 인스턴스로 상속이 되지 않기 때문에 Axios 인스턴스를 생성할 때마다 인터셉터를 생성해주어야 한다.
+
+```javascript
+axios.interceptors.response.use(response => response, error => Promise.reject);
+const instance = axios.create();
+
+console.log(axios.interceptors.response.handlers.length);  // 1
+console.log(instance.interceptors.response.handlers.length); // 0
+```
 
 https://github.com/axios/axios/issues/993
