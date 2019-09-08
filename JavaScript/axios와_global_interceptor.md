@@ -56,4 +56,21 @@ console.log(axios.interceptors.response.handlers.length);  // 1
 console.log(instance.interceptors.response.handlers.length); // 0
 ```
 
-https://github.com/axios/axios/issues/993
+글로벌 스코프의 인터셉터를 상속받을 수 있는 옵션을 추가해 달라는 [이슈](https://github.com/axios/axios/issues/993)가 올라와 있지만 진행될 기미는 보이지 않는다. 그래서 우선 기존의 `create`를 확장하여 사용하기로 하였다.
+
+AxiosDecorator.js
+```javascript
+import axios from "./axios";
+
+axios.defaults.baseURL = "https://a.com";
+axios.defaults.timeout = 3000;
+axios.defaults.withCredentials = true;
+
+axios.interceptors.response.use(response => response, Promise.reject);
+
+export const create = config => {
+  const instance = axios.create(config);
+  instance.interceptors = axios.interceptors;
+  return instance;
+};
+```
