@@ -60,7 +60,7 @@ console.log(instance.interceptors.response.handlers.length); // 0
 
 AxiosDecorator.js
 ```javascript
-import axios from "./axios";
+import axios from "axios";
 
 axios.defaults.baseURL = "https://a.com";
 axios.defaults.timeout = 3000;
@@ -68,9 +68,15 @@ axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(response => response, Promise.reject);
 
-export const create = config => {
+const create = config => {
   const instance = axios.create(config);
   instance.interceptors = axios.interceptors;
   return instance;
 };
+
+const axiosDecorator = {
+  create
+};
+
+export default axiosDecorator;
 ```
