@@ -70,7 +70,8 @@ axios.interceptors.response.use(response => response, Promise.reject);
 
 const create = config => {
   const instance = axios.create(config);
-  instance.interceptors = axios.interceptors;
+  instance.interceptors.request.handlers = [...axios.interceptors.request.handlers];
+  instance.interceptors.response.handlers = [...axios.interceptors.response.handlers];
   return instance;
 };
 
