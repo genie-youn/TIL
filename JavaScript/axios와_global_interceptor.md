@@ -81,3 +81,19 @@ const axiosDecorator = {
 
 export default axiosDecorator;
 ```
+
+근데 이러면 global scope에서 상속받은 핸들러는 어떻게 지워야 좋지? 몇개 상속받았는지 알아내서 지워줘야 하나.
+인터셉터를 해제하는 `eject` 함수는 인덱스를 인자로 받아서 해당하는 인덱스의 핸들러를 삭제한다. 그럼 핸들러 등록했을 때의 인덱스를 계속 들고있다가 필요해지면 삭제를 해야하는건가?
+
+```javascript
+/**
+	 * Remove an interceptor from the stack
+	 *
+	 * @param {Number} id The ID that was returned by `use`
+	 */
+	InterceptorManager.prototype.eject = function eject(id) {
+	  if (this.handlers[id]) {
+	    this.handlers[id] = null;
+	  }
+	};
+```
