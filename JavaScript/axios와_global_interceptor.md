@@ -100,3 +100,27 @@ export default axiosDecorator;
 
 - 글로벌 인터셉터는 런타임에 상속받아야 하는가 아니면 생성될때 복사되어야 하는가?
 - 런타임에 상속받게 된다면 인터셉터들의 순서는 어떻게 되어야 하는가?
+
+글로벌 인터셉터를 추가하는게 아니라 기존에 존재하는 인스턴스를 확장하는 api를 추가해 주는건?
+```javascript
+import axios from 'axios';
+
+export const api = axios.create({
+  baseURL: process.env.API_ROOT,
+});
+
+api.interceptors.request.use((request) => {
+  request.headers.Authorization = `Bearer mytoken`;
+  return request;
+});
+
+// Here the pdfInstance extends the api instance so the pdfInstance has also access to the request interceptor but is also able to override the baseURL and adding additional header such as Accept
+export const pdfInstance = api.extend({
+  baseURL: '/file',
+  responseType: 'arraybuffer',
+  headers: {
+    Accept: 'application/pdf',
+  },
+});
+```
+기존 defaults 옵션엔 순서가 중요한게 없나?
