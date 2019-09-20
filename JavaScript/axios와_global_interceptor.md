@@ -123,4 +123,39 @@ export const pdfInstance = api.extend({
   },
 });
 ```
-기존 defaults 옵션엔 순서가 중요한게 없나?
+
+
+**Is your feature request related to a problem? Please describe.**
+When create Axios instance, there is no way to reuse the global interceptor.
+The issue has been discussed in the past [(#993)](https://github.com/axios/axios/issues/993), but it is no longer in progress. So I re-arrange this issue.
+
+```javascript
+test("instance not have global interceptors", () => {
+  axios.interceptors.response.use(response => response, error => Promise.reject(error));
+  const instance = axios.create();
+	// axios.interceptors.response.handlers => 1
+	// instance.interceptors.response.handlers => 0
+  expect(instance.interceptors.response.handlers.length).toBe(axios.interceptors.response.handlers.length); // Fail!
+});
+```
+
+<details>
+ <summary>Reproduction</summary>
+ ```shell
+ $ git clone https://github.com/genie-youn/axios-inherited-interceptors.git
+ $ cd axios-inherited-interceptors
+ $ npm i
+ $ npm run test
+ ```
+</details>
+
+
+
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
+
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
+
+**Additional context**
+Add any other context or screenshots about the feature request here.
