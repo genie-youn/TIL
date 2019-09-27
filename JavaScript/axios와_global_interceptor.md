@@ -149,10 +149,18 @@ test("instance not have global interceptors", () => {
  ```
 </details>
 
-
-
 **Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+Add new property `withGlobalInterceptors` in `AxiosRequestConfig`
+
+```javascript
+test("instance with `withGlobalInterceptors` options should have global interceptors ", () => {
+  axios.interceptors.response.use(response => response, error => Promise.reject(error));
+  const instance = axios.create({withGlobalInterceptors: true});
+	// axios.interceptors.response.handlers => 1
+	// instance.interceptors.response.handlers => 1
+  expect(instance.interceptors.response.handlers.length).toBe(axios.interceptors.response.handlers.length); // success
+});
+```
 
 **Describe alternatives you've considered**
 A clear and concise description of any alternative solutions or features you've considered.
