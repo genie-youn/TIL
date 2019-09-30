@@ -127,7 +127,7 @@ export const pdfInstance = api.extend({
 
 **Is your feature request related to a problem? Please describe.**
 When create Axios instance, there is no way to reuse the global interceptor.
-The issue has been discussed in the past [(#993)](https://github.com/axios/axios/issues/993), but it is no longer in progress. So I re-arrange this issue.
+The issue has been discussed in the past [(#993)](https://github.com/axios/axios/issues/993), but it is no longer in progress. So I create this issue.
 
 ```javascript
 test("instance not have global interceptors", () => {
@@ -162,8 +162,41 @@ test("instance with `withGlobalInterceptors` options should have global intercep
 });
 ```
 
+#### Are global interceptors inherited by instances in run time or copied when created?
+IMHO, Global interceptors should be copied when instance are created.
+
+Once an instance is created, it should not be affected even if the global interceptors are changed. I think it would be easier to maintain an instance in an independent state from global.
+Similarly, it should not affect the global even if the interceptor of the instances are changed.
+
 **Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+In the thread, It was also discussed about the `extend`. @bierik
+
+```javascript
+import axios from 'axios';
+
+export const api = axios.create({
+  baseURL: process.env.API_ROOT,
+});
+
+api.interceptors.request.use((request) => {
+  request.headers.Authorization = `Bearer mytoken`;
+  return request;
+});
+
+// Here the pdfInstance extends the api instance so the pdfInstance has also access to the request interceptor but is also able to override the baseURL and adding additional header such as Accept
+export const pdfInstance = api.extend({
+  baseURL: '/file',
+  responseType: 'arraybuffer',
+  headers: {
+    Accept: 'application/pdf',
+  },
+});
+```
+
+**Personally**, I prefer the `AxiosRequestConfig` way because it is simpler. :smile
+
 
 **Additional context**
-Add any other context or screenshots about the feature request here.
+It’s a very personal idea. I will apprecate any feedback.
+
+I hope this feature will come into real world, and if this idea looks good, I want to implement this feature.
