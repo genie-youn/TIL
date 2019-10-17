@@ -27,3 +27,19 @@ process.on('{hook}}', (code) => {
   + `process.exit()`이나 처리되지 않은 예외로 인한 종료등 명시적인 종료에 의해 애플리케이션이 종료될 때는 **호출되지 않음** 에 유의한다.
   + `beforeExit`는 특정한 작업을 추가하려는 의도가 아니고, 단순히 `exit` 대신 사용하면 안된다.
   > 왜지
+
+- disconnect: `Child Process`나 `Cluster Mode`로 동작시 생성된 IPC 채널이 종료되었을 때
+- exit: 다음과 같은 이유로 Node의 프로세스가 종료될 때 호출됨
+  + `process.exit()`가 명시적으로 호출되었을 때
+  + Node의 이벤트 루프가 비어있고 더 이상 추가할 작업이 없을 때
+  + 이 시점에서 이벤트 루프가 종료되는 것을 막을 방법은 없으며, 모든 `exit` 이벤트에 대한 리스너가 실행되고나면 Node의 프로세스는 종료된다.
+  + `exit`의 이벤트 리스너가 모두 실행되고 나면 이벤트루프에 다른 태스크가 등록되어도 실행하지 않고 Node의 프로세스가 종료되기 때문에 리스너의 콜백함수는 **무조건** 동기적으로 실행되어야 함.
+> 그럼 process.exit()를 하면 beforeExit은 호출안되고 exit만 호출?
+
+- message: `Child Process`나 `Cluster Mode` 로 동작시 부모 프로세스로 부터 메세지를 받았을 때
+- multipleResolves: `Promise` 가 다음중 하나의 일을 했을 때 마다
+  + 한번이상 Resolved 되었을 때
+  + 한번이상 Rejected 되었을 때
+  + Resolved 된 이후 Rejected 되었을 때
+  + Rejected 된 이후 Resolved 되었을 때
+  + 잠재적인 버그를 찾는데 도움이 되지만, 감지된다고 무조건 버그라고 할 수는 없다. 예를들어 `Promise.race()` 는 `multipleResolves` 이벤트를 발생시킴
