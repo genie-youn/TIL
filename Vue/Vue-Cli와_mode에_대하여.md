@@ -27,3 +27,16 @@ package.json
 
 ### 빌드타임에 `process` 에서 가져오기
 다만 위와같이 `mode`의 값에 따른 설정파일을 자동으로 불러오기 위해서는 `.env` 파일들이 프로젝트 루트에 존재해야만 한다. 이 구조가 마음에 들지 않는다면 위 `mode`의 파라미터 값이 `process`에 주입되는것을 사용하여 쉽게 변경할 수 있다.
+
+vue.config.js
+```javascript
+const environment = new Dotenv({
+  path: `./environment/.env.${process.VUE_CLI_SERVICE.mode}`,
+});
+
+module.exports = {
+  configureWebpack: {
+    plugins: [environment],
+  },
+}
+```
