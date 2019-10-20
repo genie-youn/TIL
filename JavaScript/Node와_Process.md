@@ -43,3 +43,7 @@ process.on('{hook}}', (code) => {
   + Resolved 된 이후 Rejected 되었을 때
   + Rejected 된 이후 Resolved 되었을 때
   + 잠재적인 버그를 찾는데 도움이 되지만, 감지된다고 무조건 버그라고 할 수는 없다. 예를들어 `Promise.race()` 는 `multipleResolves` 이벤트를 발생시킴
+
+- rejectionHandled: 프로미스가 거절되고 에러핸들러가 Node 이벤트루프의 **한턴** 뒤에 이를 잡았을 때. 즉, 이미 거절되었던 프로미스를 조금 늦게 처리했을 때 (인것 같다).
+  + `Promise` 객체는 이전에 `unhandledRejection` 때 생성되었겠지만 처리 과정에서 rejection handler 를 얻을 수 있다.
+  + `Promise` 체인의 거절을 항상 처리할 수 있는 최상위 레벨의 개념은 존재하지 않는다. 기본적으로 비동기적으로 동작하기 때문에 `Promise` 의 거절은 미래시점에 발생 할 수 있으며, 이는 아마도 `unhandledRejection` 가 발생하는 이벤트 루프의 턴보다 더 늦은 시점이 될 것이다.
