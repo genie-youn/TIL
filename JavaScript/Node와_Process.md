@@ -13,8 +13,8 @@ Node 환경에서 개발을 하다 보면  `process`란 객체를 쓸 일이 왕
 
 다음과 같은 것들을 할 수 있다.
 
-#### 라이프 사이클
-프로세스의 라이프사이클을 감지하여 특정한 훅을 받아 실행할 수 있다.
+#### 이벤트 리스닝
+프로세스의 이벤트를 감지하여 콜백을 실행할 수 있다.
 ```javascript
 process.on('{hook}}', (code) => {
   console.log('do something: ', code);
@@ -54,3 +54,23 @@ process.on('{hook}}', (code) => {
 
 - **'uncaughtException' 예외는 정확하게 사용되어야 한다.**
   + 'uncaughtException'는 최후의 보루 같은 조잡한 메카니즘이다. 이 이벤트는 `On Error Resume Next` 같은 처리를 위해 사용되어선 안된다. 처리되지 않은 예외는 본질적으로 애플리케이션이 정의되지 않은 상태라는 것을 의미하고, 이를 제대로 복구하지 않고 코드를 다시 시작하려 하면 예상치 못한 문제가 추가로 발생할 수 있다.
+  + 무한 재귀에 빠지는걸 막기위해 이 핸들러에서 발생하는 예외는 잡히지 다시 이 핸들러로 잡히지 않는다.
+  + 'uncaughtException' 의 올바른 사용은 할당받은 리소스들을 동기적으로 해제하는데 사용하는 것이다. 이외의 일반적인 연산을 이어나가는 것은 안전하지 않다.
+  + 애플리케이션을 재시작 하는데에는 보다 더 신뢰성있는 방법을 사용하는 것을 추천한다.
+
+- unhandledRejection: Promise가 거절되었고, 이벤트 루프가 한바퀴 돌았으나 이를 잡은 에러 핸들러가 존재하지 않을 때.
+- warning: `process.emitWarning()` 으로 warning이 방출되었을 때.
+- Signal Events
+  + Node 프로세스가 시그널을 받았을 때
+  + 시그널의 종류에 대해서는 [다음](http://man7.org/linux/man-pages/man7/signal.7.html)을 참고
+
+#### 유용한 메서드 & 프로퍼티
+
+##### process.argv
+실행시 주어진 파라미터의 배열
+
+##### process.argv0
+첫번째 파라미터 - process.argv[2]를 가르킨다. process.argv[0] 은 node의 위치 process.argv[1] 은 실행할 파일 process.argv[2] 부터 파라미터이다. 
+
+##### process.channel
+자식 프로세스나 클러스터 모드로 돌렸을 때 이들과 통신할 수 있는 채널에 대한 레퍼런스. 이러한 경우가 아니라면 `undefined`
