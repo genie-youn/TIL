@@ -47,3 +47,10 @@ process.on('{hook}}', (code) => {
 - rejectionHandled: 프로미스가 거절되고 에러핸들러가 Node 이벤트루프의 **한턴** 뒤에 이를 잡았을 때. 즉, 이미 거절되었던 프로미스를 조금 늦게 처리했을 때 (인것 같다).
   + `Promise` 객체는 이전에 `unhandledRejection` 때 생성되었겠지만 처리 과정에서 rejection handler 를 얻을 수 있다.
   + `Promise` 체인의 거절을 항상 처리할 수 있는 최상위 레벨의 개념은 존재하지 않는다. 기본적으로 비동기적으로 동작하기 때문에 `Promise` 의 거절은 미래시점에 발생 할 수 있으며, 이는 아마도 `unhandledRejection` 가 발생하는 이벤트 루프의 턴보다 더 늦은 시점이 될 것이다.
+
+- uncaughtException: 처리되지 않은 자바스크립트 예외가 이벤트루프까지 전파될 때.
+  + 기본적으로 Node는 이러한 예외를 스택 트레이스를 `stderr` 출력하고 이전에 설정된 `process.exitCode` 를 1로 덮어쓴 뒤, 종료시킴으로써 처리한다.
+  + 위 기본동작은 'uncaughtException'에 핸들러를 등록하면 무시되어 진다.
+
+- **'uncaughtException' 예외는 정확하게 사용되어야 한다.**
+  + 'uncaughtException'는 최후의 보루 같은 조잡한 메카니즘이다. 이 이벤트는 `On Error Resume Next` 같은 처리를 위해 사용되어선 안된다. 처리되지 않은 예외는 본질적으로 애플리케이션이 정의되지 않은 상태라는 것을 의미하고, 이를 제대로 복구하지 않고 코드를 다시 시작하려 하면 예상치 못한 문제가 추가로 발생할 수 있다.
