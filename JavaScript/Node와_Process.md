@@ -70,7 +70,43 @@ process.on('{hook}}', (code) => {
 실행시 주어진 파라미터의 배열
 
 ##### process.argv0
-첫번째 파라미터 - process.argv[2]를 가르킨다. process.argv[0] 은 node의 위치 process.argv[1] 은 실행할 파일 process.argv[2] 부터 파라미터이다. 
+첫번째 파라미터 - process.argv[2]를 가르킨다. process.argv[0] 은 node의 위치 process.argv[1] 은 실행할 파일 process.argv[2] 부터 파라미터이다.
 
 ##### process.channel
 자식 프로세스나 클러스터 모드로 돌렸을 때 이들과 통신할 수 있는 채널에 대한 레퍼런스. 이러한 경우가 아니라면 `undefined`
+
+##### process.env
+사용자 환경에 관련된 객체를 반환한다.
+
+이 객체는 수정될 수 있으나, 이러한 수정은 Node.js 프로세스 외부에 반영되지 않거나, (명확히 요청하지 않는 한) 다른 Worker 스레드에는 반영되지 않는다. 즉 다음 예제는 동작하지 않는다.
+
+`$ node -e 'process.env.foo = "bar"' && echo $foo`
+
+반면 다음 예제는 정상적으로 동작한다.
+
+```javascript
+process.env.foo = 'bar';
+console.log(process.env.foo);
+```
+
+`process.env`의 새로운 프로퍼티에 값을 할당하게 되면 이 값은 문자열로 형변환된다. 이는 곧 Deprecated 될 예정이며, 앞으로의 Node 버전들에서는 문자열, 숫자, 불리언이 아닌 값은 예외를 발생하게 된다.
+
+```javascript
+process.env.test = null;
+console.log(process.env.test);
+// => 'null'
+process.env.test = undefined;
+console.log(process.env.test);
+// => 'undefined'
+```
+
+`delete` 키워드를 통해 `process.env`의 프로퍼티를 삭제할 수 있다.
+
+```javascript
+process.env.TEST = 1;
+delete process.env.TEST;
+console.log(process.env.TEST);
+// => undefined
+```
+
+Worker 인스턴스를 생성할 때 명시적으로 작성하지 않는 한, 각 Worker 스레드는 부모 스레드의 `process.env` 사본을 생성자에 갖고있다. `process.env`의 변경은 Worker 스레드 사이에서 가시적이지 않으며, 오로지 메인 스레드만이 os나 natvie add-ons에 가시적인 변경을 만들 수 있다.
