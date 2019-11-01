@@ -38,3 +38,32 @@ DOM polyfills, Intl polyfills, 등등의 무수히 많은 다른 웹 플랫폼 A
 - `entry-global`: 현재 `@babel/preset-env` 의 `useBuiltIns: "entry"` 옵션과 동일하다.
 - `usage-global`: 현재 `@babel/preset-env` 의 `useBuiltIns: "usage"` 옵션과 동일하다.
 - `usage-pure`: 현재 `@babel/plugin-transform-runtime` 가 폴리필을 주입하는 방식과 동일하다.
+
+Every interested project should have their own polyfill provider: for example, babel-polyfill-provider-corejs3 or @ungap/babel-polyfill-provider.
+
+**Polyfill injector** 는 바벨의 플러그인으로 프로그램의 추상 구문 트리를 분석한다. 이 플러그인은 글로벌 참조나 프로퍼티 접근등의 폴리필이 필요한 모든 표현식을 찾고, 이것을 처리할 수 있는 polyfill provider가 존재하는지 확인한다.
+
+생태계는 바벨의 공식적인 패키지중 일부인 오로지 하나의 polyfill injector만 있으면 될것이다. 아마 ` @babel/preset-env` 에 포함되거나, `@babel/plugin-inject-polyfills` 라는 새로운 이름의 패키지가 생길 수도 있다.
+
+### New user experience
+사용자가 일부 제안되어진 ECMAScript를 사용하고 있고, `Intl` 을 통해 로컬라이징을 하며 `fetch`를 사용하고 있다고 가정해보자.
+
+너무 많은 바이트의 폴리필을 로딩하는건 피하고 싶고, 범용적으로 사용되는 브라우저만 지원하고 사용하지 않는 폴리필은 로드되지 않기를 바랄때 다음과 같이 설정을 한다면 어떻겠는가?
+
+```JavaScript
+{
+  "presets": [
+    ["@babel/preset-env", { "targets": [">1%"] }]
+  ],
+  "plugins": [
+    ["@babel/inject-polyfills", {
+      "method": "usage-global",
+      "providers": [
+        "intl",
+        "fetch",
+        ["corejs3", { "proposals": true }]
+      ]
+    }],
+  ]
+}
+```
