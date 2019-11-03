@@ -67,3 +67,54 @@ Every interested project should have their own polyfill provider: for example, b
   ]
 }
 ```
+
+### New developer experience
+polyfill provider들이 안전하게 사용할 수 있는 새로운 cross-plugin communication protocol을 제공하기 위해서 우리는 communication이 어떻게 발생하는지 추상화 할 수 있는 몇가지 유틸리티를 제공해야 한다.
+
+우리는 아마도 `@babel/helper-create-class-features-plugin` 에서 했던 것 처럼 `File`의 클래스 `Map` 에 공유된 엔트리를 사용할 것이다. 그러나 버그의 출저와 복잡성을 제한하기 위해 이를 개발자에게 노출해서는 안된다.
+
+또한 우리는 `@babel/helper-polyfill-provider` 패키지를 새로 만들 거나 `@babel/plugin-inject-polyfills` 패키지에서 헬퍼들을 노출할 수 있다.
+
+```JavaScript
+import createPolyfillProvider, { injectImport } from "@babel/helper-polyfill-provider";
+
+export default createPolyfillProvider((api, options) => {
+  return {
+    name: "object-entries-polyfill-provider",
+
+    entryGlobal(name, targets, path) {
+      if (name !== "object-entries-polyfill") return false;
+      if (!supportsEntries(targets)) {
+        injectImport("object-entries-polyfill/global", path);
+      }
+      path.remove();
+      return true;
+    },
+
+    usageGlobal(name, targets, path) {
+      if (name !== "Object.entries") return false;
+      if (!supportsEntries(targets)) {
+        injectImport("object-entries-polyfill/global", path);
+      }
+      return true;
+    },
+
+    usagePure(name, targets, path) {
+      if (name !== "Object.entries") return false;
+      if (!supportsEntries(targets)) {
+        const id = path.scope.generateUidIdentifier("Object.entries");
+        injectImport("object-entries-polyfill/local", path, id);
+        path.parentPath.replaceWith(id);
+      }
+      return true;
+    }
+  }
+});
+```
+
+`createPolyfillProvider` 함수는 폴리필 플러그인 팩토리를 가져와 적절한 바벨 플러그인을 만들기 위해 랩핑한다.
+팩토리 함수는 다른 플러그인과 동일하게 바벨의 API 인스턴스와 플러그인 옵션을 인자로 받는다.
+
+반환되어지는 객체는 다른 일반 플러그인이 반환하는 값과는 다르게 폴리필 구현방법에 따른 선택적인 메소드들을 포함하고 있을 것이다.
+
+우리는 해당 객체에 다른 키는 허용하지 않으므로 쉽게 새로운 폴리필 주입방법을 도입할 수 있을 것이다. (예를 들면 `inline` 같은)
