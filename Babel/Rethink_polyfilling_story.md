@@ -125,3 +125,10 @@ export default createPolyfillProvider((api, options) => {
 	+ 전역 정적 메서드이면 메서드 이름 (`Object.entries`)
 	+ 메서드나 프로퍼티를 가지는 객체를 특정할 수 없다면 별표와 메서드 혹은 프로퍼티 (`*.includes`)
 - 사용자가 지원하고자 하는 엔진, 사용자가 명시하지 않은 경우 `falsy` 한 값을 갖게 된다.
+- `NodePath`는 *polyfill provider* 에 의해 실행되는 표현식이다. 이는 `ImportDeclaration` (entry-global) 이거나, 메소드 이름을 나타내는 식별자 (계산된 표현식), 혹은 `"foo" in Bar` 와 같은 `BinaryExpression` 이 될 수 있다.
+
+Polyfill providers는 `true` 혹은 `false`를 반환할 수 있다.
+polyfill injector는 사용자가 설정한 순서대로 모든 polyfill provider를 `true`를 반환할 때 까지 호출한다.
+이러한 방법으로 polyfill providers는 자신이 처리할 수 없는 폴리필을 무시할 수 있다.
+
+만약 대상 엔진이 이미 지원하는 기능이라 폴리필이 주입되지 않을 경우 polyfill provider는 반드시 `true`를 반환해 명시적으로 처리되었다는걸 표현해야 함에 주의한다.
