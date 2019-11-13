@@ -6,5 +6,26 @@
 
 팀원분이 히스토리 객체에 캐싱해두는 방법으로 멋지게 해결을 해주셔서, 이를 조금 더 추상적이고, 조금 더 다형성을 제공할 수 있도록 라이브러리화 시켰다. 이 과정에서 느꼈던 것 들을 기록해 두고자 한다.
 
+전체 예제는 이 [저장소](https://github.com/genie-youn/vue-state-restorer) 에서 확인할 수 있다.
+
 ### 문제
 아마 대부분의 컴포넌트들은 다음과 같이 구성될 것이다.
+
+```typescript
+import { Component, Prop, Vue } from 'vue-property-decorator';
+
+@Component
+export default class Travels extends Vue {
+  travels = [];
+
+  userId = 'userId';
+
+  created() {
+    this.fetchTravels();
+  }
+
+  async fetchTravels() {
+    this.travels = await this.$apis.getTravels(this.userId);
+  }
+}
+```
