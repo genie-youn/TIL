@@ -11,21 +11,37 @@
 ### 문제
 아마 대부분의 컴포넌트들은 다음과 같이 구성될 것이다.
 
-```typescript
+```Vue
+<template>
+  <div>
+    <div v-for="(travel, index) in travels" :key="index">
+      <div>{{travel.title}}</div>
+      <div>{{travel.startDate}} - {{travel.endDate}}</div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import travelClient from '@/apis/travels';
 
 @Component
 export default class Travels extends Vue {
   travels = [];
 
-  userId = 'userId';
+  userID = 'userID';
 
   created() {
     this.fetchTravels();
   }
 
   async fetchTravels() {
-    this.travels = await this.$apis.getTravels(this.userId);
+    this.travels = await travelClient.getTravels(this.userID);
   }
 }
+</script>
 ```
+
+대부분의 컴포넌트가 생성시 필요한 데이터를 API로부터 받아오고 이를 화면에 렌더링한다.
+
+이 때 사용자가 리스트에서 스크롤을 내리며 보다가 다른 페이지로 진입 후, 뒤로가기를 통해 다시 이 페이지로 돌아오면 컴포넌트가 다시 새롭게 생성되고, API에서 데이터를 새로 받아와 새로 렌더링 하기 때문에 기존에 보던 리스트는 사라지고 새로운 리스트가 노출되며 스크롤 위치 또한 다시 최상단으로 변하게 된다.
