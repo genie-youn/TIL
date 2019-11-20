@@ -18,30 +18,26 @@ Vue의 Event는 위 두가지, 즉 이벤트의 전파가 존재하지 않는다
 
 ```vue
 <template>
-  <div class="container">
-    <div class="columns">
-      <div class="column">
-        <Card/>
-      </div>
-      <div class="column">
-        <Card/>
-      </div>
-      <div class="column">
-        <Card/>
-      </div>
-    </div>
+  <div class="card">
+    <CardHeader/>
+    <CardImage/>
+    <CardContent/>
   </div>
 </template>
-
 <script>
-import Card from '@/components/Card.vue';
+import CardImage from '@/components/CardImage.vue';
+import CardContent from '@/components/CardContent.vue';
+import CardHeader from '@/components/CardHeader.vue';
 
 export default {
-  name: 'HelloWorld',
-  components: { Card },
-  props: {
-    msg: String,
+  name: 'Card',
+  components: {
+    CardContent,
+    CardImage,
+    CardHeader,
   },
 };
 </script>
 ```
+
+`CardHeader` 컴포넌트 안에는 다음과 같이 몇가지 버튼이 포함되어 있다.
