@@ -40,4 +40,52 @@ export default {
 </script>
 ```
 
-`CardHeader` 컴포넌트 안에는 다음과 같이 몇가지 버튼이 포함되어 있다.
+`CardHeader` 컴포넌트 안에는 다음과 같이 두가지 버튼이 포함되어 있다.
+
+```vue
+<template>
+  <div class="icon-container">
+    <AlertButton/>
+    <CheckButton/>
+  </div>
+</template>
+
+<script>
+import AlertButton from '@/components/AlertButton.vue';
+import CheckButton from '@/components/CheckButton.vue';
+
+export default {
+  name: 'CardHeader',
+  components: {
+    CheckButton,
+    AlertButton,
+  },
+};
+</script>
+```
+
+그중 체크유무를 표시하는 컴포넌트는 다음과 같다.
+```vue
+<template>
+<span class="icon" :class="{checked: checked}" @click="check">
+      <i class="fas fa-check"></i>
+    </span>
+</template>
+<script>
+export default {
+  name: 'CheckButton',
+  data() {
+    return {
+      checked: false,
+    };
+  },
+  methods: {
+    check() {
+      this.checked = !this.checked;
+    },
+  },
+};
+</script>
+```
+
+정리하면 `Card` > `CardHeader` > `CheckButton` 으로 컴포넌트가 중첩되어 있는 구조이다.
