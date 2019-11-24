@@ -1,7 +1,7 @@
 # Vue와 Event
 
 ### 들어가며
-Vue를 처음 접하다보면 많이 헷갈려하는 부분이 Event와 관련된 부분이 아닐까 싶다.
+Vue를 처음 접했을때 많이 헷갈렸던 부분이 Event와 관련된 부분이었다.
 
 기본적으로 DOM에서 이벤트가 동작하는 방식과는 사뭇 다르게 동작하기 때문인데, 왜 기존에 DOM의 Event가 동작하는 방식과는 다르게 설계되었는지 간략히 정리하려 한다.
 
@@ -89,3 +89,19 @@ export default {
 ```
 
 정리하면 `Card` > `CardHeader` > `CheckButton` 으로 컴포넌트가 중첩되어 있는 구조이다.
+`CheckButton` 에서 클릭 이벤트가 발생하면 `Card`의 `border` 색상을 변경해주고 싶다고 했을 때, 단순히 구현한다면 다음과 같이 `Card` 컴포넌트에 클릭 이벤트 리스너를 등록하여 구현할 수 있을 것이다.
+
+Card.vue
+```vue
+...
+mounted() {
+    this.$el.addEventListener('click', (e) => {
+      if (e.target.classList.contains('btn-check')) {
+        this.$el.style.border = '1px solid #2f9e4d';
+      }
+    });
+  },
+...
+```
+
+`CheckButton` 에서 발생한 클릭 이벤트가 버블링되어 `Card`까지 전파되고 이를 잡아서 처리하는. 자바스크립트에서 흔한 이벤트 처리방식이다. 그래서 뷰를 처음 접했을 때, 이와 똑같이 이벤트를 구현했었다.
