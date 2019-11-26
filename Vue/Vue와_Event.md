@@ -105,3 +105,100 @@ mounted() {
 ```
 
 `CheckButton` 에서 발생한 클릭 이벤트가 버블링되어 `Card`까지 전파되고 이를 잡아서 처리하는. 자바스크립트에서 흔한 이벤트 처리방식이다. 그래서 뷰를 처음 접했을 때, 이와 똑같이 이벤트를 구현했었다.
+
+`CheckButton` 컴포넌트에서는 클릭시 이벤트를 발생시키게 하고
+
+CheckButton.vue
+```vue
+<template>
+<span class="icon" :class="{checked: checked}" @click="check">
+      <i class="fas fa-check btn-check"></i>
+    </span>
+</template>
+<script>
+export default {
+  name: 'CheckButton',
+  data() {
+    return {
+      checked: false,
+    };
+  },
+  methods: {
+    check() {
+      this.checked = !this.checked;
+      this.$emit('checked');
+    },
+  },
+};
+</script>
+```
+
+`Card` 컴포넌트에서 이벤트를 리스닝하게 구현을 하는데
+
+Card.vue
+```vue
+<template>
+  <div class="card">
+    <CardHeader @checked="onChecked"/>
+    <CardImage/>
+    <CardContent/>
+  </div>
+</template>
+<script>
+import CardImage from '@/components/CardImage.vue';
+import CardContent from '@/components/CardContent.vue';
+import CardHeader from '@/components/CardHeader.vue';
+
+export default {
+  name: 'Card',
+  components: {
+    CardContent,
+    CardImage,
+    CardHeader,
+  },
+  methods: {
+    onChecked() {
+      this.$el.style.border = '1px solid #2f9e4d';
+    },
+  },
+};
+</script>
+```
+
+이 코드는 의도되로 동작되지 않는다.
+`CheckButton` 컴포넌트에서 발생한 이벤트가 `CardHeader` 를 거쳐 `Card` 까지 전파되지 않기 때문인데, 이를 의도되로 동작하게 하려면 다음과 같이 `CardHeader` 컴포넌트에서 명시적으로 위로 전파시켜주어야 한다.
+
+CardHeader.vue
+```vue
+<template>
+  <div class="icon-container">
+    <AlertButton/>
+    <CheckButton @checked="onChecked"/>
+  </div>
+</template>
+
+<script>
+import AlertButton from '@/components/AlertButton.vue';
+import CheckButton from '@/components/CheckButton.vue';
+
+export default {
+  name: 'CardHeader',
+  components: {
+    CheckButton,
+    AlertButton,
+  },
+  methods: {
+    onChecked() {
+      this.$emit('checked');
+    },
+  },
+};
+</script>
+```
+
+왜 Vue의 이벤트는 기존 자바스크립트 DOM의 이벤트와는 다르게 설계 되었을까?
+
+### Vue의 Event가 DOM의 Event와는 다르게 설계된 이유
+그 이유는 Vue의 이벤트 모델이 Node의 [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter) 를 참고하여 설계되었기 때문이다.
+
+>
