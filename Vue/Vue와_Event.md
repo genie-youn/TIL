@@ -201,4 +201,11 @@ export default {
 ### Vue의 Event가 DOM의 Event와는 다르게 설계된 이유
 그 이유는 Vue의 이벤트 모델이 Node의 [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter) 를 참고하여 설계되었기 때문이다.
 
->
+기존에 이벤트를 전파시키는 메소드는 `$dispatch` 였는데, 2.0 업데이트가 되면서 `deprecated` 되었다.
+그 이유는 컴포넌트간의 이벤트 버블링이 암묵적으로 일어나기 때문에 코드를 이해하기 어렵게 만들기 쉽다는 이유다.
+이러한 이벤트 전파는 컴포넌트 트리 구조에 의존적이고, 이는 컴포넌트 트리의 규모가 커지면 추적하기가 어렵기 때문이라고 설명하고 있다.
+
+이러한 중첩된 컴포넌트 사이에 이벤트를 주고 받아야 하는 상황이 생긴다면 `EventBus` 를 구현하거나, `Vuex` 스토어를 사용할 것을 권하고 있다.
+
+> https://github.com/vuejs/vue/issues/2873
+> https://github.com/vuejs/vue/issues/9868
