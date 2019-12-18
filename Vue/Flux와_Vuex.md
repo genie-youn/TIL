@@ -6,3 +6,15 @@ Vuex는 규모있는 Vue 애플리케이션을 개발하는데 빠트릴 수 없
 하지만 역시 잘 모르고 써서 그런걸까? 실무에서 사용하면서 많은 시행착오를 겪었고 때로는 오히려 너무 복잡해져 버린 스토어를 보면서 깊은 탄식을 내뱉었던 길 잃은 순한 양이 된듯한 기분도 적잖이 느꼈다.
 
 이제서야 Vuex가 무엇인지 조금은 알 것 같은 요즘 (사실 지금 느끼고 있는 이것들도 정말 best practice에 근접한 방법인지 잘 모르겠지만) Vuex와 기반이 되는 개념인 Flux에 관하여 정리를 하고자 한다.
+
+## Vuex와 Flux, 그리고 Elm
+Vuex의 공식 레퍼런스를 보면 기본적인 개념은 [Flux](https://facebook.github.io/flux/docs/overview/), [Redux](http://redux.js.org/), 그리고 [Elm](https://guide.elm-lang.org/architecture/) 에서 영감을 얻었다고 설명하고 있다.
+
+> https://vuex.vuejs.org/
+
+그렇다면 Flux와 Elm 은 무엇일까? 하나씩 살펴보도록 하자.
+
+### Flux
+Flux는 Facebook에서 만든 클라이언트 사이드 웹 어플리케이션을 위한 아키텍처라고 소개하고 있다.
+
+> https://haruair.github.io/flux/docs/overview.html
