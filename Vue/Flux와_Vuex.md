@@ -15,15 +15,17 @@ Vuex의 공식 레퍼런스를 보면 기본적인 개념은 [Flux](https://face
 그렇다면 Flux와 Elm 은 무엇일까? 하나씩 살펴보도록 하자.
 
 ### Flux
-Flux는 Facebook에서 만든 클라이언트 사이드 웹 어플리케이션을 위한 아키텍처라고 소개하고 있다. 단방향 데이터 흐름을 활용하여 React의 조합 가능한 뷰 컴포넌트를 보완한다고 한다. 
+Flux는 Facebook에서 만든 클라이언트 사이드 웹 어플리케이션을 위한 아키텍처라고 소개하고 있다. 단방향 데이터 흐름을 활용하여 React의 조합 가능한 뷰 컴포넌트를 보완한다고 한다.
 
 Flux는 `Dispatcher`, `Store`, `View` 크게 세 부분으로 구성되어 있는데, 데이터가 단방향으로 흐른다는게 핵심이다. `View`가 사용자와의 상호작용을 통해 상태의 변경이 생긴다면 중앙의 `Dispatcher`를 통해 `action`을 전파한다. `Store`는 이 `action`을 받으면 자신의 상태를 변경하고 영향이 있는 모든 `View`를 변경하게 된다. 이는 React의 선언형 프로그램이 방식으로 구현되게 된다.
 
 Flux는 규모가 큰 MVC 어플리케이션에서 발생할 수 있는 데이터간의 복잡한 의존성과 연쇄적으로 일어나는 갱신이 뒤얽힌 데이터 흐름을 만들고 예측하기 힘든 상황을 만들어내는 문제를 해결하기 위해 고안되었다.
 
-Flux는 `Store`를 통해 제어를 역전시킨 점이 특징이다. 
+Flux는 `Store`를 통해 제어를 역전시킨 점이 특징이다.
 
-Control is inverted with stores: the stores accept updates and reconcile them as appropriate, rather than depending on something external to update its data in a consistent way. Nothing outside the store has any insight into how it manages the data for its domain, helping to keep a clear separation of concerns. Stores have no direct setter methods like setAsRead(), but instead have only a single way of getting new data into their self-contained world — the callback they register with the dispatcher.
+#### A Single Dispatcher
+`Dispatcher`는 Flux 애플리케이션의 모든 데이터 흐름을 관리하는 중앙 허브이다. 등록된 각각의 `Store`에게 `Action`을 분배하는 단순한 역할을 수행한다. 각각의 `Store`는 스스로 등록하고 콜백을 제공한다. `Action Creator`가 새로운 `Action`이 있다고 `Dispatcher`에게 알려주면 각각의 `Store`는 앞서 등록해두었던 콜백을 통해 새로운 `Action`을 전달받게 된다.
+
 
 
 > https://haruair.github.io/flux/docs/overview.html
