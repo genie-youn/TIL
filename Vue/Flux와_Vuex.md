@@ -26,6 +26,12 @@ Flux는 `Store`를 통해 제어를 역전시킨 점이 특징이다.
 #### A Single Dispatcher
 `Dispatcher`는 Flux 애플리케이션의 모든 데이터 흐름을 관리하는 중앙 허브이다. 등록된 각각의 `Store`에게 `Action`을 분배하는 단순한 역할을 수행한다. 각각의 `Store`는 스스로 등록하고 콜백을 제공한다. `Action Creator`가 새로운 `Action`이 있다고 `Dispatcher`에게 알려주면 각각의 `Store`는 앞서 등록해두었던 콜백을 통해 새로운 `Action`을 전달받게 된다.
 
+#### Stores
+상태와 비즈니스 로직이 담겨있다. MVC 패턴의 model과 유사하지만 많은 객체를 관리한다는 점에서 차이가 있다.
+ORM의 단일 상태 레코드와는 좀 다르고, Backbone의 컬렉션과도 조금 다르다. `Store`는 애플리케이션의 도메인을 나타낸다.
+`Dispatcher`에 스스로를 등록하고 콜백을 제공하는데, 이 콜백은 `Action`을 인자로 받게된다. `Action`의 타입에 따라 적절히 상태를 변경하는 로직을 수행하고 이 변경은 이벤트로 전파된다. 각 `View`들은 이 이벤트를 받아 변경된 상태로 자신을 스스로 변경한다.
+
+#### Views and Controller-Views
 
 
 > https://haruair.github.io/flux/docs/overview.html
