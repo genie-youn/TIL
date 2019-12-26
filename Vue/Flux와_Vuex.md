@@ -40,6 +40,15 @@ React는 조합가능한 View를 제공한다. 이렇게 조합되어 중첩된 
 
 #### Actions
 
+`Dispatcher`는 `Action` 이라는 데이터 페이로드를 받아 `Store`를 디스패치 할 수 있는 메소드들을 외부로 노출한다. `Action`은 이 메소드들을 통해 생성되어 `Dispatcher`로 전달되게 된다.
+
+예를 들어, TO-DO 어플리케이션에서 특정 해야할 일의 텍스트를 변경한다고 해보자. 이 경우 `TodoActions` 모듈의 `updateText(todoId, newText)` 메소드를 호출하여 `Action` 을 생성하게 될테고 `Store`는 이 `Action`에 따라 적절하게 `Store`의 상태를 변경하게 된다.
+
+이런 `Action`을 생성하는 메소드는 `Action`에 특정한 타입을 부여할 수 있는데, `Store` 는 이 타입을 해석하여 적절히 처리하게 된다.
+위 예제에선 `TODO_UPDATE_TEXT` 와 같이 타입을 부여할 수 있을 것이다.
+
+아마 이런 `Action`을 생성하는 대부분의 메서드는 유저와의 상호작용에 대한 응답으로 `View`가 호출하게 될 텐데, 꼭 그렇지만은 않다. 예를 들어 필요한 데이터를 첫 진입시 초기화 할 때 서버의 API 응답에 대한 결과로 `Action`을 생성할 수도 있다.
+
 
 
 > https://haruair.github.io/flux/docs/overview.html
