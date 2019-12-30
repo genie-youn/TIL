@@ -49,6 +49,24 @@ React는 조합가능한 View를 제공한다. 이렇게 조합되어 중첩된 
 
 아마 이런 `Action`을 생성하는 대부분의 메서드는 유저와의 상호작용에 대한 응답으로 `View`가 호출하게 될 텐데, 꼭 그렇지만은 않다. 예를 들어 필요한 데이터를 첫 진입시 초기화 할 때 서버의 API 응답에 대한 결과로 `Action`을 생성할 수도 있다.
 
+#### What About that Dispatcher?
+앞서 언급한 것과 같이, `Dispatcher`는 스토어들 간의 의존성 또한 관리할 수 있다. 이는 `Dispatcher` 클래스의 `waitFor()` 메서드를 통해 가능하게 된다. 이 메소드는 간단한 어플리케이션에서는 사용할 필요가 없지만, 어플리케이션이 복잡해진다면 꼭 사용하게 될 메소드 중에 하나이다.
+
+TodoStore 의 상태를 변경하기 전에 의존하고 있는 다른 상태를 먼저 변경하려면 다음과 같이 구현할 수 있다.
+
+```javascript
+case 'TODO_CREATE':
+  Dispatcher.waitFor([
+    PrependedTextStore.dispatchToken,
+    YetAnotherStore.dispatchToken
+  ]);
+  TodoStore.create(PrependedTextStore.getText() + ' ' + action.text);
+  break;
+```
+
+`waitFor()` 는 디스패쳐 토큰이라고 불리는 디스패쳐 레지스트리 인덱스의 배열을 인자로 받는다. 이 토큰들을 통해 `waitFor()`를 호출한 스토어는 다른 스토어의 상태에 의존하여 자신의 상태를 어떻게 변경해야 할지 알 수 있다.
+
+#### Dispatcher
 
 
 > https://haruair.github.io/flux/docs/overview.html
