@@ -82,6 +82,84 @@ case 'TODO_CREATE':
 - `dispatch(object payload):void`: 등록된 모든 콜백을 실행
 - `isDispatching(): boolean`: 현재 디스패칭 중인지
 
+##### Example
+예를들어 항공시스템에서 목적지 국가를 선택하면 기본 도시가 자동으로 선택되는 입력 폼을 가정해보자.
 
+```javascript
+var flightDispatcher = new Dispatcher();
+// Keeps track of which country is selected
+var CountryStore = {country: null};
+// Keeps track of which city is selected
+var CityStore = {city: null};
+// Keeps track of the base flight price of the selected city
+var FlightPriceStore = {price: null};
+```
+
+사용자가 도시를 선택했을때 페이로드를 디스패치하게 된다.
+```javascript
+flightDispatcher.dispatch({
+  actionType: 'city-update',
+  selectedCity: 'paris'
+});
+```
+
+이러한 페이로드는 `CityStore` 에서 다음과 같이 처리된다.
+```javascript
+flightDispatcher.register(function(payload) {
+  if (payload.actionType === 'city-update') {
+    CityStore.city = payload.selectedCity;
+  }
+});
+```
+
+사용자가 국가를 선택했을때 다음과 같이 페이로드를 디스패치하게 된다.
+
+```javascript
+flightDispatcher.dispatch({
+  actionType: 'country-update',
+  selectedCountry: 'australia'
+});
+```
+
+이 페이로드는 두 스토어 모두에서 처리된다.
+
+```javascript
+CountryStore.dispatchToken = flightDispatcher.register(function(payload) {
+  if (payload.actionType === 'country-update') {
+    CountryStore.country = payload.selectedCountry;
+  }
+});
+```
+
+`CountryStore`에 콜백을 등록할때 반환받은 토큰을 통해 `waitFor` 메서드를 사용하여 `CityStore`가 필요한 데이터를 사용하기 위해 `CountryStore`가 먼저 업데이트 되는것을 보장할 수 있다.
+
+```javascript
+CityStore.dispatchToken = flightDispatcher.register(function(payload) {
+  if (payload.actionType === 'country-update') {
+    // `CountryStore.country` may not be updated.
+    flightDispatcher.waitFor([CountryStore.dispatchToken]);
+    // `CountryStore.country` is now guaranteed to be updated.
+    // Select the default city for the new country
+    CityStore.city = getDefaultCityForCountry(CountryStore.country);
+  }
+});
+```
+
+`waitFor()`는 다음과 같이 체이닝해서 사용할 수도 있다.
+```javascript
+FlightPriceStore.dispatchToken =
+  flightDispatcher.register(function(payload) {
+    switch (payload.actionType) {
+      case 'country-update':
+      case 'city-update':
+        flightDispatcher.waitFor([CityStore.dispatchToken]);
+        FlightPriceStore.price =
+          getFlightPriceStore(CountryStore.country, CityStore.city);
+        break;
+  }
+});
+```
+
+위와 같이 작성할 경우 `country-update` 페이로드는 `CountryStore`, `CityStore`, `FlightPriceStore` 순서로 콜백이 처리되는 것을 보장한다.
 
 > https://haruair.github.io/flux/docs/overview.html
