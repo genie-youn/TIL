@@ -67,6 +67,21 @@ case 'TODO_CREATE':
 `waitFor()` 는 디스패쳐 토큰이라고 불리는 디스패쳐 레지스트리 인덱스의 배열을 인자로 받는다. 이 토큰들을 통해 `waitFor()`를 호출한 스토어는 다른 스토어의 상태에 의존하여 자신의 상태를 어떻게 변경해야 할지 알 수 있다.
 
 #### Dispatcher
+디스패쳐는 등록된 콜백들에게 페이로드를 전파하기 위해 사용된다. 이는 양방향 구조의 일반적인 pub-sub과는 차이가 있다.
+- 콜백은 특정 이벤트를 구독하고 있지 않다. 모든 페이로드는 등록된 모든 콜백으로 전달된다.
+- 콜백은 그 일부나 혹은 전부가 다른 콜백이 실행될 때 까지 연기되어질 수 있다.
+
+##### API
+제공하는 API는 다음과 같다.
+
+- `register(function callback):string`: 모든 페이로드에 대해 실행되어질 콜백을 등록, `waitFor()`에 사용가능한 토큰(식별자)를 반환
+- `unregister(string id):void`: 주어진 토큰에 해당하는 콜백을 삭제
+- `waitFor(array<string> ids): void`: 현재의 콜백이 실행되기전 인자로 받은 모든 콜백이 실행될 때까지 기다림, 페이로드를 디스패치항 응답으로의 콜백으로만 사용가능
+> 이게 무슨말인지 모르겠다.
+
+- `dispatch(object payload):void`: 등록된 모든 콜백을 실행
+- `isDispatching(): boolean`: 현재 디스패칭 중인지
+
 
 
 > https://haruair.github.io/flux/docs/overview.html
