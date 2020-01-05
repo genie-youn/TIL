@@ -162,4 +162,37 @@ FlightPriceStore.dispatchToken =
 
 위와 같이 작성할 경우 `country-update` 페이로드는 `CountryStore`, `CityStore`, `FlightPriceStore` 순서로 콜백이 처리되는 것을 보장한다.
 
+### Flux Utils
+Flux Utils는 Flux를 처음 시작하는데 도움을 주는 유틸 클래스들을 모아둔 것이다. 이 유틸들은 간단한 Flux 애플리케이션을 위한 것으로 모든 케이스에 대한 기능들을 전부 갖추고 있는 프레임워크가 아니다. 만약 기능이 부족하다고 느껴진다면 다른 훌륭한 Flux 프레임워크를 찾아보는걸 권장한다.
+
+#### Usage
+Flux Utils는 세 가지 클래스를 포함하고 있다.
+- 1. Store
+- 2. ReduceStore
+- 3. Container
+
+Flux Utils 의 기본적인 사용은 다음과 같다.
+```javascript
+import { ReduceStore } from 'flux/utils';
+class CounterStore extends ReduceStore<number> {
+  getInitialState(): number {
+    return 0;
+  }
+  reduce(state: number, action: Object): number {
+    switch (action.type) {
+      case 'increment':
+        return state + 1;
+      case 'square':
+        return state * state;
+      default:
+        return state;
+    }
+  }
+}
+```
+
+#### Best Practice
+
+
+
 > https://haruair.github.io/flux/docs/overview.html
