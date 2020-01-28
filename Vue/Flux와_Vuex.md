@@ -218,7 +218,21 @@ class CounterStore extends ReduceStore<number> {
 
 #### Store
 
-##### constructor(dispatcher: Dispatcher)
+##### `constructor(dispatcher: Dispatcher)`
+
+##### `addListener(callback: Function): {remove: Function}`
+스토어에 변경이 생겼을 때 발생한 콜백을 실행할 리스너를 스토어에 등록한다. `remove()` 함수에 반환받은 토큰을 함께 호출하면 리스너를 삭제할 수 있다.
+
+##### `getDispatcher(): Dispatcher`
+스토어에 등록되어 있는 디스패쳐를 반환한다.
+
+##### `getDispatchToken(): DispatchToken`
+디스패쳐가 스토어를 구분하는데 사용되는 디스패쳐 토큰을 반환한다. 이 토큰을 사용하여 이 스토어에 대한 `waitFor()`를 호출할 수 있다.
+
+##### `hasChanged(): boolean`
+현재 디스패치에 의해 스토어가 변경됐는지를 반환한다. 디스패칭 도중에만 호출할 수 있으며 이를 사용하여 다른 스토어의 데이터 의존하는 스토어를 구현할 수 있다.
+
+##### `__emitChange(): void`
 
 
 
