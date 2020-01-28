@@ -192,6 +192,33 @@ class CounterStore extends ReduceStore<number> {
 ```
 
 #### Best Practice
+아래 클래스를 사용함에 있어 몇가지 Best Practice를 소개한다.
+
+##### Stores
+- 데이터 캐싱
+- 데이터에 접근 가능한 `public getters` 제공
+- `dispatcher` 로부터의 특정 액션에 대해 응답
+- 데이터가 변경될때 변경에 대한 이벤트를 방출
+- 오로지 `dispatch` 를 통해서만 변경을 방출
+
+##### Actions
+`setter`가 아닌 사용자의 액션을 기술 (e.g. `set-page-id`가 아닌 `select-page`)
+
+##### Containers
+- `view`를 제어하는 리액트 컴포넌트
+- 주요한 역할은 스토어로부터 정보를 모으고, 컴포넌트의 상태로 저장하는 일
+- `props`를 갖지 않으며 UI와 관련된 로직 또한 없다.
+
+##### Views
+- `Container`로 부터 제어를 당하는 리액트 컴포넌트
+- UI와 렌더링에 관련된 모든 로직을 포함하고 있음
+- 모든 정보와 콜백을 `props`를 통해 전달받음
+
+### API
+
+#### Store
+
+##### constructor(dispatcher: Dispatcher)
 
 
 
