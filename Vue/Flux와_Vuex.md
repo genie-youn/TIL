@@ -216,7 +216,7 @@ class CounterStore extends ReduceStore<number> {
 
 ### API
 
-#### Store
+#### `Store`
 
 ##### `constructor(dispatcher: Dispatcher)`
 
@@ -233,6 +233,19 @@ class CounterStore extends ReduceStore<number> {
 현재 디스패치에 의해 스토어가 변경됐는지를 반환한다. 디스패칭 도중에만 호출할 수 있으며 이를 사용하여 다른 스토어의 데이터 의존하는 스토어를 구현할 수 있다.
 
 ##### `__emitChange(): void`
+이 저장소가 변경되었음을 알리는 이벤트를 모든 리스너에게 전파한다. 오로지 디스패칭 하는 도중에만 호출되며 스토어의 `__onDispatch` 함수의 마지막에 중복되지 않고 처리된다.
+
+##### `onDispatch(payload: Object): void`
+서브클래스는 반드시 이 메소드를 오버라이드 해야한다. 이는 스토어가 디스패쳐로부터 액션을 어떻게 받을것인지를 나타낸다. 모든 상태 변경 로직은 반드시 이 메소드가 실행되는 동안 완료되어야 한다.
+
+#### `ReduceStore<T>`
+`Store` 클래스를 상속받은 클래스
+
+##### `getState(): T`
+현재 스토어의 모든 상태를 노출하는 getter. 만약 스토어의 상태가 불변하지 않다면 반드시 상태를 직접 노출하지 않도록 오버라이드해야 한다.
+
+##### `getInitialState(): T`
+
 
 
 
