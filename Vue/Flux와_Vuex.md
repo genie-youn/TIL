@@ -245,8 +245,16 @@ class CounterStore extends ReduceStore<number> {
 현재 스토어의 모든 상태를 노출하는 getter. 만약 스토어의 상태가 불변하지 않다면 반드시 상태를 직접 노출하지 않도록 오버라이드해야 한다.
 
 ##### `getInitialState(): T`
+스토어의 상태를 초기화한다. 이 메서드는 스토어를 생성하는 동안 한번 호출된다.
 
+##### `reduce(state: T, action: Object): T`
+현재의 상태와 액션을 소비하여 스토어를 새로운 상태로 변경한다. 모든 서브클래스는 반드시 이 메소드를 구현해야하며 이 메소드는 반드시 순수하고 사이드이펙트가 없어야만 한다.
 
+##### `areEqual(one: T, two: T): boolean`
+두 버전의 상태가 동일한지를 판단한다. 상태가 불변하다면 이 메소드를 오버라이드하지 않아도 된다.
+
+##### `Doesn't Need to Emit a Change`
+`ReduceStore`를 상속받은 모든 스토어는 명시적으로 `reduce()` 함수 내에서 변경 이벤트를 뱉을 필요가 없다. (하지만 여전히 이러한 방식이 필요하다면 가능하다.) 디스패치 이전의 상태와 이후의 상태를 비교하여 변경이 생겼다면 자동으로 변경 이벤트를 뱉는다. 만약 이러한 방식을 제어할 필요가 있다면 (아마 상태가 불변이지 않을 것이다.) `areEqual()`을 오버라이드해야한다.
 
 
 > https://haruair.github.io/flux/docs/overview.html
