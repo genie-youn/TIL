@@ -256,5 +256,31 @@ class CounterStore extends ReduceStore<number> {
 ##### `Doesn't Need to Emit a Change`
 `ReduceStore`를 상속받은 모든 스토어는 명시적으로 `reduce()` 함수 내에서 변경 이벤트를 뱉을 필요가 없다. (하지만 여전히 이러한 방식이 필요하다면 가능하다.) 디스패치 이전의 상태와 이후의 상태를 비교하여 변경이 생겼다면 자동으로 변경 이벤트를 뱉는다. 만약 이러한 방식을 제어할 필요가 있다면 (아마 상태가 불변이지 않을 것이다.) `areEqual()`을 오버라이드해야한다.
 
+#### `Container`
+
+##### `create(base: ReactClass, options: ?Object): ReactClass`
+`create` 는 리액트 클래스를 연관된 스토어가 변경될 때 자신의 상태를 업데이트하는 컨테이너로 변경한다. 인자로 주어진 기본 클래스는 반드시 정적 메서드로 `getStores()` 와 `calculateState()`를 가지고 있어야 한다.
+
+```javascript
+import { Component } from 'react';
+import { Container } from 'flux/utils';
+class CounterContainer extends Component {
+  static getStores() {
+    return [CounterStore];
+  }
+  static calculateState(prevState) {
+    return {
+      counter: CounterStore.getState(),
+    };
+  }
+  render() {
+    return <CounterUI counter={this.state.counter} />;
+  }
+}
+const container = Container.create(CounterContainer);
+```
+
+특정 동작을 제어하기 위하여 컨테이너를 생성할 때 추가적인 옵션을 부여할 수 있다.
+
 
 > https://haruair.github.io/flux/docs/overview.html
