@@ -73,5 +73,47 @@ ECMA-402 (자바스크립트 Intl 표준 라이브러리) 에 숫자 포맷팅�
 
 ## III. Sign Display
 
+부호는 양수에 표현될 수 있다.
+```Javascript
+(55).toLocaleString("en-US", {
+    signDisplay: "always"
+});
+// ==> +55
+```
+
+통화 회계 부호 표시도 새로운 옵션을 통해 지원된다. 많은 지역에서 마이너스 부호를 붙이는 대신에 괄호로 숫자를 감싸는 방법으로 음수의 통화 회계 숫자를 표현한다.
+
+```Javascript
+(-100).toLocaleString("bn", {
+    style: "currency",
+    currency: "EUR",
+    currencySign: "accounting"
+});
+// ==> (১০০.০০€)
+```
+
+`signDisplay`: "auto" (default), "always", "never", "exceptZero"
+`currencySign`: "standard" (default), "accounting"
+
+"accounting" 은 통화를 나타내는 값에 회계적 표현을 가능하게 한다. 자세한 내용을 아래 예제를 참고하면 된다.
+
+`signDisplay`
+
+signDisplay | -1  | -0  | 0   | 1   | NaN
+----------- | --- | --- | --- | --- | ---
+auto        | -1  | -0  | 0   | 1   | NaN
+always      | -1  | -0  | +0  | +1  | +NaN
+never       | 1   | 0   | 0   | 1   | NaN
+exceptZero  | -1  | 0   | 0   | +1  | NaN
+
+`currencySign`
+
+signDisplay | -1      | -0      | 0       | 1      | NaN
+----------- | --------| ------- | ------- | ------ | ----
+auto        | ($1.00) | ($0.00) | $0.00   | $1.00  | $NaN
+always      | ($1.00) | ($0.00) | +$0.00  | +$1.00 | +$NaN
+never       | $1.00   | $0.00   | $0.00   | $1.00  | $NaN
+exceptZero  | ($1.00) |  $0.00  | $0.00   | +$1.00 | $NaN
+
 
 > 제안의 자세한 내용은 [다음](https://github.com/tc39/proposal-unified-intl-numberformat)을 참고한다.
