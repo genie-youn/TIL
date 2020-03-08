@@ -1,7 +1,4 @@
-#  proposal-unified-intl-numberformat
-
-## 들어가며
-이번에 `stage4` 에 합류한 `Unified Number Format` 에 대해 알아보자.
+# proposal-unified-intl-numberformat
 
 ## proposal-unified-intl-numberformat ?
 이번 tc39 미팅에서 `stage4` 에 추가된 `proposal-unified-intl-numberformat` 는 `Intl.NumberFormat` 에 표기 단위 표현와 간략한 십진법 표현 그리고 기타 현지화된 숫자 포맷팅 표현에 관한 기능을 추가한다.
@@ -114,6 +111,17 @@ auto        | ($1.00) | ($0.00) | $0.00   | $1.00  | $NaN
 always      | ($1.00) | ($0.00) | +$0.00  | +$1.00 | +$NaN
 never       | $1.00   | $0.00   | $0.00   | $1.00  | $NaN
 exceptZero  | ($1.00) |  $0.00  | $0.00   | +$1.00 | $NaN
+
+물론 다른 옵션과 함께 사용할 수 있다.
+
+```JavaScript
+(0.55).toLocaleString("en-US", {
+    style: "percent",
+    signDisplay: "exceptZero"
+});
+// ==> +55%
+```
+
 
 
 > 제안의 자세한 내용은 [다음](https://github.com/tc39/proposal-unified-intl-numberformat)을 참고한다.
