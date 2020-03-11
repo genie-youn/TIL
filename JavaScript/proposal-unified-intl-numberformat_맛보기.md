@@ -1,12 +1,14 @@
 # proposal-unified-intl-numberformat 맛보기
 
 ## 들어가며
-이번 tc39 미팅에서 `stage4` 로 승격된 `proposal-unified-intl-numberformat` 는 `Intl.NumberFormat` 에 **현지화된** 측정 단위, 회계 통화 표현등 숫자를 형식 하는 기능을 추가하는 것을 제안합니다.
+이번 tc39 미팅에서 `stage4` 로 승격된 `proposal-unified-intl-numberformat` 는 `Intl.NumberFormat` 에 **현지화된** 측정 단위, 회계 통화 표현등 숫자를 형식화 하는 기능을 추가하는 것을 제안합니다.
 
 ### Intl?
 `Intl` 객체는 ECMAScript의 국제화를 위한 API [ECMA-402](https://www.ecma-international.org/ecma-402/1.0/#sec-8) 로 정의된 각 지역의 언어에 맞는 문자열 비교,숫자와 날짜 및 시간에 대한 형식화를 제공하는 객체입니다.
 
 Intl.Collator
+각 언어에 맞는 문자열 비교에 대한 기능을 제공하는 `Collator` 객체를 생성하는 생성자입니다.
+
 ```JavaScript
 function letterSort(lang, letters) {
   letters.sort(new Intl.Collator(lang).compare);
@@ -14,11 +16,20 @@ function letterSort(lang, letters) {
 }
 
 console.log(letterSort('de', ['a','z','ä']));
-// expected output: Array ["a", "ä", "z"]
+// ["a", "ä", "z"]
 
 console.log(letterSort('sv', ['a','z','ä']));
-// expected output: Array ["a", "z", "ä"]
+// ["a", "z", "ä"]
 ```
+
+> 역주: 한국어는 `Array.prototype.sort` 로 사전순 정렬이 가능합니다.
+```JavaScript
+console.log(["오해영","박도경","한태진","에릭","서현진","전혜빈"].sort());
+// ["박도경", "서현진", "에릭", "오해영", "전혜빈", "한태진"]
+```
+
+Array.prototype.sort 는 `compareFunction` 을 생략하면 기본적으로 문자열로 변환하고 각 문자의 유니코드 포인트 값에 따라 정렬한다. 근데 사파리는 왜 한국어 정렬이 안되지?
+
 Intl.DateTimeFormat
 각 언어에 맞는 시간과 날짜 서식을 적용할 수 있는 객체의 생성자입니다.
 Intl.ListFormat
