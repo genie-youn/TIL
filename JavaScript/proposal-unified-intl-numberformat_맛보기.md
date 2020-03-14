@@ -32,6 +32,8 @@ console.log(["오해영","박도경","한태진","에릭","서현진","전혜빈
 // ["박도경", "서현진", "에릭", "오해영", "전혜빈", "한태진"]
 ```
 
+> 자세한 내용을 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Collator) 를 참고하세요.
+
 #### Intl.DateTimeFormat
 각 언어에 맞는 시간과 날짜 서식을 적용할 수 있는 객체의 생성자입니다.
 
@@ -49,11 +51,56 @@ console.log(new Intl.DateTimeFormat('ko-KR').format(date));
 // "2012. 12. 20.""
 ```
 
-Intl.ListFormat
+> 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat)를 참고하세요.
+
+#### Intl.ListFormat
 각 언어에 맞는 목록 서식을 적용할 수 있는 객체의 생성자입니다.
-Intl.NumberFormat
+
+```Javascript
+const vehicles = ['Motorcycle', 'Bus', 'Car'];
+
+const formatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
+console.log(formatter.format(vehicles));
+// "Motorcycle, Bus, and Car"
+
+const formatter2 = new Intl.ListFormat('ko', { style: 'long', type: 'conjunction' });
+console.log(formatter.format(vehicles));
+// "Motorcycle, Bus, 및 Car"
+
+```
+
+> 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ListFormat)를 참고하세요.
+
+#### Intl.NumberFormat
 각 언어에 맞는 숫자 서식을 적용할 수 있는 객체의 생성자입니다.
-Intl.PluralRules
-각 언어에 맞는 복수형 규칙 및 단수 복수 구분 서식을 적용할 수 있는 객체의 생성자입니다.
-Intl.RelativeTimeFormat
+
+```Javascript
+const number = 123456.789;
+
+console.log(new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number));
+// "123.456,79 €"
+
+// the Japanese yen doesn't use a minor unit
+console.log(new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(number));
+// "￥123,457"
+
+console.log(new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(number));
+// ₩123,457
+```
+
+> 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat)를 참고하세요.
+
+#### Intl.RelativeTimeFormat
 각 언어에 맞는 상대 시간 서식을 적용할 수 있는 객체의 생성자입니다.
+
+```javascript
+const rtf1 = new Intl.RelativeTimeFormat('ko', { style: 'narrow' });
+
+console.log(rtf1.format(3, 'quarter'));
+// 3분기 후
+
+console.log(rtf1.format(-1, 'day'));
+// 1일 전
+```
+
+> 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RelativeTimeFormat)를 참고하세요.
