@@ -104,3 +104,23 @@ console.log(rtf1.format(-1, 'day'));
 ```
 
 > 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RelativeTimeFormat)를 참고하세요.
+
+#### Proposal Unified Intl Numberformat
+
+`Proposal Unified Intl Numberformat`는 위에서 소개했던 `Intl.NumberFormat` 에 추가적으로 m/s, m<sup>3</sup> 등 과 같은 측정 단위에 대한 표현이나 숫자에 대한 과학,공학,회계적 표현을 가능하게 하는 기능을 추가할 것을 제안합니다.
+
+> 자세한 논의 내용은 이 [스레드](https://github.com/tc39/ecma402/issues/215) 를 참고하세요.
+
+`Intl`의 생성자에 여러 기능을 포함시켜 복잡하게 만드는 것 보단 `Intl.NumberFormat` 의 스펙을 변경하여 통합하는 방식으로 더 쉽게 이 추가 기능을 지원할 것을 제안합니다.
+
+#### Units
+측정 단위는 다음과 같이 표현할 수 있습니다.
+
+```JavaScript
+(299792458).toLocaleString("en-US", {
+    style: "unit",
+    unit: "meter-per-second",
+    unitDisplay: "short"
+});
+// ==> "299,792,458 m/s"
+```
