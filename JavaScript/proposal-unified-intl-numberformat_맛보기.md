@@ -124,3 +124,48 @@ console.log(rtf1.format(-1, 'day'));
 });
 // ==> "299,792,458 m/s"
 ```
+
+#### Scientific and Compact Notation
+과학 표기 단위나 간결하게 표현하기 위해서는 새로 추가된 옵션인 `notation` 을 추가하면 됩니다.
+
+```JavaScript
+(987654321).toLocaleString("en-US", {
+    notation: "scientific"
+});
+// ==> 9.877E8
+
+(987654321).toLocaleString("en-US", {
+    notation: "engineering"
+});
+// ==> 987.7E6
+
+(987654321).toLocaleString("en-US", {
+    notation: "compact",
+    compactDisplay: "long"
+});
+// ==> 987.7 million
+```
+
+- `notation` 은 다음중 하나의 값을 받을 수 있습니다. "standard" (default), "scientific", "engineering", "compact"
+- `compactDisplay` 은 `notation` 이 "compact" 일 경우멘 사용할 수 있으며 "short" (default) 또는 "long" 을 받을 수 있습니다.
+
+반올림 관련 설정 (최소/최대 정수/소수 자릿수) 는 선택한 표기법에 따라 숫자를 변환 한 후에 적용이 됩니다.
+
+`notation` 이 "compact" 이고 별도의 반올림 옵션이 주어지지 않으면, 정수에 가장 근접하게 반올림하되, 두개의 유효한 숫자를 유지하는 특수한 반올림 전략이 사용됩니다.
+
+예를들어 123.4K는 123K로 반올림되고, 1.234K는 1.2K로 반올림 됩니다.
+
+만약 `notation`이 "compact" 이고 별도의 반올림 설정이 없다면 이 반올림 전략이 사용되고 있는지 `resolvedOptions` 을 통해 확인 할 수 있습니다.
+
+`notation` 은 다른 옵션과 조합되어 사용될 수 있습니다.
+
+```JavaScript
+(299792458).toLocaleString("en-US", {
+    notation: "scientific",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    style: "unit",
+    unit: "meter-per-second"
+});
+// ==> 3.00E8 m/s
+```
