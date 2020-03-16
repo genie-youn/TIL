@@ -169,3 +169,59 @@ console.log(rtf1.format(-1, 'day'));
 });
 // ==> 3.00E8 m/s
 ```
+
+#### Sign Display
+
+부호는 양수에 대해 표현될 수 있습니다.
+```Javascript
+(55).toLocaleString("en-US", {
+    signDisplay: "always"
+});
+// ==> +55
+```
+
+통화 회계 부호 표시도 새로운 옵션을 통해 지원됩니다. 많은 지역에서 마이너스 부호를 붙이는 대신에 괄호로 숫자를 감싸는 방법으로 음수의 통화 회계 숫자를 표현합니다.
+
+```Javascript
+(-100).toLocaleString("bn", {
+    style: "currency",
+    currency: "EUR",
+    currencySign: "accounting"
+});
+// ==> (১০০.০০€)
+```
+
+`signDisplay`: "auto" (default), "always", "never", "exceptZero"
+`currencySign`: "standard" (default), "accounting"
+
+"accounting" 은 통화를 나타내는 값에 회계적 표현을 가능하게 합니다. 자세한 내용을 아래 예제를 참고하세요.
+
+`signDisplay`
+
+signDisplay | -1  | -0  | 0   | 1   | NaN
+----------- | --- | --- | --- | --- | ---
+auto        | -1  | -0  | 0   | 1   | NaN
+always      | -1  | -0  | +0  | +1  | +NaN
+never       | 1   | 0   | 0   | 1   | NaN
+exceptZero  | -1  | 0   | 0   | +1  | NaN
+
+`currencySign`
+
+signDisplay | -1      | -0      | 0       | 1      | NaN
+----------- | --------| ------- | ------- | ------ | ----
+auto        | ($1.00) | ($0.00) | $0.00   | $1.00  | $NaN
+always      | ($1.00) | ($0.00) | +$0.00  | +$1.00 | +$NaN
+never       | $1.00   | $0.00   | $0.00   | $1.00  | $NaN
+exceptZero  | ($1.00) |  $0.00  | $0.00   | +$1.00 | $NaN
+
+물론 다른 옵션과 함께 사용할 수 있습니다.
+
+```JavaScript
+(0.55).toLocaleString("en-US", {
+    style: "percent",
+    signDisplay: "exceptZero"
+});
+// ==> +55%
+```
+
+> 제안의 자세한 내용은 [다음](https://github.com/tc39/proposal-unified-intl-numberformat)을 참고한다.
