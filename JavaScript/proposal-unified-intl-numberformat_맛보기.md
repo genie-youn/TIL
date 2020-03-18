@@ -90,11 +90,54 @@ console.log(new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' 
 console.log(new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(number));
 // ₩123,457
 
-console.log(new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(987654321));
-// 9.9억
+console.log(new Intl.NumberFormat('ko-KR', { style: 'percent' }).format(1.45));
+// 145%
 
-console.log(new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(9876543));
-// 998만
+```
+
+> NumberFormat에 관한 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat)를 참고
+
+#### Intl.RelativeTimeFormat
+각 언어에 맞는 상대 시간 서식을 적용할 수 있는 객체의 생성자이다.
+
+```javascript
+const rtf1 = new Intl.RelativeTimeFormat('ko', { style: 'narrow' });
+
+console.log(rtf1.format(3, 'quarter'));
+// 3분기 후
+
+console.log(rtf1.format(-1, 'day'));
+// 1일 전
+```
+
+> RelativeTimeFormat에 관한 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RelativeTimeFormat)를 참고
+
+#### Proposal Unified Intl Numberformat
+
+`Unified Numberformat`는 위에서 소개했던 `Intl.NumberFormat` 에 추가적으로 m/s, m<sup>3</sup> 등 과 같은 측정 단위에 대한 표현이나 숫자에 대한 과학,공학,회계적 표현을 가능하게 하는 기능을 추가할 것을 제안한다.
+
+> 자세한 논의 내용은 이 [스레드](https://github.com/tc39/ecma402/issues/215) 를 참.
+
+`Intl`의 생성자에 여러 기능을 포함시켜 복잡하게 만드는 것 보단 `Intl.NumberFormat` 의 스펙을 변경하여 통합하는 방식으로 더 쉽게 이 추가 기능을 지원할 것을 제안한다.
+
+#### Units
+측정 단위는 다음과 같이 표현할 수 있다.
+
+```JavaScript
+console.log(new Intl.NumberFormat("en-US",  {
+    style: 'unit',
+    unit: "centimeter-per-second",
+    unitDisplay: "short"
+}).format(299792458));
+// 299,792,458 cm/s
+
+console.log(new Intl.NumberFormat("ko-KR",  {
+    style: 'unit',
+    unit: "centimeter-per-second",
+    unitDisplay: "short"
+}).format(299792458));
+// 한국은 표기단위를 붙여서 표현
+// 299,792,458cm/s
 
 console.log(new Intl.NumberFormat("ko-KR",  {
     style: 'unit',
@@ -125,86 +168,46 @@ console.log(new Intl.NumberFormat("ko-KR",  {
 // 초속 5센티미터
 ```
 
-> NumberFormat에 관한 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat)를 참고
-
-#### Intl.RelativeTimeFormat
-각 언어에 맞는 상대 시간 서식을 적용할 수 있는 객체의 생성자입니다.
-
-```javascript
-const rtf1 = new Intl.RelativeTimeFormat('ko', { style: 'narrow' });
-
-console.log(rtf1.format(3, 'quarter'));
-// 3분기 후
-
-console.log(rtf1.format(-1, 'day'));
-// 1일 전
-```
-
-> 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RelativeTimeFormat)를 참고하세요.
-
-#### Proposal Unified Intl Numberformat
-
-`Proposal Unified Intl Numberformat`는 위에서 소개했던 `Intl.NumberFormat` 에 추가적으로 m/s, m<sup>3</sup> 등 과 같은 측정 단위에 대한 표현이나 숫자에 대한 과학,공학,회계적 표현을 가능하게 하는 기능을 추가할 것을 제안합니다.
-
-> 자세한 논의 내용은 이 [스레드](https://github.com/tc39/ecma402/issues/215) 를 참고하세요.
-
-`Intl`의 생성자에 여러 기능을 포함시켜 복잡하게 만드는 것 보단 `Intl.NumberFormat` 의 스펙을 변경하여 통합하는 방식으로 더 쉽게 이 추가 기능을 지원할 것을 제안합니다.
-
-#### Units
-측정 단위는 다음과 같이 표현할 수 있습니다.
-
-```JavaScript
-(299792458).toLocaleString("en-US", {
-    style: "unit",
-    unit: "meter-per-second",
-    unitDisplay: "short"
-});
-// ==> "299,792,458 m/s"
-```
-
 #### Scientific and Compact Notation
-과학 표기 단위나 간결하게 표현하기 위해서는 새로 추가된 옵션인 `notation` 을 추가하면 됩니다.
+과학, 공학적 표현이나 간결하게 표현하기 위해서는 새로 추가된 옵션인 `notation` 을 추가하면 된다.
 
 ```JavaScript
-(987654321).toLocaleString("en-US", {
-    notation: "scientific"
-});
-// ==> 9.877E8
+console.log(new Intl.NumberFormat('ko-KR', { notation: "scientific" }).format(987654321));
+// 9.877E8
 
-(987654321).toLocaleString("en-US", {
-    notation: "engineering"
-});
-// ==> 987.7E6
+console.log(new Intl.NumberFormat('ko-KR', { notation: "engineering" }).format(987654321));
+// 987.654E6
 
-(987654321).toLocaleString("en-US", {
-    notation: "compact",
-    compactDisplay: "long"
-});
-// ==> 987.7 million
+console.log(new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(987654321));
+// 9.9억
+
+console.log(new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(9876543));
+// 998만
 ```
 
-- `notation` 은 다음중 하나의 값을 받을 수 있습니다. "standard" (default), "scientific", "engineering", "compact"
-- `compactDisplay` 은 `notation` 이 "compact" 일 경우멘 사용할 수 있으며 "short" (default) 또는 "long" 을 받을 수 있습니다.
+- `notation` 은 다음중 하나의 값을 받을 수 있다. "standard" (default), "scientific", "engineering", "compact"
+- `compactDisplay` 은 `notation` 이 "compact" 일 경우멘 사용할 수 있으며 "short" (default) 또는 "long" 을 받을 수 있다.
 
-반올림 관련 설정 (최소/최대 정수/소수 자릿수) 는 선택한 표기법에 따라 숫자를 변환 한 후에 적용이 됩니다.
+반올림 관련 설정 (최소/최대 정수/소수 자릿수) 는 선택한 표기법에 따라 숫자를 변환 한 후에 적용이 된다.
 
-`notation` 이 "compact" 이고 별도의 반올림 옵션이 주어지지 않으면, 정수에 가장 근접하게 반올림하되, 두개의 유효한 숫자를 유지하는 특수한 반올림 전략이 사용됩니다.
+`notation` 이 "compact" 이고 별도의 반올림 옵션이 주어지지 않으면, 정수에 가장 근접하게 반올림하되, 두개의 유효한 숫자를 유지하는 특수한 반올림 전략이 사용된다.
 
-예를들어 123.4K는 123K로 반올림되고, 1.234K는 1.2K로 반올림 됩니다.
+예를들어 123.4K는 123K로 반올림되고, 1.234K는 1.2K로 반올림 된다.
 
 만약 `notation`이 "compact" 이고 별도의 반올림 설정이 없다면 이 반올림 전략이 사용되고 있는지 `resolvedOptions` 을 통해 확인 할 수 있습니다.
 
 `notation` 은 다른 옵션과 조합되어 사용될 수 있습니다.
 
 ```JavaScript
-(299792458).toLocaleString("en-US", {
+console.log(new Intl.NumberFormat("ko-KR",  {
     notation: "scientific",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-    style: "unit",
-    unit: "meter-per-second"
-});
-// ==> 3.00E8 m/s
+    style: 'unit',
+    unit: "centimeter-per-second",
+    unitDisplay: "short"
+}).format(299792458));
+// 3.00E8cm/s
 ```
 
 #### Sign Display
