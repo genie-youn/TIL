@@ -1,17 +1,21 @@
 # proposal-unified-intl-numberformat 맛보기
 
 ## 들어가며
-이번 tc39 미팅에서 `stage4` 로 승격된 `proposal-unified-intl-numberformat` 는 `Intl.NumberFormat` 에 **현지화된** 측정 단위, 회계 통화 표현등 숫자를 형식화 하는 기능을 추가하는 것을 제안합니다.
+얼마 전 [tc39의 2월 미팅](https://github.com/tc39/notes/blob/master/meetings/2020-02/february-5.md#unified-number-format-for-stage-4)에서 `proposal-unified-intl-numberformat`가 스테이지4로 승격되었다.
+
+`proposal-unified-intl-numberformat`는 `Intl.NumberFormat`에 측정 단위와 회계적 표현 등 숫자를 형식화 하는 기능을 제안한다.
+
+이 아티클에선 `Intl`과 제안하고 있는 `Unified Numberformat`에 관한 MDN을 번역하고, 한국어 예제를 간략하게 추가합니다.
 
 ### Intl?
-`Intl` 객체는 ECMAScript의 국제화를 위한 API [ECMA-402](https://www.ecma-international.org/ecma-402/1.0/#sec-8) 로 정의된 각 지역의 언어에 맞는 문자열 비교,숫자와 날짜 및 시간에 대한 형식화를 제공하는 객체입니다.
+`Intl` 객체는 ECMAScript의 국제화를 위한 API [ECMA-402](https://www.ecma-international.org/ecma-402/1.0/#sec-8) 로 정의된 각 지역의 언어에 맞는 문자열 비교,숫자와 날짜 및 시간에 대한 형식화를 제공하는 객체로 다음과 같은 생성자를 포함하는 네임스페이스이다.
 
 #### Intl.Collator
-각 언어에 맞는 문자열 비교에 대한 기능을 제공하는 `Collator` 객체를 생성하는 생성자입니다.
+각 언어에 맞는 문자열 비교에 대한 기능을 제공하는 `Collator` 객체를 생성하는 생성자이다.
 
-`Collator` 객체는 두개의 문자열을 비교하는 `compare()` 와 객체의 설정 정보를 반환하는 `resolvedOptions()` 두개의 메서드를 가지고 있습니다.
+`Collator` 객체는 두개의 문자열을 비교하는 `compare()` 와 객체의 설정 정보를 반환하는 `resolvedOptions()` 두개의 메서드를 가지고 있다.
 
-독일어(de) 와 스웨덴어(sv) 는 동일하게 ä 를 사용하지만 독일어는 a 다음에, 스페인어에선 z 다음에 정렬됩니다.
+독일어(de) 와 스웨덴어(sv) 는 동일하게 ä 를 사용하지만 독일어는 a 다음에, 스페인어에선 z 다음에 정렬된다.
 
 ```JavaScript
 function letterSort(lang, letters) {
@@ -26,16 +30,16 @@ console.log(letterSort('sv', ['a','z','ä']));
 // ["a", "z", "ä"]
 ```
 
-> 역주: `Array.prototype.sort` 는 인자로 `compareFunction`을 따로 지정하지 않으면 각 문자의 유니코드 포인트 값에 따라 정렬합니다. 따라서 한국어는 별도의 인자 없이도 정렬이 가능합니다.
+> 역주: `Array.prototype.sort` 는 인자로 `compareFunction`을 따로 지정하지 않으면 각 문자의 유니코드 포인트 값에 따라 정렬한다. 따라서 한국어는 별도의 인자 없이도 정렬이 가능하다.
 ```JavaScript
 console.log(["오해영","박도경","한태진","에릭","서현진","전혜빈"].sort());
 // ["박도경", "서현진", "에릭", "오해영", "전혜빈", "한태진"]
 ```
 
-> 자세한 내용을 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Collator) 를 참고하세요.
+> Collator에 관한 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Collator) 를 참고
 
 #### Intl.DateTimeFormat
-각 언어에 맞는 시간과 날짜 서식을 적용할 수 있는 객체의 생성자입니다.
+각 언어에 맞는 시간과 날짜 서식을 적용할 수 있는 객체의 생성자이다.
 
 ```Javascript
 const date = new Date(Date.UTC(2012, 11, 20, 3, 0, 0));
@@ -48,13 +52,13 @@ console.log(new Intl.DateTimeFormat('en-GB').format(date));
 // "20/12/2012"
 
 console.log(new Intl.DateTimeFormat('ko-KR').format(date));
-// "2012. 12. 20.""
+// "2012. 12. 20."
 ```
 
-> 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat)를 참고하세요.
+> DateTimeFormat에 관한 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat)를 참고
 
 #### Intl.ListFormat
-각 언어에 맞는 목록 서식을 적용할 수 있는 객체의 생성자입니다.
+주어진 리스트를 각 언어에 맞게 문자열로 변경할 수 있는 객체의 생성자이다.
 
 ```Javascript
 const vehicles = ['Motorcycle', 'Bus', 'Car'];
@@ -69,10 +73,10 @@ console.log(formatter.format(vehicles));
 
 ```
 
-> 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ListFormat)를 참고하세요.
+> ListFormat에 관한 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ListFormat)를 참고
 
 #### Intl.NumberFormat
-각 언어에 맞는 숫자 서식을 적용할 수 있는 객체의 생성자입니다.
+각 언어에 맞는 숫자 서식을 적용할 수 있는 객체의 생성자이다.
 
 ```Javascript
 const number = 123456.789;
@@ -80,15 +84,48 @@ const number = 123456.789;
 console.log(new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number));
 // "123.456,79 €"
 
-// the Japanese yen doesn't use a minor unit
 console.log(new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(number));
 // "￥123,457"
 
 console.log(new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(number));
 // ₩123,457
+
+console.log(new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(987654321));
+// 9.9억
+
+console.log(new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(9876543));
+// 998만
+
+console.log(new Intl.NumberFormat("ko-KR",  {
+    style: 'unit',
+    unit: "liter",
+    unitDisplay: "short"
+}).format(50));
+// 50L
+
+console.log(new Intl.NumberFormat("ko-KR",  {
+    style: 'unit',
+    unit: "liter",
+    unitDisplay: "long"
+}).format(50));
+// 50리터
+
+console.log(new Intl.NumberFormat("ko-KR",  {
+    style: 'unit',
+    unit: "centimeter-per-second",
+    unitDisplay: "short"
+}).format(5));
+// 5cm/s
+
+console.log(new Intl.NumberFormat("ko-KR",  {
+    style: 'unit',
+    unit: "centimeter-per-second",
+    unitDisplay: "long"
+}).format(5));
+// 초속 5센티미터
 ```
 
-> 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat)를 참고하세요.
+> NumberFormat에 관한 자세한 내용은 [레퍼런스](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat)를 참고
 
 #### Intl.RelativeTimeFormat
 각 언어에 맞는 상대 시간 서식을 적용할 수 있는 객체의 생성자입니다.
