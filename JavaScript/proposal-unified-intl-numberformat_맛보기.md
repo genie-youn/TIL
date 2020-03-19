@@ -194,9 +194,9 @@ console.log(new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(98765
 
 예를들어 123.4K는 123K로 반올림되고, 1.234K는 1.2K로 반올림 된다.
 
-만약 `notation`이 "compact" 이고 별도의 반올림 설정이 없다면 이 반올림 전략이 사용되고 있는지 `resolvedOptions` 을 통해 확인 할 수 있습니다.
+만약 `notation`이 "compact" 이고 별도의 반올림 설정이 없다면 이 반올림 전략이 사용되고 있는지 `resolvedOptions` 을 통해 확인 할 수 있다.
 
-`notation` 은 다른 옵션과 조합되어 사용될 수 있습니다.
+또한 `notation` 은 다음과 같이 다른 옵션과 조합되어 사용될 수 있다.
 
 ```JavaScript
 console.log(new Intl.NumberFormat("ko-KR",  {
@@ -212,7 +212,7 @@ console.log(new Intl.NumberFormat("ko-KR",  {
 
 #### Sign Display
 
-부호는 양수에 대해 표현될 수 있습니다.
+부호는 양수에 대해 표현될 수 있다.
 ```Javascript
 (55).toLocaleString("en-US", {
     signDisplay: "always"
@@ -220,7 +220,7 @@ console.log(new Intl.NumberFormat("ko-KR",  {
 // ==> +55
 ```
 
-통화 회계 부호 표시도 새로운 옵션을 통해 지원됩니다. 많은 지역에서 마이너스 부호를 붙이는 대신에 괄호로 숫자를 감싸는 방법으로 음수의 통화 회계 숫자를 표현합니다.
+통화 회계 부호 표시도 새로운 옵션을 통해 지원된다. 많은 지역에서 마이너스 부호를 붙이는 대신에 괄호로 숫자를 감싸는 방법으로 음수의 통화 회계 숫자를 표현한다.
 
 ```Javascript
 (-100).toLocaleString("bn", {
@@ -234,7 +234,7 @@ console.log(new Intl.NumberFormat("ko-KR",  {
 `signDisplay`: "auto" (default), "always", "never", "exceptZero"
 `currencySign`: "standard" (default), "accounting"
 
-"accounting" 은 통화를 나타내는 값에 회계적 표현을 가능하게 합니다. 자세한 내용을 아래 예제를 참고하세요.
+"accounting" 은 통화를 나타내는 값에 회계적 표현을 가능하게 한다. 자세한 내용을 아래 예제를 참고.
 
 `signDisplay`
 
@@ -254,7 +254,7 @@ always      | ($1.00) | ($0.00) | +$0.00  | +$1.00 | +$NaN
 never       | $1.00   | $0.00   | $0.00   | $1.00  | $NaN
 exceptZero  | ($1.00) |  $0.00  | $0.00   | +$1.00 | $NaN
 
-물론 다른 옵션과 함께 사용할 수 있습니다.
+물론 다른 옵션과 함께 사용할 수 있다.
 
 ```JavaScript
 (0.55).toLocaleString("en-US", {
@@ -264,4 +264,11 @@ exceptZero  | ($1.00) |  $0.00  | $0.00   | +$1.00 | $NaN
 // ==> +55%
 ```
 
-> 제안의 자세한 내용은 [다음](https://github.com/tc39/proposal-unified-intl-numberformat)을 참고한다.
+> 이외 제안의 자세한 내용은 [다음](https://github.com/tc39/proposal-unified-intl-numberformat)을 참고.
+
+### 마치며
+stage4에 합류하여 곧 표준 스펙으로 만나보게 될 `Unified Numberformat`에 대해 알아보았다.
+
+사실 이 제안을 보고 `Intl`을 처음 알게 되었고, 글로벌 서비스를 위해 로케일 데이터에 대한 지원이 필요한 서비스라면 요긴하게 사용될 스펙일 것 같다.
+
+`Intl`은 각 피쳐별로 다르긴 하지만 대부분의 모던 브라우저에서 사용 가능하며, `Unified Numberformat`의 경우 해당 제안을 낸게 구글이라 그런지.. 크롬에서는 77버전에 구현되었고 나머지 브라우저에선 다음 [폴리필](https://www.npmjs.com/package/@formatjs/intl-unified-numberformat)을 추가하면 사용가능하다.
