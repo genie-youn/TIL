@@ -9,6 +9,20 @@
 
 > [CORS](https://developer.mozilla.org/ko/docs/Web/HTTP/CORS)에 대한 자세한 내용은 다음을 참고.
 
-## charle
+## charles
 
 https://www.charlesproxy.com/
+
+charles 는 HTTP 요청을 프록시하거나 모니터링 할 수 있는 툴이다. SSL 인증서를 넣어서 HTTPS 요청을 모니터링 하거나 요청,응답의 헤더, 바디등 다양한 정보를 변조하며 테스트 해볼 수 있다.
+
+charles 로 로컬에서 CORS를 대응하려면 `rewrite` 를 통해 서버 응답의 헤더를 변조하면 된다.
+
+```
+Access-Control-Allow-Origin: https://local.myapp.com:8080
+Access-Control-Allow-Methods: POST, GET, DELETE, PUT, OPTIONS
+Access-Control-Allow-Headers: X-MY-CUSTOM-HEADER, Content-Type
+```
+
+charles 는 웹 개발할때 많은 유용한 기능이 있기에 꼭 CORS를 위해서가 아니더라도 디버깅이나 테스트하는데 유용하므로 친해지도록 하자.
+
+한가지 흠이 있다면, charles 의 라이센스가 유료라는 것인데, 회사에서 사주지 않는 다면 두번째 선택지가 있다.
