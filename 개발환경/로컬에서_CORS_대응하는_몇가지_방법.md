@@ -26,3 +26,13 @@ Access-Control-Allow-Headers: X-MY-CUSTOM-HEADER, Content-Type
 charles 는 웹 개발할때 많은 유용한 기능이 있기에 꼭 CORS를 위해서가 아니더라도 디버깅이나 테스트하는데 유용하므로 친해지도록 하자.
 
 한가지 흠이 있다면, charles 의 라이센스가 유료라는 것인데, 회사에서 사주지 않는 다면 두번째 선택지가 있다.
+
+## Moesif Orign & CORS Changer
+
+두번째는 Moesif Orign & CORS Changer 라는 크롬 익스텐션이다. 동일하기 Response의 CORS 관련 헤더를 조작할 수 있다.
+
+다만, HTTPS 환경에서 적용하려면 `ADVANCED SETTINGS` 에서 도메인을 직접 주어야 하는데 (기본은 whildcard로 적용되지만 https는 제외되는것 같다.) 회사 도메인의 메일을 적어주어야 `ADVANCED SETTINGS` 에 진입할수 있다..
+
+다행히 스팸메일 같은게 오거나 하지 않으니 편하게 추가해주도록 하자.
+
+> 설치는 다음 [링크](https://chrome.google.com/webstore/detail/moesif-orign-cors-changer/digfbfaphojjndkpccljibejjbppifbc) 를 참고
