@@ -36,3 +36,63 @@ const store = new Vuex.Store({
 store.state.a // -> `moduleA`'s state
 store.state.b // -> `moduleB`'s state
 ```
+
+## 문제
+
+다음과 같이 단순히 스토어의 `state` 를 렌더링하는 컴포넌트가 있다고 하자.
+
+```vue
+<template>
+  <div>
+    <h1>{{ message }}</h1>
+  </div>
+</template>
+
+<script>
+import {mapGetters} from "vuex";
+
+export default {
+  name: 'HelloWorld',
+  computed: {
+    ...mapGetters("moduleA", ["message"])
+  },
+};
+</script>
+```
+
+컴포넌트가 의존하고 있는 스토어는 다음과 같이 생겼다.
+
+```javascript
+import Vue from 'vue';
+import Vuex from 'vuex';
+
+Vue.use(Vuex);
+
+export default new Vuex.Store({
+  state: {
+  },
+  mutations: {
+  },
+  actions: {
+  },
+  modules: {
+    moduleA,
+  },
+});
+
+
+const moduleA = {
+  state: {
+    message: "",
+  },
+  mutations: {
+    updateMesasge(state, payload) {
+      state.message = payload;
+    },
+  },
+  actions: {},
+  getters: {
+    message: state => state.message,
+  },
+}
+```
