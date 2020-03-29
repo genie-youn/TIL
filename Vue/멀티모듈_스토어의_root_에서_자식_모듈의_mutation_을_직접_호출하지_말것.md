@@ -44,19 +44,25 @@ store.state.b // -> `moduleB`'s state
 ```vue
 <template>
   <div>
-    <h1>{{ message }}</h1>
+    <h1 @click="click">{{ message }}</h1>
   </div>
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+  import {mapActions, mapGetters} from "vuex";
 
-export default {
-  name: 'HelloWorld',
-  computed: {
-    ...mapGetters("moduleA", ["message"])
-  },
-};
+  export default {
+    name: 'HelloWorld',
+    computed: {
+      ...mapGetters("moduleA", ["message"])
+    },
+    methods: {
+      ...mapActions(["updateAllMessage"]),
+      click() {
+        this.updateAllMessage();
+      }
+    },
+  };
 </script>
 ```
 
@@ -68,25 +74,13 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-    moduleA,
-  },
-});
-
-
 const moduleA = {
+  namespaced: true,
   state: {
-    message: "",
+    message: "testtest",
   },
   mutations: {
-    updateMesasge(state, payload) {
+    updateMessage(state, payload) {
       state.message = payload;
     },
   },
@@ -95,4 +89,19 @@ const moduleA = {
     message: state => state.message,
   },
 }
+
+export default new Vuex.Store({
+  state: {},
+  mutations: {},
+  actions: {
+    updateAllMessage(state, payload) {
+      moduleA.mutations.updateMessage(moduleA.state, "wow");
+    }
+  },
+  modules: {
+    moduleA,
+  },
+});
 ```
+
+잘 되는데??
