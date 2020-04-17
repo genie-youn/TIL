@@ -35,6 +35,8 @@ ENTRYPOINT ["java","-jar","/app.jar"]
 
 > gradle 을 사용할 경우를 기준으로 작성되었다. 만약 maven 을 사용중이라면 `ARG JAR_FILE=build/libs/*.jar` 대신 `ARG JAR_FILE=target/*.jar` 로 Dockerfile 을 생성하거나 빌드시 `--build-arg JAR_FILE=target/*.jar` 파라미터를 추가로 주도록 하자
 
+> 자세한 내용은 [레퍼런스](https://spring.io/guides/gs/spring-boot-docker/) 를 참고
+
 ### 2. 실행
 이미지가 정상적으로 생성되었는지 확인하기 위해 로컬에서 실행시켜보자.
 
@@ -45,6 +47,16 @@ $ docker run -p 8080:8080 demo
 ```
 
 ### 레지스터에 업로드
+[quickstart](https://cloud.google.com/container-registry/docs/quickstart)의 '시작하기 전에'' 를 따라서 Container Registry 를 활성화하고 Cloud SDK 를 설치한다.
 
+설치를 마쳤으면 cloud sdk 를 통해 인증을 하고 이미지에 태그를 지정하고 업로드한다.
 
-> 자세한 내용은 [레퍼런스](https://spring.io/guides/gs/spring-boot-docker/) 를 참고
+```shell
+$ gcloud auth configure-docker
+# [PROJECT-ID] 에는 gcp 프로젝트의 id를 넣어준다. 프로젝트 id가 test 라면 gcr.io/test/demo 로 지정하면 된다.
+$ docker tag demo gcr.io/[PROJECT-ID]/demo
+# 레지스트리에 푸쉬
+$ docker push gcr.io/[PROJECT-ID]/demo
+```
+
+[Container Registry](https://console.cloud.google.com/gcr) 에 접속해서 정상적으로 업로드 되었는지 확인한다.
