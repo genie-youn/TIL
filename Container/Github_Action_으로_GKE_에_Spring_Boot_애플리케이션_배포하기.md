@@ -60,3 +60,45 @@ $ docker push gcr.io/[PROJECT-ID]/demo
 ```
 
 [Container Registry](https://console.cloud.google.com/gcr) 에 접속해서 정상적으로 업로드 되었는지 확인한다.
+
+## Github Action
+
+### 1. workflow 생성
+
+상단에 네번째 `Actions` 클릭
+
+![](https://user-images.githubusercontent.com/16642635/79749277-e1a8aa80-8349-11ea-850d-3bc225d14e81.png)
+
+Build and Deploy to GKE > `Set up this workflow` 클릭
+
+![](https://user-images.githubusercontent.com/16642635/79749526-54198a80-834a-11ea-8614-e972b7761c08.png)
+
+### 2. workflow 정의
+`Set up this workflow` 를 클릭하고 나면 기본적인 플로우가 정의되면 yaml 파일이 생성된다. 한 부분씩 살펴보도록 하자.
+
+```yaml
+on:
+  release:
+    types: [created]
+```
+
+github에 어떤 액션이 생겼을 때 workflow 를 실행시킬 것인지 정의하는 부분이다.
+
+몇가지 유용하게 사용할 만한 액션들은 다음과 같다.
+
+```yaml
+on:
+  # 릴리즈 생성시
+  release:
+    types: [created]
+  # develop 브랜치에 푸쉬 발생시
+  push:
+    branches:
+      - develop
+  # feature 이하 모든 브랜치, develop, master 브랜치에 PR이 생성됐을 경우
+  pull_request:
+    branches: [feature/**, develop, master]
+  # 이슈 (PR을 포함하여)에 코멘트가 생성되었을 경우
+  issue_comment:
+    types: [created]
+```
