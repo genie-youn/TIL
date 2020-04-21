@@ -76,6 +76,8 @@ Build and Deploy to GKE > `Set up this workflow` 클릭
 ### 2. workflow 정의
 `Set up this workflow` 를 클릭하고 나면 기본적인 플로우가 정의되면 yaml 파일이 생성된다. 한 부분씩 살펴보도록 하자.
 
+#### Event
+
 ```yaml
 on:
   release:
@@ -101,4 +103,40 @@ on:
   # 이슈 (PR을 포함하여)에 코멘트가 생성되었을 경우
   issue_comment:
     types: [created]
+  # 이슈가 할당됐을 경우
+  issues:
+    types: [assigned]
+```
+
+> 사용가능한 전체 액션은 다음 [레퍼런스](https://help.github.com/en/actions/reference/events-that-trigger-workflows#webhook-events)를 참고한다.
+
+#### Environment
+
+다음은 `Environment` 이다. workflow 에서 사용할 환경 변수들을 정의할 수 있다.
+
+또한 `Settings` > `Secrets` 에 등록해둔 private 한 정보들도 사용 가능하다.
+
+![](https://user-images.githubusercontent.com/16642635/79864784-00c03e80-8415-11ea-8936-b6428ee3b394.png)
+
+```yaml
+env:
+  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+  GKE_EMAIL: ${{ secrets.GKE_EMAIL }}
+  GITHUB_SHA: ${{ github.sha }}
+  GKE_ZONE: us-west1-a
+  GKE_CLUSTER: example-gke-cluster
+  IMAGE: gke-test
+  REGISTRY_HOSTNAME: gcr.io
+  DEPLOYMENT_NAME: gke-test
+```
+
+이후 `$GKE_CLUSTER` 와 같이 사용하면 된다.
+
+```yaml
+# Set up kustomize
+- name: Build
+  run: |        
+    docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"$GITHUB_SHA" \
+      --build-arg GITHUB_SHA="$GITHUB_SHA" \
+      --build-arg GITHUB_REF="$GITHUB_REF" .
 ```
