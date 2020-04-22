@@ -140,3 +140,61 @@ env:
       --build-arg GITHUB_SHA="$GITHUB_SHA" \
       --build-arg GITHUB_REF="$GITHUB_REF" .
 ```
+
+### Jobs
+
+이후 실제 수행할 작업들의 목록인 `Jobs` 를 기술한다. 한단계씩 살펴보자
+
+```yaml
+jobs:
+  # 빌드 후 gke에 배포
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    # 순차적으로 실행되는 작업들의 집합인 steps
+    steps:
+    - name: Checkout
+      # {owner}/{repo}@{ref} 로 사용할 수 있다.
+      # 이 스텝의 경우 https://github.com/actions/checkout 의 v2를 사용하게 된다.
+      uses: actions/checkout@v2
+
+    # gcloud CLI 설치
+    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        version: '270.0.0'
+        service_account_email: ${{ secrets.GKE_EMAIL }}
+        service_account_key: ${{ secrets.GKE_KEY }}
+
+    # gcloud command-line tool 을 사용하여 사용자 인증
+    - run: |
+        # Set up docker to authenticate
+        # via gcloud command-line tool.
+        gcloud auth configure-docker
+
+    # Build the Docker image
+    - name: Build
+      run: |        
+        docker build -t "$REGISTRY_HOSTNAME"/"$GKE_PROJECT"/"$IMAGE":"$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_REF="$GITHUB_REF" .
+
+    # Push the Docker image to Google Container Registry
+    - name: Publish
+      run: |
+        docker push $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
+
+    # Set up kustomize
+    - name: Set up Kustomize
+      run: |
+        curl -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+        chmod u+x ./kustomize
+
+    # Deploy the Docker image to the GKE cluster
+    - name: Deploy
+      run: |
+        gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
+        ./kustomize edit set image $REGISTRY_HOSTNAME/$GKE_PROJECT/$IMAGE:${GITHUB_SHA}
+        ./kustomize build . | kubectl apply -f -
+        kubectl rollout status deployment/$DEPLOYMENT_NAME
+        kubectl get services -o wide
+```
