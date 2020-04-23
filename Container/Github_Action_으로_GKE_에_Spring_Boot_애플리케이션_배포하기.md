@@ -61,6 +61,79 @@ $ docker push gcr.io/[PROJECT-ID]/demo
 
 [Container Registry](https://console.cloud.google.com/gcr) 에 접속해서 정상적으로 업로드 되었는지 확인한다.
 
+#### gke 배포
+
+gke (google-kubernetes-engine)에 배포하기 위해 `deployment.yaml` 을 생성해주도록 하자.
+
+```shell
+$ kubectl create deployment demo --image=gcr.io/[PROJECT-ID]/demo --dry-run -o=yaml > deployment.yaml
+```
+
+생성된 파일은 다음과 같다.
+
+development.yaml
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: demo
+  name: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: demo
+    spec:
+      containers:
+      - image: gcr.io/deductive-ship-274811/demo
+        name: demo
+        resources: {}
+status: {}
+```
+
+배포 전략과 포트를 수정해주도록 하자
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: demo
+  name: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: demo
+    spec:
+      containers:
+      - image: gcr.io/deductive-ship-274811/demo
+        name: demo
+        resources: {}
+        ports:
+        - containerPort: 8080
+status: {}
+```
+
 ## Github Action
 
 ### 1. workflow 생성
@@ -170,6 +243,11 @@ jobs:
         # Set up docker to authenticate
         # via gcloud command-line tool.
         gcloud auth configure-docker
+
+    # 그래들 빌드
+    - name: Build Gradle
+      run: |
+        ./gradlew build
 
     # Build the Docker image
     - name: Build
