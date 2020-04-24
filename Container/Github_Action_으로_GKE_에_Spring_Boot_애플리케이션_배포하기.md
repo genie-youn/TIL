@@ -191,6 +191,9 @@ on:
 
 ![](https://user-images.githubusercontent.com/16642635/79864784-00c03e80-8415-11ea-8936-b6428ee3b394.png)
 
+`Secrets` 에서 `GKE_PROJECT`에는 콘솔에서 PROJECT-ID 를 확인하여 입력하고, `GKE_EMAIL` 에는 gcloud 콘솔에 접근할 이메일 정보를 입력하면 된다.
+
+
 ```yaml
 env:
   GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
@@ -214,7 +217,7 @@ env:
       --build-arg GITHUB_REF="$GITHUB_REF" .
 ```
 
-### Jobs
+#### Jobs
 
 이후 실제 수행할 작업들의 목록인 `Jobs` 를 기술한다. 한단계씩 살펴보자
 
@@ -362,3 +365,5 @@ jobs:
         kubectl get services -o wide
 
 ```
+
+### 2. workflow 실행
