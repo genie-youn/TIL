@@ -134,6 +134,9 @@ spec:
 status: {}
 ```
 
+**service/kustomization 설명 추가하기**
+
+
 ## Github Action
 
 ### 1. workflow 생성
@@ -191,8 +194,19 @@ on:
 
 ![](https://user-images.githubusercontent.com/16642635/79864784-00c03e80-8415-11ea-8936-b6428ee3b394.png)
 
-`Secrets` 에서 `GKE_PROJECT`에는 콘솔에서 PROJECT-ID 를 확인하여 입력하고, `GKE_EMAIL` 에는 gcloud 콘솔에 접근할 이메일 정보를 입력하면 된다.
+`Secrets` 에서 `GKE_PROJECT`에는 콘솔에서 `PROJECT-ID` 를 확인하여 입력한뒤, `IAM > 서비스 계정`에서 깃헙 액션이 사용할 계정을 추가해주도록 하자.
 
+깃헙 액션이 사용할 계정은 다음 두가지 권한을 **반드시** 포함하고 있어야 한다.
+- Kubernetes Engine Developer (Kubernetes Engine 개발자)
+- Storage Admin (저장소 관리자)
+
+계정 생성 후 이 계정의 이메일을 `GKE_EMAIL` 로 `Secrets`에 등록하고, 우측 **작업** 에서 `키 만들기` 를 눌러 생성된 json 형식의 키를 `GKE_KEY` 로 `Secrets` 에 등록해주어야 한다.
+
+`Secrets` 에 키를 모두 등록했다면 다음과 같이 총 세개의 키가 등록되어 있어야 한다.
+![](https://user-images.githubusercontent.com/16642635/80302948-17391200-87e8-11ea-89ad-ba5461661d7e.png)
+
+
+> 자세한 내용은 [다음](https://github.com/GoogleCloudPlatform/github-actions/tree/master/example-workflows/gke) 을 참고
 
 ```yaml
 env:
@@ -279,6 +293,7 @@ jobs:
         kubectl rollout status deployment/$DEPLOYMENT_NAME
         kubectl get services -o wide
 ```
+기존에 생성된 workflow 파일에 **Build Gradle** 스텝이 추가됐음에 유의한다.
 
 전체 yaml 파일은 다음과 같다.
 
