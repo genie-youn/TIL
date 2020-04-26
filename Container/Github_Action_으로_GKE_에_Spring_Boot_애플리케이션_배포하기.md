@@ -63,15 +63,15 @@ $ docker push gcr.io/[PROJECT-ID]/demo
 
 #### gke 배포
 
-gke (google-kubernetes-engine)에 배포하기 위해 `deployment.yaml` 을 생성해주도록 하자.
+gke (google-kubernetes-engine)에 배포하기 위해 `deployment.yml` 을 생성해주도록 하자.
 
 ```shell
-$ kubectl create deployment demo --image=gcr.io/[PROJECT-ID]/demo --dry-run -o=yaml > deployment.yaml
+$ kubectl create deployment demo --image=gcr.io/[PROJECT-ID]/demo --dry-run -o=yaml > deployment.yml
 ```
 
 생성된 파일은 다음과 같다.
 
-development.yaml
+development.yml
 
 ```yaml
 apiVersion: extensions/v1beta1
