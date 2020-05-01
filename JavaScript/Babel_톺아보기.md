@@ -13,3 +13,8 @@ https://babeljs.io/docs/en/babel-preset-env#modules
 https://github.com/babel/website/issues/1852
 https://github.com/babel/babel/pull/8485
 https://github.com/babel/babel/pull/8485/files#r236086742
+
+## Babel
+`Babel` 은 ECMAScript 2015 를 포함한 최신 스펙의 자바스크립트 코드를 이를 지원하지 않는 오래된 브라우저나, 환경에서도 동작할 수 있도록 변환해주는 컴파일러이다.
+
+기본적으로는 문법을 변환하고, 목표한 환경에 맞춰 필요한 폴리필들을 `@babel/polyfill`을 통해 주입할 수 있다.
