@@ -8,14 +8,17 @@ Specification type의 값은 스펙 정의를 위한 인위로 만들어진 값�
 Specification type의 값은 ECMAScript 표현식을 평가한 중간결과를 표현하는데 사용될 순 있지만, 객체의 프로퍼티나 ECMAScript 언어의 변수로 저장되어 질 수는 없다.
 
 ## 6.2.7 The Abstract Closure Specification Type
-
-The Abstract Closure specification type is used to refer to algorithm steps together with a collection of values.
-
 *Abstract Closure* specification type 은 값들의 집합과 함께 알고리즘 단계를 참조하는데 사용된다.
 
 Abstract Closure 는 메타값으로 *closure(arg1, arg2)* 와 같이 함수를 사용하둣 호출할 수 있다.
 
-In algorithm steps that create an Abstract Closure, values are captured with the verb "capture" followed by a list of aliases. When an Abstract Closure is created, it captures the value that is associated with each alias at that time. In steps that specify the algorithm to be performed when an Abstract Closure is called, each captured value is referred to by the alias that was used to capture the value.
+
+Abstract Closure를 생성하는 알고리즘 단계내에서는 "capture" 라는 동사와 값을 기억할 변수들을 표기하고 이후 수행될 알고리즘을 기술한다.
+
+Abstract Closure가 생성되면 그 시점의 변수의 값을 기억한다.
+
+Abstract Closure를 호출하면, 기억해두었던 값을 참조하여 기술해 둔 알고리즘을 수행한다.
+
 
 만약 `Abstract Closure`가 `Completion Record`를 반환하면 `Completion Record`의 타입은 정상이거나 예외를 던져야 한다.
 
