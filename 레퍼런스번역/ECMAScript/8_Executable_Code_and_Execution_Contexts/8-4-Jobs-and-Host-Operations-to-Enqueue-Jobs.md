@@ -25,4 +25,13 @@ At some future point in time, when there is no running execution context and the
 - 한번 [Job](https://tc39.es/ecma262/#job)이 평가되기 시작하면 다른 [Job](https://tc39.es/ecma262/#job)에 대한 평가가 시작되기전 반드시 완료되어야 한다.
 - [Abstract Closure](https://tc39.es/ecma262/#sec-abstract-closure)은 반드시 에러에 대한 처리를 구현하고 완료를 반환해야 한다.
 
+> NOTE: 호스팅환경은 스케줄링에 관련하여 모든 Job들을 일괄적으로 다룰 필요는 없다. 예를들어 웹 브라우저와 Node.js는 Promise를 다루는 Job을 다른 작업보다 높은 우선순위로 처리한다. 후에는 우선순위가 높지 않은 작업을 추가하는 기능이 추가될 수도 있다.
+
+## 8.4.1 HostEnqueuePromiseJob (*job*, *realm*)
+HostEnqueuePromiseJob 은 호스팅 환경에서 정의하는 추상 연산으로, 미래의 특정 시점에 [Job](https://tc39.es/ecma262/#job) [Abstract Closure](https://tc39.es/ecma262/#sec-abstract-closure) *job* 을 수행하도록 스케줄링 한다.
+
+이 알고리즘과 함께 사용되는 Abstract Closures 는 Promise를 다루는 일과 연관되어 있거나, Promise를 다루는 연산과 동일한 우선순위로 스케줄링 될 작업을 나타낸다.
+
+*realm* 파라미터는 특별히 표준으로 정의된 요구사항 없이 호스트로 전달되게 되며, 이는 `null` 이나 [`Realm`](https://tc39.es/ecma262/#realm) 가 될 수 있다.
+
 https://tc39.es/ecma262/#job
