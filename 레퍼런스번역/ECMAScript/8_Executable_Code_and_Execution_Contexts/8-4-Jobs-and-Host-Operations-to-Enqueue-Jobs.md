@@ -34,4 +34,9 @@ HostEnqueuePromiseJob 은 호스팅 환경에서 정의하는 추상 연산으�
 
 *realm* 파라미터는 특별히 표준으로 정의된 요구사항 없이 호스트로 전달되게 되며, 이는 `null` 이나 [`Realm`](https://tc39.es/ecma262/#realm) 가 될 수 있다.
 
+> NOTE: PromiseResolveThenableJobs의 **realm** 은 **then** [function object](https://tc39.es/ecma262/#function-object)에서 [GetFunctionRealm](https://tc39.es/ecma262/#sec-getfunctionrealm)을 호출한 결과이다. PromiseReactionJobs의 **realm** 은 핸들러가 undefined가 아닐 경우 handler에서 [GetFunctionRealm]((https://tc39.es/ecma262/#sec-getfunctionrealm))을 호출한 결과이다. 그 이외의 **realm** 은 null 이 된다. 예를들어 WHATWG HTML 명세에선 **realm** 을 스크립트를 실행할 수 있는지 확인하고, 실행할 준비를 하는데 사용한다.
+
+HostEnqueuePromiseJob 의 구현은 [8.4](https://tc39.es/ecma262/#sec-jobs)의 요구사항을 반드시 충족시켜야 한다.
+추가적으로, Jobs는 반드시 선입선출의 순서로 스케줄되어야 하며, HostEnqueuePromiseJob 이 스케줄한 순서와 동일하게 실행되어야 한다.
+
 https://tc39.es/ecma262/#job
