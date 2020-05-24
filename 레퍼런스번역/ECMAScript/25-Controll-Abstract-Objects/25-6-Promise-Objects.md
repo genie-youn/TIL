@@ -1,5 +1,4 @@
 # 25.6 Promise Objects
-
 Promise 는 지연된 (그리고 아마 비동기로 처리될) 연산의 결과에 대한 플레이스홀더로 사용될 수 있는 객체이다.
 
 어떤 Promise 객체든 다음 세가지의 서로 베타적인 상태중 하나를 갖는다. *fulfilled*, *rejected*, *pending*
@@ -12,13 +11,23 @@ Promise 는 지연된 (그리고 아마 비동기로 처리될) 연산의 결과
 
 프로미스가 *settled* 거나, 다른 프로미스의 상태에 맞추기위해  "locked in" 되어 있다면 *resolved* 되었다고 한다.
 
-Attempting to resolve or reject a resolved promise has no effect.
+이미 resolved 된 프로미스를 `resolve` 하거나 `reject` 하는건 아무런 효과도 없다.
+만약 resolved 되지 않은 프로미스를 *unresolved* 되었다고 하는데, 이 *unresolved* 된 프로미스는 항상 pending 상태에 놓이게 된다.
+resolved 된 프로미스는 pending 일수도, fulfilled 일수도, rejected 일 수도 있다.
 
-A promise is unresolved if it is not resolved.
+## 25.6.1 Promise Abstract Operations
 
-An unresolved promise is always in the pending state.
+### 25.6.1.1 PromiseCapability Records
+PromiseCapability 는 프로미스 객체를 resolve 하거나 reject 하는 함수와 함께 캡슐화 하는데 사용되는 [Record](https://tc39.es/ecma262/#sec-list-and-record-specification-type) 값이다.
+PromiseCapability Records 는  NewPromiseCapability 추상 연산에 의해 생성된다.
+PromiseCapability Records 는 다음 표에 있는 필드들을 가지고 있다.
 
-A resolved promise may be pending, fulfilled or rejected.
+| Field       | Name              |	Value	Meaning
+| [[Promise]] |	An object	        | An object that is usable as a promise.
+| [[Resolve]] |	A function object |	The function that is used to resolve the given promise object.
+| [[Reject]]	| A function object	| The function that is used to reject the given promise object.
+
+#### 25.6.1.1.1 IfAbruptRejectPromise ( value, capability )
 
 
 
