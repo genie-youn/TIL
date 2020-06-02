@@ -7,7 +7,7 @@
         <li @click="click">추천된 태그2</li>
       </ul>
     </div>
-    <input @focusout="focusout" />
+    <input @focusout="focusout" v-model="insertedTag" />
   </div>
 </template>
 
