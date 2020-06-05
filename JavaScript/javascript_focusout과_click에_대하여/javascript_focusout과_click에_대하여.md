@@ -1,6 +1,5 @@
 # javascript focusout과 click에 대하여
 
-## 들어가며
 얼마 전 게시글에 태그를 입력하는 기능을 만들던 중이었다. 태그를 입력하면 그와 관련있는 태그들을 레이어로 노출해주고 이걸 선택하면 태그가 입력되게 된다. 또한 태그를 작성하다 다른곳을 클릭하면 작성중인 태그는 박싱되고 태그입력이 완료되어야 한다. 간략히 코드로 보면 다음과 같다.
 
 ```vue
@@ -50,3 +49,29 @@ export default {
 즉, 추천 태그의 `click` 보다 인풋의 `focusout` 이 먼저 트리거되서 발생하는 이슈이다. `Performance` 탭을 보면 `mousedown` > `focusout` > `mouseup` 순으로 이벤트가 트리거 되는것을 확인할 수 있다.
 
 ![](https://user-images.githubusercontent.com/16642635/83576804-8505f580-a56d-11ea-9e65-2e2af4c72ae0.png)
+
+```vue
+<template>
+  <div @mousedown="mousedown($event)" @mouseup="mouseup($event)" @click="click($event)">테스트 박스</div>
+</template>
+<script>
+export default {
+  methods: {
+    click(event) {
+      console.log("click");
+    },
+    mousedown(event) {
+      console.log("mousedown");
+    },
+    mouseup(event) {
+      console.log("mouseup");
+    },
+  }
+}
+</script>
+```
+
+위 코드에서 `테스트 박스` 를 클릭하면 `mousedown` > `mouseup` > `click` 순으로 트리거되는걸 볼 수 있다.
+
+## 마치며
+이벤트가 의도한대로 트리거되지 않는다면, 퍼포먼스탭에서 실제로 이벤트가 어떤 순서로 트리거되는지 측정하고, 의도에 맞게 조정하도록 하자.

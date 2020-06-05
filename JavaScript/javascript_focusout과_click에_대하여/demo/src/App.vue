@@ -8,6 +8,7 @@
       </ul>
     </div>
     <input @focusout="focusout" v-model="insertedTag" />
+    <div @mousedown="mousedown($event)" @mouseup="mouseup($event)" @click="click($event)">ggggg</div>
   </div>
 </template>
 
@@ -26,10 +27,16 @@ export default {
       this.insertedTag = "";
       // ...작성중인 태그 저장 로직 생략
     },
-    click() {
+    click(event) {
       // click 됐을때 처리해야할 로직들 생략
       console.log("click");
-    }
+    },
+    mousedown(event) {
+      console.log("mousedown");
+    },
+    mouseup(event) {
+      console.log("mouseup");
+    },
   },
 }
 </script>
