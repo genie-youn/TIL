@@ -28,9 +28,7 @@ PromiseCapability Records 는 다음 표에 있는 필드들을 가지고 있다
 | [[Reject]]	| A function object	| The function that is used to reject the given promise object.
 
 #### 25.6.1.1.1 IfAbruptRejectPromise ( value, capability )
-IfAbruptRejectPromise is a shorthand for a sequence of algorithm steps that use a PromiseCapability Record. An algorithm step of the form:
-
-IfAbruptRejectPromise는 단축이다. PromiseCapability Record를 사용하는 일련의 알고리즘 단계를 나타내기 위한 단축된 표현이다. 알고리즘 단계는 다음과 같은 형태를 갖는다.
+IfAbruptRejectPromise는 PromiseCapability Record를 사용하는 일련의 알고리즘 단계를 나타내기 위한 단축된 표현이다. 알고리즘 단계는 다음과 같은 형태를 갖는다.
 
 1. IfAbruptRejectPromise(value, capability).
 
@@ -45,5 +43,26 @@ IfAbruptRejectPromise는 단축이다. PromiseCapability Record를 사용하는 
 PromiseReaction은 프로미스가 resoved 되었거나 rejected 되었을 때 어떻게 반응해야 하는지에 대한 정보를 저장하기 위해 사용되는 [Record](https://tc39.es/ecma262/#sec-list-and-record-specification-type) 값이다.
 
 PromiseReaction records는 [PerformPromiseThen](https://tc39.es/ecma262/#sec-performpromisethen) 추상 연상에 의해 생성되고, [NewPromiseReactionJob](https://tc39.es/ecma262/#sec-newpromisereactionjob) 로 부터 반환되는 [Abstract Closure](https://tc39.es/ecma262/#sec-abstract-closure)에 의해 사용된다.
+
+| Field Name  |                           Value                               |                        Meaning                           |
+| ----------- | ------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [[Promise]] |                          An object                         	 |                   An object that is usable as a promise.      |
+| [[Resolve]] | A [function object](https://tc39.es/ecma262/#function-object) | The function that is used to resolve the given promise object. |
+| [[Reject]] | A [function object](https://tc39.es/ecma262/#function-object) | The function that is used to reject the given promise object. |
+
+#### 25.6.1.1.1 IfAbruptRejectPromise ( *value*, *capability* )
+IfAbruptRejectPromise is a shorthand for a sequence of algorithm steps that use a PromiseCapability Record. An algorithm step of the form:
+
+IfAbruptRejectPromise PromiseCapability Record를 사용하는 일련의 알고리즘 단계를 나타내기 위한 단축된 표현이다. 알고리즘 단계는 다음과 같은 형태를 갖는다.
+
+1. [IfAbruptRejectPromise](https://tc39.es/ecma262/#sec-ifabruptrejectpromise)(*value*, *capability*).
+
+이는 다음과 동일한 의미를 갖는다.
+
+1. If *value* is an [abrupt completion](https://tc39.es/ecma262/#sec-completion-record-specification-type), then
+  a. Perform ? [Call](https://tc39.es/ecma262/#sec-call)(capability.[[Reject]], **undefined**, « *value*.[[Value]] »).
+  b. Return *capability*.[[Promise]].
+2. Else if *value* is a [Completion Record](https://tc39.es/ecma262/#sec-completion-record-specification-type), set *value* to *value*.[[Value]].
+
 
 https://tc39.es/ecma262/#sec-promise-objects
