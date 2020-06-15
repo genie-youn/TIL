@@ -5,6 +5,69 @@
 
 왜 그런일이 발생했는지 정리해두려한다.
 
+# Case A. props 로 `undefined` 와 다른 타입을 주고, 타입에 명시한 값으로 초기화를 진행했을 경우.
+
+```vue
+<template>
+  <h1>{{ msg }}</h1>
+</template>
+
+<script>
+export default {
+  props: {
+    msg: {
+      type: [String, undefined],
+      required: true,
+    }
+  },
+}
+</script>
+```
+
+위와 같이 `props`가 받을수 있는 타입을 `String`과 `undefined` 로 선언한 컴포넌트를 다음처럼 "test" 라는 문자열로 초기화를 하게 되면
+
+```vue
+<template>
+  <img alt="Vue logo" src="src/assets/logo.png" />
+  <caseA :msg="msg" />
+  <button @click="setUndefined">set undefined</button>
+  <button @click="setObject">set Object</button>
+</template>
+
+<script>
+import caseA from './components/caseA.vue'
+
+export default {
+  name: 'App',
+  components: {
+    caseA
+  },
+  data() {
+    return {
+      msg: "test",
+    }
+  },
+  methods: {
+    setUndefined() {
+      this.msg = undefined;
+      console.log("undefined");
+    },
+    setObject() {
+      this.msg = {
+        test: "abc",
+      };
+      console.log("object");
+    },
+  },
+}
+</script>
+```
+
+컴포넌트와 아래 버튼들도 정상적으로 생성된다. 이후 이 값을 `undefined` 나 `Object`로 변경하게 되면 각각 'Right-hand side of 'instanceof' is not an object' 를 뱉으며 죽어버리게 된다.
+
+> 정상적인 props type checker는 경고만 내보내지 강제하진 않는다.
+
+
 # 관련 이슈
 이미 누군가 [리포팅](https://github.com/vuejs/vue/issues/1961)을 했고, [구현 PR](https://github.com/vuejs/vue/pull/9358) 이 올라와 있지만 1년반째 머지되지 않고있다.
 
