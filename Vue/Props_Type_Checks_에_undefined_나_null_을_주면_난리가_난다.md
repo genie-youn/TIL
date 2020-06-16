@@ -67,6 +67,39 @@ export default {
 
 > 정상적인 props type checker는 경고만 내보내지 강제하진 않는다.
 
+# Case A. props 로 `undefined` 와 다른 타입을 주고, 타입에 명시하지 않은 값으로 초기화를 진행했을 경우.
+이 경우 문제는 조금 더 심각해지는데 컴포넌트를 생성하는 과정에서 'Right-hand side of 'instanceof' is not an object' 에러가 발생하게 되고 **이후 초기화 과정이 중단되어 버려 전혀 상관이 없는 하단 버튼까지 렌더링이 되지 않는다.**
+
+# 원인
+
+```javascript
+function assertType (value: any, type: Function): {
+  valid: boolean;
+  expectedType: string;
+} {
+  let valid
+  const expectedType = getType(type)
+  if (simpleCheckRE.test(expectedType)) {
+    const t = typeof value
+    valid = t === expectedType.toLowerCase()
+    // for primitive wrapper objects
+    if (!valid && t === 'object') {
+      valid = value instanceof type
+    }
+  } else if (expectedType === 'Object') {
+    valid = isPlainObject(value)
+  } else if (expectedType === 'Array') {
+    valid = Array.isArray(value)
+  } else {
+    valid = value instanceof type
+  }
+  return {
+    valid,
+    expectedType
+  }
+}
+```
+
 
 # 관련 이슈
 이미 누군가 [리포팅](https://github.com/vuejs/vue/issues/1961)을 했고, [구현 PR](https://github.com/vuejs/vue/pull/9358) 이 올라와 있지만 1년반째 머지되지 않고있다.
