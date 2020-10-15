@@ -45,17 +45,16 @@ Vue.createApp(Demo).mount('#app')
 
 위 코드를 실행시켜보면 PC Safari를 포함한 기타 브라우저에선 잘 동작하나 유독 iOS의 모바일 브라우저에서만 동작하지 않는것을 확인 할 수 있다.
 
+잘되는데?
+
 https://bugs.webkit.org/show_bug.cgi?id=195884#c2
 https://bugs.webkit.org/show_bug.cgi?id=190017
-https://bugs.webkit.org/show_bug.cgi?id=190564
-https://bugs.webkit.org/show_bug.cgi?id=197746
 https://bugs.webkit.org/show_bug.cgi?id=214434
+https://bugs.webkit.org/attachment.cgi?id=404507&action=prettypatch
 https://bugs.webkit.org/show_bug.cgi?id=213149
+https://bugs.webkit.org/attachment.cgi?id=401807&action=prettypatch
 https://bugs.webkit.org/show_bug.cgi?id=207272
-https://bugs.webkit.org/show_bug.cgi?id=199490
-https://bugs.webkit.org/show_bug.cgi?id=199137
-https://bugs.webkit.org/show_bug.cgi?id=198737
-https://bugs.webkit.org/show_bug.cgi?id=198412
+https://bugs.webkit.org/attachment.cgi?id=389873&action=prettypatch
 https://bugs.webkit.org/show_bug.cgi?id=195856
-https://bugs.webkit.org/show_bug.cgi?id=195824
-https://bugs.webkit.org/show_bug.cgi?id=193565
+https://bugs.webkit.org/attachment.cgi?id=367298&action=prettypatch
+https://bugs.webkit.org/show_bug.cgi?id=142757
