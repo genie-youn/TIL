@@ -85,14 +85,11 @@ iOS webkit은 [포커스가 사용자 제스처에 대한 응답이 아닌 경�
 
 
 
-https://bugs.webkit.org/show_bug.cgi?id=195884#c2
+https://bugs.webkit.org/show_bug.cgi?id=195884#c4
 https://bugs.webkit.org/show_bug.cgi?id=190017
 https://bugs.webkit.org/show_bug.cgi?id=214434
-https://bugs.webkit.org/attachment.cgi?id=404507&action=prettypatch
 https://bugs.webkit.org/show_bug.cgi?id=213149
-https://bugs.webkit.org/attachment.cgi?id=401807&action=prettypatch
 https://bugs.webkit.org/show_bug.cgi?id=207272
-https://bugs.webkit.org/attachment.cgi?id=389873&action=prettypatch
 https://bugs.webkit.org/show_bug.cgi?id=195856
-https://bugs.webkit.org/attachment.cgi?id=367298&action=prettypatch
+https://bugs.webkit.org/show_bug.cgi?id=193811
 https://bugs.webkit.org/show_bug.cgi?id=142757
