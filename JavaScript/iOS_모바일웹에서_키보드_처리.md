@@ -81,9 +81,53 @@ Vue.createApp(Demo).mount('#app')
 
 iOS webkit은 [포커스가 사용자 제스처에 대한 응답이 아닌 경우엔 시스템 키보드가 올라가지 않도록 설게](https://bugs.webkit.org/show_bug.cgi?id=195884#c4)되었다. 키보드를 불러오는게 화면중 많은 공간을 차지하고 잘 입력할 수 있도록 페이지를 확대/축소 하거나 스크롤 하는데 이러한 동작이 유저의 제스처가 아닌 프로그래밍되어 자동으로 주어지는 포커스에 의해 실행된다면 사용자에게 짜증나고, 방해가 되는 사용자 경험을 만든다고 판단했기 때문이다.
 
-그렇다면 '사용자 제스처에 대한 응답' 이란 무엇일까?
+그렇다면 '사용자 제스처에 대한 응답' 이란 무엇일까? 코드를 살펴보자.
 
+[/Source/WebKit/UIProcess/ios/WKContentViewInteraction.mm](https://github.com/WebKit/webkit/blob/bc26aef617f2cbcbf4ed47cc6d76f6f76a7acfdc/Source/WebKit/UIProcess/ios/WKContentViewInteraction.mm#L5906-L5941)
+```c++
+BOOL shouldShowInputView = [&] {
+        switch (startInputSessionPolicy) {
+        case _WKFocusStartsInputSessionPolicyAuto:
+            // The default behavior is to allow node assistance if the user is interacting.
+            // We also allow node assistance if the keyboard already is showing, unless we're in extra zoom mode.
+            if (userIsInteracting)
+                return YES;
 
+            if (self.isFirstResponder || _becomingFirstResponder) {
+                // When the software keyboard is being used to enter an url, only the focus activity state is changing.
+                // In this case, auto focus on the page being navigated to should be disabled, unless a hardware
+                // keyboard is attached.
+                if (activityStateChanges && activityStateChanges != WebCore::ActivityState::IsFocused)
+                    return YES;
+
+#if PLATFORM(WATCHOS)
+                if (_isChangingFocus && ![_focusedFormControlView isHidden])
+                    return YES;
+#else
+                if (_isChangingFocus)
+                    return YES;
+
+                if ([UIKeyboard isInHardwareKeyboardMode])
+                    return YES;
+#endif
+            }
+            return NO;
+        case _WKFocusStartsInputSessionPolicyAllow:
+            return YES;
+        case _WKFocusStartsInputSessionPolicyDisallow:
+            return NO;
+        default:
+            ASSERT_NOT_REACHED();
+            return NO;
+        }
+    }();
+```
+
+이거 두개 보다가 말았다..
+https://trac.webkit.org/changeset/230902/webkit
+https://bugs.webkit.org/show_bug.cgi?id=184844
+
+_WKFocusStartsInputSessionPolicyAuto 가 뭐하는 아이인고
 
 https://bugs.webkit.org/show_bug.cgi?id=195884#c4
 https://bugs.webkit.org/show_bug.cgi?id=190017
