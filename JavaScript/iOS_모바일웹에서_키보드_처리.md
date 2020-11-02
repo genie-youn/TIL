@@ -123,11 +123,51 @@ BOOL shouldShowInputView = [&] {
     }();
 ```
 
+__
+
+기본값인 `_WKFocusStartsInputSessionPolicyAuto`일 경우에 다음과 같은 조건에서 inputView에 진입하게 된다.
+1. 파라미터로 주입받은 `userIsInteracting` 가 `true` 일 때
+2. `(self.isFirstResponder || _becomingFirstResponder) && (activityStateChanges && activityStateChanges != WebCore::ActivityState::IsFocused)` 가 `true` 일 때
+3. `(self.isFirstResponder || _becomingFirstResponder) && _isChangingFocus` 가 `true` 일때
+4. `(self.isFirstResponder || _becomingFirstResponder) && [UIKeyboard isInHardwareKeyboardMode]` 가 `true` 일 때
+
+하나씩 살펴보도록 하자.
+
+우선 1의 경우는 파라미터로 전달받은 호출은 `userIsInteracting` 을 찾아야 한다. 호출은 여기서 한다.
+[/Source/WebKit/UIProcess/ios/PageClientImplIOS.mm](https://github.com/WebKit/webkit/blob/3c7f9853695401da0181d257702d735615222a3e/Source/WebKit/UIProcess/ios/PageClientImplIOS.mm#L580-L598)
+
+```c++
+void PageClientImpl::elementDidFocus(const FocusedElementInformation& nodeInformation, bool userIsInteracting, bool blurPreviousNode, OptionSet<WebCore::ActivityState::Flag> activityStateChanges, API::Object* userData)
+{
+    MESSAGE_CHECK(!userData || userData->type() == API::Object::Type::Data);
+
+    NSObject <NSSecureCoding> *userObject = nil;
+    if (API::Data* data = static_cast<API::Data*>(userData)) {
+        auto nsData = adoptNS([[NSData alloc] initWithBytesNoCopy:const_cast<unsigned char*>(data->bytes()) length:data->size() freeWhenDone:NO]);
+        auto unarchiver = adoptNS([[NSKeyedUnarchiver alloc] initForReadingFromData:nsData.get() error:nullptr]);
+        unarchiver.get().decodingFailurePolicy = NSDecodingFailurePolicyRaiseException;
+        @try {
+            auto* allowedClasses = m_webView.get()->_page->process().processPool().allowedClassesForParameterCoding();
+            userObject = [unarchiver decodeObjectOfClasses:allowedClasses forKey:@"userObject"];
+        } @catch (NSException *exception) {
+            LOG_ERROR("Failed to decode user data: %@", exception);
+        }
+    }
+
+    [m_contentView _elementDidFocus:nodeInformation userIsInteracting:userIsInteracting blurPreviousNode:blurPreviousNode activityStateChanges:activityStateChanges userObject:userObject];
+}
+```
+
+**
+
+여기도 전달받은 파라미터를 그대로 토스한다.
+
+
+
 이거 두개 보다가 말았다..
 https://trac.webkit.org/changeset/230902/webkit
 https://bugs.webkit.org/show_bug.cgi?id=184844
 
-_WKFocusStartsInputSessionPolicyAuto 가 뭐하는 아이인고
 
 https://bugs.webkit.org/show_bug.cgi?id=195884#c4
 https://bugs.webkit.org/show_bug.cgi?id=190017
