@@ -162,6 +162,48 @@ void PageClientImpl::elementDidFocus(const FocusedElementInformation& nodeInform
 
 여기도 전달받은 파라미터를 그대로 토스한다.
 
+호출하는 애가 얜가?
+
+[/Source/WebKit/WebProcess/WebPage/WebPage.cpp](https://github.com/WebKit/webkit/blob/3c7f9853695401da0181d257702d735615222a3e/Source/WebKit/WebProcess/WebPage/WebPage.cpp#L5721-L5756)
+```c++
+void WebPage::elementDidFocus(WebCore::Element& element)
+{
+    if (!shouldDispatchUpdateAfterFocusingElement(element)) {
+        updateInputContextAfterBlurringAndRefocusingElementIfNeeded(element);
+        m_focusedElement = &element;
+        m_recentlyBlurredElement = nullptr;
+        return;
+    }
+
+    if (is<HTMLSelectElement>(element) || isTextFormControlOrEditableContent(element)) {
+        m_focusedElement = &element;
+        m_hasPendingInputContextUpdateAfterBlurringAndRefocusingElement = false;
+
+#if PLATFORM(IOS_FAMILY)
+
+#if ENABLE(FULLSCREEN_API)
+        if (element.document().fullscreenManager().isFullscreen())
+            element.document().fullscreenManager().cancelFullscreen();
+#endif
+
+        ++m_currentFocusedElementIdentifier;
+        FocusedElementInformation information;
+        getFocusedElementInformation(information);
+        RefPtr<API::Object> userData;
+
+        m_formClient->willBeginInputSession(this, &element, WebFrame::fromCoreFrame(*element.document().frame()), m_userIsInteracting, userData);
+
+        send(Messages::WebPageProxy::ElementDidFocus(information, m_userIsInteracting, m_recentlyBlurredElement, m_lastActivityStateChanges, UserData(WebProcess::singleton().transformObjectsToHandles(userData.get()).get())));
+#elif PLATFORM(MAC)
+        // FIXME: This can be unified with the iOS code above by bringing ElementDidFocus to macOS.
+        // This also doesn't take other noneditable controls into account, such as input type color.
+        send(Messages::WebPageProxy::SetEditableElementIsFocused(!element.hasTagName(WebCore::HTMLNames::selectTag)));
+#endif
+        m_recentlyBlurredElement = nullptr;
+    }
+}
+```
+
 
 
 이거 두개 보다가 말았다..
