@@ -30,3 +30,67 @@ yarn add @babel/preset-env --dev
 ## Browserslist 통합
 
 브라우저, 또는 일렉트론 기반의 프로젝트에선 대상 환경을 지정하는데 `.browserslistrc` 를 사용하는것을 추천한다. `autoprefixer`, `stylelint`, `eslint-plugin-compat` 등과 같은 도구를 사용한다면 이미 이 파일이 있을수도 있다.
+
+기본적으로 `@babel/preset-env` 은 [targets](https://babeljs.io/docs/en/babel-preset-env#targets) 나 [ignoreBrowserslistConfig](https://babeljs.io/docs/en/babel-preset-env#ignorebrowserslistconfig) 옵션을 따로 설정하지 않는 한, [browserslist config sources](https://github.com/browserslist/browserslist#queries) 를 사용하게 된다.
+
+> browserslist 의 defaults query 를 사용하는 경우 (명시적으로든, browserslist config를 따로 생성하지 않았든) preset-env가 어떻게 동작하는지 [No targets](https://babeljs.io/docs/en/babel-preset-env#no-targets)을 참고할것.
+
+예를들어 시장 점유율이 0.25% 가 넘는 (IE 10이나 블랙베리등 보안 업데이트 이슈가 있는 브라우저를 제외한) 브라우저만을 대상으로 동작할 수 있도록 폴리필을 추가하고 코드를 변환하기를 원한다면 다음과 같이 작성할 수 있다.
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "entry"
+      }
+    ]
+  ]
+}
+```
+
+#### browserslist
+```json
+> 0.25%
+not dead
+```
+
+또는
+
+#### package.json
+```json
+"browserslist": "> 0.25%, not dead"
+```
+
+> `v7.4.5` 부터 browserslist query는 [mobileToDesktop: true](https://github.com/browserslist/browserslist#js-api) 옵션과 함께 동작하게 된다. 쿼리가 실행되는 스냅샷을 생성해보고 싶다면 다음 명령어를 사용할 수 있다. `npx browserslist --mobile-to-desktop ">0.25%, not dead"`.
+
+## 옵션
+
+프리셋의 옵션에 대한 추가적인 정보가 필요하다면 [preset options](https://babeljs.io/docs/en/presets#preset-options) 문서를 참고할 것.
+
+### `targets`
+`string | Array<string> | { [string]: string }`, 기본값 `{}`
+
+프로젝트가 지원할 대상 환경을 명시한다.
+
+[browserslist-compatible](https://github.com/ai/browserslist) query 또한 사용할 수 있다. (with [caveats](https://babeljs.io/docs/en/babel-preset-env#ineffective-browserslist-queries)):
+
+```json
+{
+  "targets": "> 0.25%, not dead"
+}
+```
+
+또는 지원할 최소 버전을 각각 명시할 수 있다. `chrome`, `opera`, `edge`, `firefox`, `safari`, `ie`, `ios`, `android`, `node`, `electron` 를 설정할 수 있다.
+
+```json
+{
+  "targets": {
+    "chrome": "58",
+    "ie": "11"
+  }
+}
+```
+
+#### No targets
