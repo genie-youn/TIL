@@ -94,3 +94,26 @@ not dead
 ```
 
 #### No targets
+
+`preset-env` 의 목표중 하나는 기존에 `preset-latest` 를 사용중이던 사용자들이 쉽게 `preset-env` 로 전환할 수 있도록 돕는것이다. 이를 위해 no targets 으로 설정하면 `preset-latest` 와 비슷하게 동작한다. (ES2015-ES2020 에 해당하는 모든 코드를 ES5 에서 동작할 수 있도록 변환한다.)
+
+> 지원한 환경/버전을 특정하여 명시하여 얻는 이점이 많기 때문에 `preset-env` 를 이러한 방식으로 사용하는건 권장하지 않는다.
+
+```json
+{
+  "presets": ["@babel/preset-env"]
+}
+```
+
+이러한 이유로 `preset-env`의 no targets 시 동작은 [browserslist](https://github.com/browserslist/browserslist#queries) 와는 다르다. (바벨 혹은 browserslist config(s)에 no targets 로 설정되었을 때 `defaults` query를 사용하지 않는다.) 만약 `defaults` query를 사용하고 싶다면 명시적으로 target 에 전달해주어야 한다.
+
+```json
+{
+  "presets": [["@babel/preset-env", { "targets": "defaults" }]]
+}
+```
+
+이러한 동작이 이상적이지 않다는걸 우리도 인지하고 있으며 Babel v8 에서 다시 검토할 예정이다.
+
+#### `targets.esmodules`
+`boolean`
