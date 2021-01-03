@@ -117,3 +117,22 @@ not dead
 
 #### `targets.esmodules`
 `boolean`
+
+ES Modules (https://www.ecma-international.org/ecma-262/6.0/#sec-modules) 을 지원하는 브라우저를 대상으로 할 수 있다. 이 옵션을 설정하면 `browsers` 필드는 무시된다. `<script type="module"></script>` 와 함께 사용하여 사용자로 하여금 꼭 필요한 최소한의 스크립트만 내려받을 수 있도록 한다. (https://jakearchibald.com/2017/es-modules-in-browsers/#nomodule-for-backwards-compatibility).
+
+> esmodules 을 활성화 할 경우 browsers 는 무시된다는것을 명심.
+
+```json
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "esmodules": true
+        }
+      }
+    ]
+  ]
+}
+```
