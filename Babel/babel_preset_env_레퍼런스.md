@@ -136,3 +136,99 @@ ES Modules (https://www.ecma-international.org/ecma-262/6.0/#sec-modules) 을 �
   ]
 }
 ```
+
+#### `targets.node`
+`string | "current" | true`
+
+만약 현재 노드의 버전에 맞춰 컴파일하고 싶다면 `"node": true` 혹은 `"node": "current"` 로 설정해 주면 된다. `"node": process.version.node` 와 동일하게 동작한다.
+
+#### `targets.safari`
+`string | "tp"`
+
+사파리의 [technology preview](https://babeljs.io/docs/en/babel-preset-env) 버전에 맞춰 컴파일하고 싶다면 `"safari": "tp"` 로 설정해 주면 된다.
+
+#### `targets.browsers`
+`string | Array<string>`
+[browserslist](https://github.com/browserslist/browserslist) 를 사용하여 지원할 브라우저 환경을 지정한다. (ex: last 2 versions, > 5%, safari tp)
+
+browsers 옵션으로 설정한 값은 `targets` 의 설정 결과에 의해 덮어써진다는 점에 명심할것.
+
+> 이 옵션은 추후 삭제될 예정이므로 `targets`에 직접 쿼리를 작성하는걸 권장한다.
+
+#### `bugfixes`
+`boolean` 기본값: `false`
+`v7.9.0` 에 추가됨
+
+> Babel 8 부터는 `true`가 기본값
+
+이거 뭔 소리지?
+
+By default, `@babel/preset-env` (and Babel plugins in general) grouped ECMAScript syntax features into collections of closely related smaller features.
+
+기본적으로 `@babel/preset-env` (와 일반적인 Babel 플러그인들은) ECMAScript의 문법들을 밀접하게 연관된 문법들의 작은 모음으로 그룹화했다.
+
+These groups can be large and include a lot of edge cases, for example "function arguments" includes destructured, default and rest parameters.
+
+이러한 그룹은 클 수 있으며 많은 예외 경우를 포함할 수 있다. 예를들어 "function arguments"는 destructured, default and rest parameters 를 포함한다.
+
+From this grouping information, Babel enables or disables each group based on the browser support target you specify to `@babel/preset-env`’s `targets` option.
+
+이 그룹화된 정보들로부터, Babel 은 각각의 그룹을 `@babel/preset-env`의 `targets` 옵션에 명시한 지원할 브라우저를 기준으로 활성화할지, 비활성화할지 판단한다.
+
+When this option is enabled, `@babel/preset-env` tries to compile the broken syntax to the closest non-broken modern syntax supported by your target browsers.
+
+이 옵션이 활성화되면 `@babel/preset-env` 는 망가진 문법을 대상으로 설정한 브라우저가 지원하는 가장 가까운 안망가진 문법으로 컴파일을 시도한다???
+
+Depending on your targets and on how many modern syntax you are using, this can lead to a significant size reduction in the compiled app.
+
+지원하려는 브라우저와 얼마나 많은 모던한 문법을 컴파일된 앱의 사이즈를 확연히 줄일 수 있다.
+
+This option merges the features of [@babel/preset-modules](https://github.com/babel/preset-modules) without having to use another preset.
+
+이 옵션은 다른 프리셋 설정을 사용하지 않고도 [@babel/preset-modules](https://github.com/babel/preset-modules) 의 기능들을 병합한다..?
+
+#### `spec`
+`boolean`, defaults to `false`
+
+Enable more spec compliant, but potentially slower, transformations for any plugins in this preset that support them.
+
+> ???
+
+#### `loose`
+`boolean`, defaults to `false`
+
+preset의 ["loose" transformations](https://2ality.com/2015/12/babel6-loose-mode.html) 를 지원하는 모든 플러그인의 해당 기능을 활성화시킨다.
+
+#### `modules`
+`"amd" | "umd" | "systemjs" | "commonjs" | "cjs" | "auto" | false`, defaults to `"auto"`.
+
+ES 모듈 문법을 다른 모듈 타입으로 변환하도록 활성화한다. `cjs`는 `commonjs`의 별칭이다.
+
+Setting this to `false` will preserve ES modules. Use this only if you intend to ship native ES Modules to browsers. If you are using a bundler with Babel, the default `modules: "auto"` is always preferred.
+
+`false`로 설정할 경우 ES 모듈을 유지하므로 네이티브 ES 모듈을 브라우저로 전달하려는 경우에만 `false`로 설정한다. 만약 바벨과 함께 번들러를 사용한다면 기본값인 `modules: "auto"`를 권장한다.
+
+##### `modules: "auto"`
+
+기본적으로 `@babel/preset-env` 는 ES 모듈과 모듈 기능들 (예를 들어 `import()`) 을 변환할지 말지를 결정하는데 [caller](https://babeljs.io/docs/en/options#caller) 데이터를 사용한다.
+
+일반적으로 `caller` 데이터는 번들러 플러그인 (`babel-loader`, `@rollup/plugin-babel` 같은) 에서 지정된다. 그러므로 `caller` 데이터를 직접 전달하는건 권장하지 않는다.
+
+#### `debug`
+`boolean`, defaults to `false`
+
+`preset-env`로 활성화된 목표로 설정한 환경에 필요한 폴리필과 변환 플러그인을 `console.log` 로 출력한다.
+
+#### `include`
+`Array<string|RegExp>`, defaults to `[]`
+
+항상 포함될 플러그인의 목록을 정의한다.
+- [Babel plugins](https://github.com/babel/babel/blob/master/packages/babel-compat-data/scripts/data/plugin-features.js) - (`@babel/plugin-transform-spread`) 와 프리픽스가 없는 형식 (`plugin-transform-spread`) 모두 지원한다.
+- Built-ins ([core-js@2](https://github.com/babel/babel/blob/master/packages/babel-preset-env/src/polyfills/corejs2/built-in-definitions.js) 와 [core-js@3](https://github.com/babel/babel/blob/master/packages/babel-preset-env/src/polyfills/corejs3/built-in-definitions.js), 예를 들어 `es.map`, `es.set`, `es.object.assing`)
+
+플러그인 이름은 전체를 기술해도 되지만 부분적으로 정의해도 된다. (혹은 `RegExp`를 사용할 수 있다.)
+
+입력받을 수 있는 형식은 다음과 같다.
+- 전체 이름 (`string`): `"es.math.sign"`
+- 부분적인 이름 (`string`): `"es.math.*"` (모든 `es.math` 프리픽스가 붙은 플러그인)
+- `RegExp` 객체: `/^transform-.*$` 또는 `new RegExp("^transform-modules-.*")`
