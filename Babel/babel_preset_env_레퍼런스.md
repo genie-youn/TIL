@@ -232,3 +232,22 @@ Setting this to `false` will preserve ES modules. Use this only if you intend to
 - 전체 이름 (`string`): `"es.math.sign"`
 - 부분적인 이름 (`string`): `"es.math.*"` (모든 `es.math` 프리픽스가 붙은 플러그인)
 - `RegExp` 객체: `/^transform-.*$` 또는 `new RegExp("^transform-modules-.*")`
+
+이 옵션은 네이티브 구현체에 버그가 있거나 지원되는 기능과 지원되지 않는 기능이 합쳐져 있어 정상적으로 동작하지 않을 때 유용하다.
+
+예를들어 Node 4는 네이티브 클래스는 지원하지만 전개 연산자는 지원하지 않는다.
+만약 `super`의 파라미터를 전개연산자로 호출하면 (`super(...args)`) `@babel/plugin-transform-classes` 변환은 `include`에 포함되어야 한다. 이 외에는 `super` 와 함께 쓰인 전개 연산자를 변환할 방법은 없다.
+
+> 왜지...
+
+> NOTE: `include` 와 `exclude` 옵션은 [plugins included with this preset](https://babeljs.io/docs/en/babel-preset-env#include) 에만 동작한다. 예를들어 `@babel/plugin-proposal-do-expressions` 를 `include` 하거나 `@babel/plugin-proposal-function-bind` 를 `exclude` 하게 되면 에러를 던진다. 이런 플러그인을 사용하려면 프리셋에 `include` *하지말고* "[plugins](https://babeljs.io/docs/en/options#plugins)" 옵션에 직접 추가하여야 한다.
+
+#### `exclude`
+`Array<string|RegExp>`, defaults to `[]`
+
+항상 제외될 플러그인의 목록을 정의한다.
+제외 가능한 플러그인은 `include` 옵션과 동일하다.
+
+이 옵션은 "변환 블랙리스트" 를 만드는데 유용하다. 예를들어 제너레이터를 사용하지 않아 `regeneratorRuntime`이 추가되는걸 원하지 않는다거나 (`useBuiltIns`를 사용하는 경우) [바벨의 `async-to-gen`](https://babeljs.io/docs/en/babel-plugin-proposal-async-generator-functions) 대신 [`fast-async`](https://github.com/MatAtBread/fast-async) 와 같은 플러그인을 사용하기 위해 `@babel/plugin-transform-regenerator` 를 `exclude`에 추가해 사용하지 않을 수 있다.
+
+#### `useBuiltIns`
