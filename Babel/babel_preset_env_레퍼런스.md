@@ -251,3 +251,59 @@ Setting this to `false` will preserve ES modules. Use this only if you intend to
 이 옵션은 "변환 블랙리스트" 를 만드는데 유용하다. 예를들어 제너레이터를 사용하지 않아 `regeneratorRuntime`이 추가되는걸 원하지 않는다거나 (`useBuiltIns`를 사용하는 경우) [바벨의 `async-to-gen`](https://babeljs.io/docs/en/babel-plugin-proposal-async-generator-functions) 대신 [`fast-async`](https://github.com/MatAtBread/fast-async) 와 같은 플러그인을 사용하기 위해 `@babel/plugin-transform-regenerator` 를 `exclude`에 추가해 사용하지 않을 수 있다.
 
 #### `useBuiltIns`
+`"usage"` | `"entry"` | `false`, defaults to `false`.
+
+이 옵션은 `@babel/preset-env`가 폴리필을 어떻게 다룰지를 설정한다.
+
+`usage`나 `entry` 옵션이 사용되면, `@babel/preset-env` 는 `core-js` 모듈에 대한 참조를 직접적으로 추가한다. 이는 `core-js` 가 접근 가능해야한다는걸 의미한다.
+
+`@babel/polyfill`이 7.4.0에 deprecated 되면서 [`corejs`](https://babeljs.io/docs/en/babel-preset-env#corejs) 의 버전을 설정하여 직접 추가하는것을 권장하고 있다.
+
+```shell
+npm install core-js@3 --save
+
+# or
+
+npm install core-js@2 --save
+```
+
+##### `useBuiltIns: 'entry'`
+
+> NOTE: 앱 전체에 걸쳐 딱 한번만 `import "core-js";`와 `import "regenerator-runtime/runtim";` 을 사용해야만 한다. 두번 `import`하게 되면 예외를 반환한다. 만약 `@babel/polyfill`을 사용중이라면 이것이 이미 `core-js`와 `regenerator-runtime`을 포함하고 있기 때문에 마찬가지로 예외를 반환하게 된다. 이러한 패키지를 여러번 `import` 하는 것은 글로벌 스코프의 충돌을 비롯한 여러 추적하기 어려운 문제들을 만들어낸다. 그렇기에 이러한 `import` 를 포함하는 단일 엔트리 파일을 생성하여 사용할 것을 권장한다.
+
+이 옵션은 `import "core-js/stable;"` 과 `import "regenerator-runtime/runtime;"` 구문을 (혹은 `require("core-js")`와 `require("regenerator-runtime/runtime")`) 을 목표한 환경에 따라 필요한 개별 모듈만을 `import` 하는 구문으로 대체하는 새로운 플러그인을 활성화시킨다.
+
+##### In
+```javascript
+import "core-js";
+```
+
+##### Out (different based on environment)
+```javascript
+import "core-js/modules/es.string.pad-start";
+import "core-js/modules/es.string.pad-end";
+```
+
+`"core-js"`를 `import`하면 가능한 모든 ECMAScript 기능의 폴리필을 전부 로드한다. 만약 그중 일부만 필요하다는것을 안다면, `core-js@3`와 `@bable/preset-env`를 통해 최적화 할 수 있다. 예를들어, array 의 메소드들과 새로운 `Math`의 제안된 기능들에 대한 폴리필만 필요하다면 다음과 같이 작성할 수 있다.
+
+##### In
+```javascript
+import "core-js/es/array";
+import "core-js/proposal/math-extensions";
+```
+
+##### Out (different based on environment)
+```javascript
+import "core-js/modules/es.array.unscopables.flat";
+import "core-js/modules/es.array.unscopables.flat-map";
+import "core-js/modules/esnext.math.clamp";
+import "core-js/modules/esnext.math.deg-per-rad";
+import "core-js/modules/esnext.math.degrees";
+import "core-js/modules/esnext.math.fscale";
+import "core-js/modules/esnext.math.rad-per-deg";
+import "core-js/modules/esnext.math.radians";
+import "core-js/modules/esnext.math.scale";
+```
+[`core-js`](https://github.com/zloirock/core-js) 의 도큐먼트에서 다른 엔트리 포인트에 대한 정보를 확인할 수 있다.
+
+> NOTE: `core-js@2` 를 사용할 때 (혹은 [corejs: 2](https://babeljs.io/docs/en/babel-preset-env#corejs) 옵션을 사용할 때) `@babel/preset-env`는 `@babel/polyfill`의 `import`와 `required` 또한 변환을 한다. 이러한 동작은 다른 `core-js`버전에서 더 이상 `@babel/polyfill`을 사용할 수 없기 때문에 deprecated 될 예정이다.
