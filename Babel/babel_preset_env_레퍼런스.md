@@ -307,3 +307,44 @@ import "core-js/modules/esnext.math.scale";
 [`core-js`](https://github.com/zloirock/core-js) 의 도큐먼트에서 다른 엔트리 포인트에 대한 정보를 확인할 수 있다.
 
 > NOTE: `core-js@2` 를 사용할 때 (혹은 [corejs: 2](https://babeljs.io/docs/en/babel-preset-env#corejs) 옵션을 사용할 때) `@babel/preset-env`는 `@babel/polyfill`의 `import`와 `required` 또한 변환을 한다. 이러한 동작은 다른 `core-js`버전에서 더 이상 `@babel/polyfill`을 사용할 수 없기 때문에 deprecated 될 예정이다.
+
+##### `useBuiltIns: 'usage'`
+각 파일에서 사용중인 특정 폴리필만을 추가한다. 번들러가 동일한 폴리필에 대해 한번만 로드하게 되는 장점이 있다.
+
+##### In
+a.js
+```javascript
+var a = new Promise();
+```
+
+b.js
+```javascript
+var b = new Map();
+```
+
+##### Out (if environment dosen't support it)
+a.js
+```javascript
+import "core-js/modules/es.promise";
+var a = new Promise();
+```
+
+b.js
+```javascript
+import "core-js/modules/es.map";
+var b = new Map();
+```
+
+##### Out (if environment supports it)
+a.js
+```javascript
+var a = new Promise();
+```
+
+b.js
+```javascript
+var b = new Map();
+```
+
+##### `useBuiltIns: false`
+각 파일에 폴리필을 자동으로 추가하는걸 막는다. 또한 `import "core-js"` 와 `import "@bable/polyfill"` 을 각각의 폴리필로 변환하지 않는다.
