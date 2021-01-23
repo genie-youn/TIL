@@ -348,3 +348,50 @@ var b = new Map();
 
 ##### `useBuiltIns: false`
 각 파일에 폴리필을 자동으로 추가하는걸 막는다. 또한 `import "core-js"` 와 `import "@bable/polyfill"` 을 각각의 폴리필로 변환하지 않는다.
+
+#### `corejs`
+Added in: `v7.4.0`
+
+`string` or `{ version: string, proposals: boolean}`, 기본값은 `"2.0"` 이다. `version` 에는 `core-js`가 지원하는 버전이면 어느 버전이는 입력할 수 있다. (`"3.8"`, `"2.0"` 등등)
+
+이 옵션은 `useBuiltIns: usage`나 `useBuiltIns: entry` 옵션과 함께 명시한 버전의 `core-js`가 지원하는 폴리필이 `@babel/preset-env`에 주입되어 있을 경우에만 동작한다.
+
+되도록이면 마이너 버전까지 명시해주는 편이 좋다. 마이너 버전을 명시하지 않으면 예를들어, `"3"` 으로 입력하면 `3.0`으로 해석되어 최신 기능들에 대한 폴리필은 포함하지 않게 된다.
+
+기본적으로는 ECMAScript의 표준 스펙에 대한 폴리필만이 주입된다. 만약 추가적으로 다른 폴리필을 주입하고 싶다면 다음과 같이 세가지 방법이 있다.
+
+- `useBuiltIns: "entry"` 를 사용하고 있다면 [proposal polyfill](https://github.com/zloirock/core-js/tree/master/packages/core-js/proposals) 을 직접 추가할 수 있다. : `import core-js/proposals/string-replace-all`
+- `useBuiltIns: "usage"` 를 사용하고 있다면 다음 두가지 방법이 있다.
+  + [shippedProposals](https://babeljs.io/docs/en/babel-preset-env#shippedproposals) 옵션을 `true`로 설정한다. 해당 옵션을 설정하면 이미 브라우저에 구현된 제안 상태의 ECMAScript 스펙에 대하여 폴리필과 변환을 활성화한다.
+  + `corejs: { version: "3.8", proposals: true }` 처럼 `proposals` 속성을 `true`로 설정한다. 이처럼 설정하면 `core-js@3.8` 이 지원하는 모든 제안 상태의 스펙에 대해 폴리필을 주입한다.
+
+#### `foreceAllTransforms`
+`boolean`, 기본값은 `false`.
+
+##### Example
+Babel 7의 [JavaScript config file](https://babeljs.io/docs/en/config-files#javascript)를 사용하면 환경변수가 `production`으로 설정됐을때 강제로 모든 변환을 실행시킬 수 있다.
+
+```javascript
+module.exports = function(api) {
+  return {
+    presets: [
+      [
+        "@babel/preset-env",
+        {
+          targets: {
+            chrome: 59,
+            edge: 13,
+            firefox: 50,
+          },
+          // for uglifyjs...
+          forceAllTransforms: api.env("production"),
+        },
+      ],
+    ],
+  };
+};
+```
+
+> NOTE: `targets.uglify` 는 deprecated되어 다음 메이저 버전에서 삭제될 예정이다.
+
+기본적으로 preset은 목표로한 환경에 필요한것만 변환한다. 만약 빌드 산출물이 UglifyJS 를 통해 동작해야 되거나 오로지 ES5 만을 지원하는 환경에서 동작해야 하는 경우등과 같이 전부를 강제로 변환하는것이 의미있을 경우 이 옵션을 사용하면 된다
