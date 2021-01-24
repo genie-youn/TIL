@@ -395,3 +395,43 @@ module.exports = function(api) {
 > NOTE: `targets.uglify` 는 deprecated되어 다음 메이저 버전에서 삭제될 예정이다.
 
 기본적으로 preset은 목표로한 환경에 필요한것만 변환한다. 만약 빌드 산출물이 UglifyJS 를 통해 동작해야 되거나 오로지 ES5 만을 지원하는 환경에서 동작해야 하는 경우등과 같이 전부를 강제로 변환하는것이 의미있을 경우 이 옵션을 사용하면 된다
+
+> NOTE: Uglify 의 ES6 지원은 "Harmony" 브랜치에서 진행중이지만 아직 안정적이진 않다. 진행상황은 [UglifyJS2 issue #448](https://github.com/mishoo/UglifyJS2/issues/448) 에서 확인할 수 있다. ES6를 지원하는 다른 minifier 가 필요하다면 [babel-minify](https://babeljs.io/docs/en/babel-preset-minify) 를 추천한다.
+
+#### `configPath`
+`string`, defaults to `process.cwd()`
+
+browserslist 의 설정을 찾기 위한 시작 경로를 설정한다. 해당 경로부터 시스템 루트까지 계속 찾아 올라간다.
+
+#### `ignoreBrowserslistConfig`
+`boolean`, defaults to `false`
+
+browserslist 파일 검색 또는 package.json 내 browserslist 키 참조를 포함하여 [browserslist config source](https://github.com/browserslist/browserslist#queries) 를 사용할지 안할지 설정한다. 이 설정은 Babel로 컴파일 되지 않는 파일에 browserslist 설정을 사용하는 프로젝트에 유용하다. (???)
+
+#### `browserslistenv`
+Added in: `v7.10.0`
+`string`, defaults to `undefined`
+
+사용할 [Browserslist environment](https://github.com/browserslist/browserslist#configuring-for-different-environments) 를 명시한다.
+
+#### `shippedProposals`
+`boolean`, defaults to `false`
+
+브라우저에서 이미 지원하고 있는 제안 상태의 기능들에 대한 지원을 활성화한다. 만약 목표로한 환경이 제안된 기능을 지원한다면 변환을 수행하는 대신에 그에 매칭되는 문법 파서 플러그인이 활성화 된다. (???) 브라우저가 지원하기 전 제안된 기능들은 스펙이 계속 변경될 수 있으므로 [@babel/preset-stage-3](https://babeljs.io/docs/en/babel-preset-stage-3) 과는 변환 결과가 다를 수 있음에 유의해라.
+
+현재 제공되는 옵션은 다음과 같다:
+`useBuiltIns: "usage"` 를 사용하면 **Builtins** 가 주입된다.
+- esnext.global-this (`core-js@3` 에서만 지원된다.)
+- esnext.string.match-all (`core-js@3` 에서만 지원된다.)
+
+**Features**
+- [class properties](https://github.com/tc39/proposal-class-fields)
+- [numeric separator](https://github.com/tc39/proposal-numeric-separator)
+- [private methods](https://github.com/tc39/proposal-private-methods)
+
+## 마치며
+바벨의 `preset-env`는 지원하려는 목표 환경을 설정하면 이에 맞게 소스코드를 변환하고 폴리필을 주입해주는 도구이다. 지원하려는 환경은 `browserslist` 등을 활용하여 정의할 수 있고, 폴리필은 기본적으로 `core-js`를 통해 주입되게 된다.
+
+폴리필을 주입하는 전략은 `useBuiltIns` 옵션을 활용할 수 있는데, 해당 옵션을 `entry` 로 설정하면 주입하려는 폴리필을 직접 정의할 수 있고 `usage`로 설정하면 소스코드에서 실제로 사용중인 폴리필만이 주입된다.
+
+`core-js` 의 버전을 지정할 수도 있고 특정 폴리필을 반드시 포함하거나 제외하도록 설정할 수 있으며 브라우저가 이미 제공하는 제안된 기능을 지원하기 위해 `shippedProposals` 설정을 활용할 수 있다.
