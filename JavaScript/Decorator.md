@@ -20,3 +20,40 @@ Decorator는 어노테이션으로 관리될 수 있어 간편하고, 객체의 
 - 클래스의 외관에서는 데코레이터의 실행에 관련된 코드가 노출되지 않도록 하여 엔진에 의해 좀 더 최적화 될 수 있도록 한다.
 - cross-file 에 대한 지식이 없이도 per-file 을 기반으로 동작할 수 있도록 구현되어야 한다.
 - 추가되는 새로운 네임스페이스나 second-class value 의 타입이 없다. 데코레이터는 함수여야 한다.
+
+## Example
+```javascript
+import { logged } from "./logged.mjs";
+
+class C {
+  @logged
+  m(arg) {
+    this.#x = arg;
+  }
+
+  @logged
+  set #x(value) { }
+}
+
+new C().m(1);
+// starting m with arguments 1
+// starting set #x with arguments 1
+// ending set #x
+// ending m
+```
+
+```javascript
+// logged.mjs
+
+export function logged(f) {
+  const name = f.name;
+  function wrapped(...args) {
+    console.log(`starting ${name} with arguments ${args.join(", ")}`);
+    const ret = f.call(this, ...args);
+    console.log(`ending ${name}`);
+    return ret;
+  }
+  Object.defineProperty(wrapped, 'name', { value: name, configurable: true })
+  return wrapped;
+}
+```
