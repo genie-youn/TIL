@@ -9,6 +9,61 @@ Decorator 패턴은 객체에 동적으로 새로운 책임을 부여하기 위�
 
 이와 동일한 의미의 데코레이터 인지를 염두해두고 [스펙](https://github.com/tc39/proposal-decorators)을 읽어보았다.
 
+---
+
+데코레이터 함수는 객체 생성시에 데코레이팅할 대상과 부가적인 컨텍스트를 인자로 호출되고 데코레이팅 된 함수를 반환하게 됨.
+데코레이팅할 대상이 메소드라면 메소드가 호출될때, 게터라면 게터가 호출될때, 세터라면 세터가 호출될 때 데코레이터 함수가 반환한 본래의 로직을 데코레이팅 한 함수를 대신 호출하여 부가적인 로직을 구현할 수 있도록 함.
+
+```javascript
+export function logged(f) {
+  const name = f.name;
+  function wrapped(...args) {
+    console.log(`starting ${name} with arguments ${args.join(", ")}`);
+    const ret = f.call(this, ...args);
+    console.log(`ending ${name}`);
+    return ret;
+  }
+  Object.defineProperty(wrapped, 'name', { value: name, configurable: true })
+  return wrapped;
+}
+```
+
+이러한 데코레이터가 있다고 하면, 이렇게 쓰게 되는데
+
+```javascript
+import { logged } from "./logged.mjs";
+
+class C {
+  @logged
+  m(arg) {
+    this.#x = arg;
+  }
+
+  @logged
+  set #x(value) { }
+}
+
+new C().m(1);
+// starting m with arguments 1
+// starting set #x with arguments 1
+// ending set #x
+// ending m
+```
+
+만약 이를 바벨등으로 변환하여 현재 자바스크립트로 동작하게 만들어 본다면 우선 생성자에 `@logged` 달려 있으므로
+
+```javascript
+C.prototype.m = logged(C.prototype.m, { kind: "method", name: "m", isStatic: false });
+```
+
+이런식으로 데코레이터 함수로 생성자를 wrapping 함.
+첫번째 인자로는 데코레이팅할 대상을 두번째 인자로는 추가적인 context 를부여
+
+`logged`는 기존의 생성자를 데코레이팅한 함수를 반환해야 함.
+
+
+## Proposal
+
 자바스크립트의 클래스를 확장하기 위한 스펙이다.
 
 **Decorators** 는 클래스 요소 혹은 자바스크립트의 문법이 객체를 정의하는 동안 호출되어 데코레이터가 반환하는 새로운 값으로 감싸거나 대체하는 함수이다.
@@ -56,4 +111,21 @@ export function logged(f) {
   Object.defineProperty(wrapped, 'name', { value: name, configurable: true })
   return wrapped;
 }
+```
+
+```javascript
+let x_setter;
+
+class C {
+  m(arg) {
+    this.#x = arg;
+  }
+
+  static #x_setter(value) { }
+  static { x_setter = C.#x_setter; }
+  set #x(value) { return x_setter.call(this, value); }
+}
+
+C.prototype.m = logged(C.prototype.m, { kind: "method", name: "m", isStatic: false });
+x_setter = logged(x_setter, {kind: "setter", isStatic: false});
 ```
