@@ -61,6 +61,23 @@ C.prototype.m = logged(C.prototype.m, { kind: "method", name: "m", isStatic: fal
 
 `logged`는 기존의 생성자를 데코레이팅한 함수를 반환해야 함.
 
+생성자를 데코레이팅 할땐 다음과 같이 할 수 있음
+
+`@defineElement`
+
+```javascript
+import { defineElement } from "./defineElement.mjs";
+
+@defineElement('my-class')
+class MyClass extends HTMLElement { }
+```
+
+```Javascript
+// defineElement.mjs
+export function defineElement(name, options) {
+  return klass => { customElements.define(name, klass, options); return klass; }
+}
+```
 
 ## Proposal
 
@@ -75,57 +92,3 @@ Decorator는 어노테이션으로 관리될 수 있어 간편하고, 객체의 
 - 클래스의 외관에서는 데코레이터의 실행에 관련된 코드가 노출되지 않도록 하여 엔진에 의해 좀 더 최적화 될 수 있도록 한다.
 - cross-file 에 대한 지식이 없이도 per-file 을 기반으로 동작할 수 있도록 구현되어야 한다.
 - 추가되는 새로운 네임스페이스나 second-class value 의 타입이 없다. 데코레이터는 함수여야 한다.
-
-## Example
-```javascript
-import { logged } from "./logged.mjs";
-
-class C {
-  @logged
-  m(arg) {
-    this.#x = arg;
-  }
-
-  @logged
-  set #x(value) { }
-}
-
-new C().m(1);
-// starting m with arguments 1
-// starting set #x with arguments 1
-// ending set #x
-// ending m
-```
-
-```javascript
-// logged.mjs
-
-export function logged(f) {
-  const name = f.name;
-  function wrapped(...args) {
-    console.log(`starting ${name} with arguments ${args.join(", ")}`);
-    const ret = f.call(this, ...args);
-    console.log(`ending ${name}`);
-    return ret;
-  }
-  Object.defineProperty(wrapped, 'name', { value: name, configurable: true })
-  return wrapped;
-}
-```
-
-```javascript
-let x_setter;
-
-class C {
-  m(arg) {
-    this.#x = arg;
-  }
-
-  static #x_setter(value) { }
-  static { x_setter = C.#x_setter; }
-  set #x(value) { return x_setter.call(this, value); }
-}
-
-C.prototype.m = logged(C.prototype.m, { kind: "method", name: "m", isStatic: false });
-x_setter = logged(x_setter, {kind: "setter", isStatic: false});
-```
