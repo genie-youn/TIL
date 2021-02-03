@@ -38,3 +38,67 @@ Note: as of 10-2009 development versions of Safari added support for these new e
 1. 유저가 페이지로 네비게이션 하면
 2. 페이지가 로드되면서 나서 인라인 스크립트가 실행되고
 3. 페이지가 전부 로드되고 나면 `onload` 핸들러가 실행됨
+
+캐시되어있는 페이지에 진입하면 인라인 스크립트와 `onload` 핸들러는 동작안함.
+
+대신 `pageshow` 이벤트 잡아서 쓰면됨 (`onload`가 동작하지 않으므로)
+
+반대로 `unload` 도 동작하지 않으므로 `pagehide` 잡아서 쓰면 됨
+
+위 두 이벤트는 캐시된 페이지의 진입이 아닌 최초 진입이라면 `persisted` 의 값이 `true` 로 설정되어 있음
+
+```html
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<head>
+<title>Order query Firefox 1.5 Example</title>
+<style type="text/css">
+body, p {
+	font-family: Verdana, sans-serif;
+	font-size: 12px;
+   	}
+</style>
+<script type="text/javascript">
+function onLoad() {
+	loadOnlyFirst();
+	onPageShow();
+}
+
+function onPageShow() {
+//calculate current time
+	var currentTime= new Date();
+	var year=currentTime.getFullYear();
+	var month=currentTime.getMonth()+1;
+	var day=currentTime.getDate();
+	var hour=currentTime.getHours();
+	var min=currentTime.getMinutes();
+	var sec=currentTime.getSeconds();
+	var mil=currentTime.getMilliseconds();
+	var displayTime = (month + "/" + day + "/" + year + " " +
+		hour + ":" + min + ":" + sec + ":" + mil);
+	document.getElementById("timefield").value=displayTime;
+}
+
+function loadOnlyFirst() {
+	document.zipForm.name.focus();
+}
+</script>
+</head>
+<body onload="onLoad();" onpageshow="if (event.persisted) onPageShow();">
+<h2>Order query</h2>
+
+<form name="zipForm" action="http://www.example.com/formresult.html" method="get">
+<label for="timefield">Date and time:</label>
+<input type="text" id="timefield"><br>
+<label for="name">Name:</label>
+<input type="text" id="name"><br>
+<label for="address">Email address:</label>
+<input type="text" id="address"><br>
+<label for="order">Order number:</label>
+<input type="text" id="order"><br>
+<input type="submit" name="submit" value="Submit Query">
+</form>
+</body>
+</html>
+```
