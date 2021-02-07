@@ -13,7 +13,7 @@ https://web.dev/bfcache/#optimize-your-pages-for-bfcache
 https://developers.google.com/web/updates/2019/02/back-forward-cache
 https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Releases/1.5/Using_Firefox_1.5_caching
 
-# 파이어폭스
+# 파이어폭스 (MDN)
 페이지 네비게이션을 더 빠르게 하기 위해 자바스크립트의 상태를 포함한 페이지 전체를 메모리에 캐싱해둠. 그래서 앞으로가기 혹은 뒤로가기시에 네트워크에서 페이지를 로딩하지 않고 이 캐시를 사용하여 빠르게 복원함. 이 캐시는 단일 브라우저 세션에서 유효하며 브라우저를 종료하면 삭제됨.
 
 다음 상황에선 캐싱하지 않음
@@ -102,3 +102,69 @@ function loadOnlyFirst() {
 </body>
 </html>
 ```
+
+위 예제는 사용자가 페이지를 벗어낫다 다시 돌아오면 현재 시간을 다시 계산해서 보여주게 됨
+
+```html
+<script>
+function onLoad() {
+	loadOnlyFirst();
+
+//calculate current time
+	var currentTime= new Date();
+	var year = currentTime.getFullYear();
+	var month = currentTime.getMonth()+1;
+	var day = currentTime.getDate();
+	var hour=currentTime.getHours();
+	var min=currentTime.getMinutes();
+	var sec=currentTime.getSeconds();
+	var mil=currentTime.getMilliseconds();
+	var displayTime = (month + "/" + day + "/" + year + " " +
+		hour + ":" + min + ":" + sec + ":" + mil);
+	document.getElementById("timefield").value=displayTime;
+}
+
+function loadOnlyFirst() {
+	document.zipForm.name.focus();
+}
+</script>
+</head>
+
+<body onload="onLoad();">
+```
+
+하지만 이 예제는 처음 페이지에 진입했을때 시간이 캐시되고 사용자가 페이지를 벗어났다 다시 돌아와도 이전의 시간이 캐시되어 보여지게 됨
+
+# 사파리 (Webkit 레퍼런스)
+
+웹킷 페이지 캐시
+
+웹킷의 페이지 캐시 = 파이어폭스의 Back-Forward Cache = 오페라의 Fast History Navigation
+
+이에 대한 웹킷의 구현을 "Page Cache" 라고 지칭함으로써 웹킷의 "Back/Forward List" 와 혼란을 줄이고자 함.
+
+페이지 캐시는 최종사용자가 웹페이지를 더 부드럽게 네비게이션하기 위한 기능임
+
+엄밀히 말하면 [HTTP Sense](https://www.ietf.org/rfc/rfc2616.txt) 에서 얘기하는 캐시와는 다름
+
+원본 리소스가 디스크에 저장되는 "disk cache" 와는 결이 다름 ??
+
+그리고 웹킷이 여러 웹 페이지에서 공유하기 위해 디코딩된 리소스를 메모리에 가지고 있는 관습적인 의미의 "memory cache" 와도 차이가 있다 ??
+
+간단히 얘기하면 사용자가 페이지를 벗어날때 페이지를 "pause" 하고 다시 돌아오면 "play" 하는것과 같음
+
+사용자가 링크를 클릭하여 새로운 페이지로 네비게이션하면 이전 페이지가 완전히 제거되는 경우가 많음
+
+돔이 제거되면 자바스크립트 객체는 가비지 컬렉터의 수집 대상이 되고 플러그인은 제거되며 디코딩된 이미지 데이터가 삭제되고 기타 다른 정리를 위한 일들이 일어남
+
+위의 일들이 일어나면 사용자가 뒤로가기를 클릭했을때 고통스러워짐. 웹킷은 아마 리소스를 네트워크를 통해 다시 내려받고 메인 HTML 파일을 다시 파싱하고 스크립트를 다시 실행시키고 이미지를 다시 디코딩하고 페이지를 다시 레이아웃하고 적절한 위치로 스크롤을 다시 옮겨주고 스크린을 다시 그려줘야 함. 이 모든 작업은 시간을 소비하고 CPU를 사용하며 배터리를 소모시킨다.
+
+이상적으로 이전 페이지는 페이지 캐시로 대체할 수 있다.
+
+화면에 표시되지 않더라도 페이지 전체를 메모리에 저장함. 전부 파괴하는 대신 일시정지 시키고 뒤로가기 버튼을 눌렀을 경우 다시 재생시키는것
+
+뒤로가기시 이전에 보던 페이지를 거의 즉시 볼 수 있어 더 나은 사용자 경험을 제공함
+
+이렇게 좋은 페이지 캐시가 동작하지 않을때 그 이유는?
+
+몇몇 페이지는 흥미롭지 않음?
