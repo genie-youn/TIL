@@ -42,3 +42,27 @@
   + 몇 가지 컴포넌트에서 로직을 끌어올리면
   + 너무 많은 책임을 지게 되고 관리하기 어려워짐
   + 앱이 성장함에 따라 몇 군데 집중된 장소에 복잡성을 두는건 유지관리성 측면에서 좋지 않음
+- Stateless & Stateful
+  + 상태를 갖는게 어떤 컴포넌트의 책임일지 신중히 생각하고 결정하라는 뭐 그런
+
+애플리케이션 설계
+- Group by Route/Module
+  + 디렉토리를 container와 component로 나누는건 보기 어렵다.
+  + 모듈과 도메인으로 분류하여 패키징할 것
+- Create a Common Module
+  + 범용적으로 사용될 수 있는 버튼, 카드, 인풋등과 같은 컴포넌트를 별도의 공통 모듈로 분리하여 관리
+  + 아토믹 컴포넌트.. 중복을 막는 첫번째 걸음이다.
+- Use Absolute Paths
+  + 상대경로보단 절대경로를 사용하는 것이 추후 변경에 유연하게 대응하는데 용이하다.
+- Wrap External Components
+  + 3rd party 라이브러리를 직접 import 하지 말것
+  + 어답터를 만들어 관리하면 외부 라이브러리의 변경을 한 지점에서 대응할 수 있다.
+  + 나도 참 열심히 미는 패턴
+- Move Components in Folders
+
+성능
+- Don't Optimize Prematurely
+- Watch The Bundle Size
+- Rerenders - Callbacks, Arrays and Objects
+
+테스팅
