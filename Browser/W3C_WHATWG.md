@@ -29,7 +29,7 @@ W3C (World Wide Web Consortium)는 팀 버너스리를 중심으로 설립된 �
 - XSLT
 
 ### WHATWG
-WHATWG (Web Hypertext Application Technology Working Group)는 W3C 워크샵이수 애플, 모질라 소프트웨어 재단, 오페라 소프트웨어가 XHTML에 대한 W3C의 방향, HTML에 대한 관심 부족, 실제 웹 개발자의 요구에 대한 명백한 무시에 대한 우려로 인해 2004년에 설립한 조직
+WHATWG (Web Hypertext Application Technology Working Group)는 W3C 워크샵이후 애플, 모질라 소프트웨어 재단, 오페라 소프트웨어가 XHTML에 대한 W3C의 방향, HTML에 대한 관심 부족, 실제 웹 개발자의 요구에 대한 명백한 무시에 대한 우려로 인해 2004년에 설립한 조직
 
 2007년에 구글과 MS가 합류하게 됨.
 
@@ -52,6 +52,11 @@ WHATWG (Web Hypertext Application Technology Working Group)는 W3C 워크샵이�
 - URL
 - XMLHttpRequest
 
+WHATWG 에서 정의하는 표준을 "Living Standard" 라고 하며 웹 개발자, 브라우저 벤터, 도구 개발자등 기타 이해 당사자로부터 피드백을 받아 지속적으로 업데이트 되는 표준을 나타낸다.
+
+정리하면, 팀 버너스리를 중심으로 각국의 기관, 브라우저 벤더등 이해관계자들인 모인 W3C 에서 파편화를 막고 웹의 지속적인 성장을 위한 표준을 제정해 왔다. 하지만 2004년 W3C의 방향성과 HTML에 대한 관심 부족, 실제 웹 개발자의 요구에 대한 무시를 우려해 브라우저 벤더인 애플, 모질라, 오페라가 WHATWG 라는 조직을 설립하여 웹에 대한 표준을 제정하기 시작하였고 이후 MS와 구글이 합류하게 된다.
+
+W3C와 WHATWG가 각각의 HTML 표준을 발표해오다 2019년 두 조직이 함께 표준 작업을 진행하고 WHATWG의 "Living Standard" 로 단일화하여 발표하기로 합의하였다.
 
 ---
 
