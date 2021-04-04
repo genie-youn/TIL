@@ -14,9 +14,23 @@ https://fetch.spec.whatwg.org/#cors-preflight-fetch
 *request* request가 주어지면, 다음과 같은 단계로 **CORS-preflight fetch** 가 이루어진다.
 
 1. *preflight* 는
+```markdown
 {
   method: `OPTIONS`,
   URL: *request* 의 current URL,
   initiator: *request* 의 initiator,
-  destination: *request* 의 destination
+  destination: *request* 의 destination,
+  origin: *request* 의 origin,
+  referrer: *request* 의 referrer,
+  referrer policy: *request* 의 referrer policy,
+  mode: "cors",
+  tainted origin flag: *request* 의 tainted origin flag,
+  response tainting: "cors"
 }
+````
+로 이루어진 새로운 request가 된다.
+
+> 이 알리고리즘은 HTTP fetch가 아닌 HTTP-network-or-cache fetch 를 사용하므로 service-workers mode의 preflight는 문제가 되지 않는다??
+
+2. *preflight* 의 header list에 `Accept` 헤더로  `*/*` 를 추가한다.
+3. *preflight* 의 header list에 `Access-Control-Request-Mehtod` 헤더로 *request* 의 method 를 추가한다.
