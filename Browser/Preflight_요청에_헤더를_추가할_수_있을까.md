@@ -32,5 +32,9 @@ https://fetch.spec.whatwg.org/#cors-preflight-fetch
 
 > 이 알리고리즘은 HTTP fetch가 아닌 HTTP-network-or-cache fetch 를 사용하므로 service-workers mode의 preflight는 문제가 되지 않는다??
 
-2. *preflight* 의 header list에 `Accept` 헤더로  `*/*` 를 추가한다.
-3. *preflight* 의 header list에 `Access-Control-Request-Mehtod` 헤더로 *request* 의 method 를 추가한다.
+2. *preflight* 의 header list에 `Accept` 헤더의 값으로 `*/*` 를 추가한다.
+3. *preflight* 의 header list에 `Access-Control-Request-Mehtod` 헤더의 값으로 *request* 의 method 를 추가한다.
+4. *headers* 는 *request* 의 header list 를 **CORS-unsafe request-header names** 로 변환한 값이 된다.
+5. 만약 *headers* 가 비어있지 않다면,
+  - *value* 는 *headers* 를 `,` 로 나눈 각각의 요소가 된다.
+  - *preflight* 의 header list에 `Access-Control-Request-Headers` 헤더의 값으로 *value* 를 추가한다.
