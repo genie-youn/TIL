@@ -38,3 +38,7 @@ https://fetch.spec.whatwg.org/#cors-preflight-fetch
 5. 만약 *headers* 가 비어있지 않다면,
   - *value* 는 *headers* 를 `,` 로 나눈 각각의 요소가 된다.
   - *preflight* 의 header list에 `Access-Control-Request-Headers` 헤더의 값으로 *value* 를 추가한다.
+6. *response* 는 *preflight* 를 request 로 한 HTTP-network-or-cache fetch를 실행시킨 결과가 된다.
+7. 만약 *request* 와 *response* 에 대한 CORS check 가 성공하고 *response* 의 status 가 ok status 라면,
+
+> preflight 가 정확한 credentials mode 를 사용하는지보다 CORS check가 먼저 이루어진다.
