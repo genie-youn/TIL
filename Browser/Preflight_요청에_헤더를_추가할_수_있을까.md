@@ -42,3 +42,9 @@ https://fetch.spec.whatwg.org/#cors-preflight-fetch
 7. 만약 *request* 와 *response* 에 대한 CORS check 가 성공하고 *response* 의 status 가 ok status 라면,
 
 > preflight 가 정확한 credentials mode 를 사용하는지보다 CORS check가 먼저 이루어진다.
+
+  1. *methods* 는 `Access-Control-Allow-Methods` 의 extracting header list values 와 *response* 의 header list의 결과가 된다. ??
+  2. *headerNames* 는 `Access-Control-Allow-Methods` 의 extracting header list values 와 *response* 의 header list의 결과가 된다. ??
+  3. *methods* 나 *headerNames* 가 실패한다면 network error 를 반환한다.
+  4. *methods* 가 null 이고 *request* 의 use-CORS-preflight-flag 가 설정되어 있으면 *methods* 를 *request* 의 method 를 포함하는 새로운 리스트로 설정한다.
+  5. 
