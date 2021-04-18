@@ -1,8 +1,16 @@
 # HTTP
 
+### fetches
+https://fetch.spec.whatwg.org/#concept-fetch
+
 ### HTTP fetch와 HTTP-network-or-cache fetch
 
+### CORS Protocol
+
 ### CORS-unsafe request-header names
+
+### Origins
+https://html.spec.whatwg.org/multipage/origin.html#concept-origin
 
 ### Preflight Request
 CORS Protocol 을 정상적으로 이행할 수 있는지 확인하기 위해 request 를 요청하기 전 이루어 지는 사전 요청으로,

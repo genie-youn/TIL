@@ -32,3 +32,9 @@ for (let number = 2; number <= 5; number +=1) {
 2.6k 의 [power-assert](https://github.com/power-assert-js/power-assert) 가 있긴 한데 더 이상 업데이트 되지는 않아 보인다.
 
 Node는 내장된 [라이브러리](https://nodejs.org/api/assert.html#assert_assert) 가 존재한다.
+
+#### 정리하면
+javascript 표준으로 정의된 `assert` 는 없으며, proposal 은 제안되었으나 별 다른 논의가 되질 않고 있다.
+Node 는 빌트인 라이브러리를 지원하며 3rd 라이브러리로는 `power-assert` 가 유명하나 더 이상 개발이 안되는 것으로 보인다.
+
+필요하다면 하나 만들어 쓰도록 하자.

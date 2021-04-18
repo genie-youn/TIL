@@ -47,4 +47,10 @@ https://fetch.spec.whatwg.org/#cors-preflight-fetch
   2. *headerNames* 는 `Access-Control-Allow-Methods` 의 extracting header list values 와 *response* 의 header list의 결과가 된다. ??
   3. *methods* 나 *headerNames* 가 실패한다면 network error 를 반환한다.
   4. *methods* 가 null 이고 *request* 의 use-CORS-preflight-flag 가 설정되어 있으면 *methods* 를 *request* 의 method 를 포함하는 새로운 리스트로 설정한다.
-  5. 
+  5. 만약 *request* 의 method 가 *methods* 에 존재하지 않으면 *request* 의 method 가 CORS-safelisted mehtod가 아니고 *request* 의 credentials mode가 "include" 또는 *methods* 가 `*` 를 포함하고 있지 않다면 network error를 반환한다... ?
+  6. 만약 request의 header list의 이름들 중 하나가 CORS non-wildcard request-header name 이고 *headerNames* 의 항목과 byte-case-insensitive match 하지 않으면 network error를 반환한다.
+  8. *max-age* 는 *response* 의 헤더 리스트 중 `Access-Control-Max-Age` 의 extracting header list values 의 결과가 된다.
+  9. 만약 *max-age* 가 실패 혹은 null 이라면 max-age를 5로 설정한다.
+  10. 만약 *max-age* 가 max-age 에 부여된 값보다 큰 경우 `max-age` 를 부여된 값으로 설정한다.
+  11. 만약 user agent 가 cache 를 제공하지 않으면 *response* 를 반환
+  12. *methods* 의 각각의 *method*
