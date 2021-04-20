@@ -8,3 +8,19 @@
 
 ### 3.2.1 General
 CORS protocol 은 응답이 서로 다른 출처에서 공유되어질 수 있는지를 나타내는 헤더들의 집합으로 구성된다.
+
+HTML 의 form 엘리먼트에서 가능한 것 보다 더 복잡한 request 들을 위하여 CORS-preflight request 가 수행되어진다. CORS-preflight request 는 current URL이 CORS protocol 을 지원하는지 확인한다.
+
+### 3.2.2 HTTP requests
+CORS request 는 `Origin` 헤더를 포함하는 HTTP request 이다.
+하지만 `Origin` 헤더는 `GET` 과 `HEAD` 를 제외한 모든 메소드를 사용하는 request 라면 포함하게 되므로 이를 통해 CORS protocol에 참여하는지를 확실하게 식별해낼 수 는 없다.
+
+CORS-preflight requet 는 CORS protocol 을 지원하는지 체크하기 위한 CORS request 이다. 메소드로는 `OPTIONS` 를 사용하며 다음과 같은 헤더를 포함한다.
+
+`Access-Control-Request-Method`
+동일한 리소스에 대한 미래의 CORS request 가 사용할 method 를 나타낸다.
+
+`Access-Control-Request-Headers`
+동일한 리소스에 대한 미래의 CORS request 가 사용할 header 를 나타낸다.
+
+### 3.2.3 HTTP response
