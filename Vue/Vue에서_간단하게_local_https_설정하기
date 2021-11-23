@@ -1,0 +1,39 @@
+# Vue에서 간단하게 local에 HTTPS 설정하기
+
+최근 크롬에서 Samesite의 기본 정책을 `none`에서 `lax`로 변경하고 https 에서만 `none` 으로 사용할 수 있도록 변경이 되었다.
+
+회원쪽에서 인증후 cookie를 심어주고 이를 가지고 회원정보를 사용하고 있었는데, 이로 인해 http 환경이었던 로컬에서는 로그인 정보를 사용할 수 없게되었다.
+
+어떻게 해결할지 고민하다 간단하게 로컬을 위한 SSL 인증서를 생성하고 vue-cli 설정으로 devServer를 https로 띄우도록 설정해보았다.
+
+### mkcert 를 이용한 local ssl 인증서 생성
+
+[mkcert](https://github.com/FiloSottile/mkcert) 는 로컬에서 신뢰 가능한 ssl 인증서를 생성해주는 도구이다. 
+프로젝트에 cert 디렉토리를 생성하고 다음 명령어로 간단하게 인증서를 생성할 수 있다.
+
+```shell
+$ brew install mkcert
+$ mkcert -install
+$ mkcert test.com "*.test.com" local.test.com
+```
+
+### Vue-cli devServer https로 구동하기
+
+설치된 인증서가 있다면 vue-cli에 간단한 설정을 추가하여 이를 사용하여 https devServer를 동작시키도록 할 수 있다.
+
+vue.config.js
+```javascript
+// ..생략
+devServer: {
+  host: "local.genie.com",
+  port: 8080,
+  public: "local.genie.com",
+  // 추가
+  https: {
+    key: fs.readFileSync("certs/test.com+2-key.pem"),
+    cert: fs.readFileSync("certs/test.com+2.pem"),
+  },
+},
+```
+
+자세한 설정은 webpack의 devServer [레퍼런스](https://webpack.js.org/configuration/dev-server/#devserverhttps) 를 참고하면 된다.
