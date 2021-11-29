@@ -85,10 +85,37 @@ Twitter의 Tweet 버튼은 스크립트와 프레임에 대한 액세스에 의�
 script-src https://apis.google.com https://platform.twitter.com; child-src https://plusone.google.com https://facebook.com https://platform.twitter.com
 ```
 
-  
+IE에서 지원하지 않는다. 오로지 `sandbox` 만 지원함..
+
 `child-src` 와 `frame-ancestors`의 차이는 뭐야
-`upgrade-insecure-requests`는 뭐야
+
+기깔나는 설명
+
+https://security.stackexchange.com/questions/143964/whats-the-difference-between-frame-ancestors-and-child-src
+
+If someone else is interested, given two sites `A` and `B`, if `B` has an iframe of `A`:
+```
+B
++-------------+
+|             |
+|   A         |
+|   +------+  |
+|   |      |  |
+|   |      +-------> frame-ancestors B;
+|   +------+  |
+|             |
++-----+-------+
+      |
+      |
+      +------------> child-src A;
+```
+
+`A`'s `frame-ancestors` must contain `B`
+`B`'s `child-src` must contain `A`
+
+`upgrade-insecure-requests`: 페이지의 모든 리소스를 https로 요청하게 된다.. ㅎㄷㄷ..
 
 ---
 https://ko.wikipedia.org/wiki/%EC%BD%98%ED%85%90%EC%B8%A0_%EB%B3%B4%EC%95%88_%EC%A0%95%EC%B1%85#cite_note-Stamm_2009-1
 https://developers.google.com/web/fundamentals/security/csp?hl=ko
+https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
