@@ -29,9 +29,9 @@ cli
           - 이름 할당
           - context에 targetDir 할당, 기본값 process.env.VUE_CLI_CONTEXT
           - resolveIntroPrompts() 의 결과로 presetPrompt와 featurePrompt 할당
-            - 
+            - ㅁ
           - resolveOutroPrompts()의 결과로 outroPrompt 할당
-            - 
+            - ㅁ
           - this.run 에 this를 명시적으로 바인딩
           - PromptModuleAPI 인스턴스 생성
             - 
