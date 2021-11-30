@@ -3,4 +3,40 @@ cli
   - 노드 버전 체크
     - 현재 process의 버전이 package.json.engines.node 에 명시된 버전을 만족시키는지 확인
     - 만족하지 않는다면 종료
-  -
+  - `/packages/test` 가 path에 존재하고 상위 디렉토리에 `@vue`가 존재한다면 process.env.VUE_CLI_DEBUG = true 로 설정
+  - create 명령어 입력시 lib/create.js 실행
+    - create 호출
+      - options.proxy가 존재하면 process.env.HTTP_PROXY = options.proxy 를 설정
+      - cwd 에 현재 디렉토리 정보 할당
+      - inCurrent 에 projectName이 "." 인지 할당
+      - name 은 inCurrent 라면 현재 디렉토리의 이름 아니라면 projectName으로 할당
+      - targetDir 할당
+      - validateProjectName(name) // npm 패키지의 name으로 사용가능한 이름인지
+      - validate-npm-package-name의 결과에 따라 console에 로그
+      - targetDir 에 디렉토리가 이미 존재하고 options.merge가 아니라면
+        - options.force 옵션이 존재하면
+          - 해당 디렉토리 삭제 
+        - 아니라면
+          - 콘솔을 비운다음
+          - inCurrent 라면
+            - inquirer를 통해 현재 디렉토리에 프로젝트를 생성할것인지 확인하고 사용자가 ok 하지 않는다면 중단
+          - 아니라면
+            - inquirer를 통해 merge할지 overwrite 할지 취소할지 묻고 overwrite 라면 targetDir를 삭제 merge라면 계속 진행
+      - targetDir 가 존재하지 않거나 options.merge 라면
+        - @vue/lib/util/createTool.getPromptModules() 호출
+          -  @vue/lib/promptModules 하위 모듈들을 import 한 뒤 이를 배열에 담아 반환
+        - Creator 객체 생성 new Creator(name, targetDir, getPromptModules()) 
+          - 이름 할당
+          - context에 targetDir 할당, 기본값 process.env.VUE_CLI_CONTEXT
+          - resolveIntroPrompts() 의 결과로 presetPrompt와 featurePrompt 할당
+            - 
+          - resolveOutroPrompts()의 결과로 outroPrompt 할당
+            - 
+          - this.run 에 this를 명시적으로 바인딩
+          - PromptModuleAPI 인스턴스 생성
+            - 
+          - PromptModuleAPI 인스턴스를 파라미터로 promptModules 의 모든 모듈을 실행시킴
+        - Creator의 create(options) 호출
+    - Promise를 반환하게 되는데, 실패하면 스피너를 멈추고 테스트 에러로그를 남긴 후 process.env.VUE_CLI_TEST 가 아니라면 프로세스를 종료
+
+  
