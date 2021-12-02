@@ -29,14 +29,31 @@ cli
           - 이름 할당
           - context에 targetDir 할당, 기본값 process.env.VUE_CLI_CONTEXT
           - resolveIntroPrompts() 의 결과로 presetPrompt와 featurePrompt 할당
-            - ㅁ
+            - getPresets() 호출
+              - @vue/lib/options의 loadOptions 호출
+                - 캐시되어 있는 옵션이 잇다면 이를 반환
+                - .vuerc 파일이 있는지 확인하고 없다면 빈값 반환
+                - .vuerc 파일을 읽어서 캐시하고
+                - 스키마를 검사한 다음 읽은 값을 반환
+              - 반환받은 options의 presets과 기본값 presets merge하여 반환 
+            - 저장된 프리셋의 이름과 features로 name을 구성하고 value는 preset인 presetChoices를 할당
+            - presetChoices를 가지고 presetPrompt 생성
+            - featurePrompt 생성
           - resolveOutroPrompts()의 결과로 outroPrompt 할당
-            - ㅁ
+            - config 파일 쓸지 물어봄
+            - 저장할지 물어봄
+            - 패키지매니저 뭐 사용할지 물어봄
           - this.run 에 this를 명시적으로 바인딩
           - PromptModuleAPI 인스턴스 생성
-            - 
+            - creator 프로퍼티에 자신을 생성한 Creator 할당
           - PromptModuleAPI 인스턴스를 파라미터로 promptModules 의 모든 모듈을 실행시킴
+          - 각 모듈은 PromptModuleAPI를 파라미터로 받아 이 객체를 통해 Creator에게 메세지를 전달 할 수 있다.
+            - 전달 가능한 메세지는 `injectFeature` `injectPrompt` `injectOptionForPrompt` `injectOptionForPrompt` 
         - Creator의 create(options) 호출
+          - isTestOrDebug = process.env.VUE_CLI_TEST || process.env.VUE_CLI_DEBUG  
+          - { run, name, context, afterInvokeCbs, afterAnyInvokeCbs } = this
+          - 
     - Promise를 반환하게 되는데, 실패하면 스피너를 멈추고 테스트 에러로그를 남긴 후 process.env.VUE_CLI_TEST 가 아니라면 프로세스를 종료
+
 
   
