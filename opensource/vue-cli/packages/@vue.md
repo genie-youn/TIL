@@ -52,6 +52,17 @@ cli
         - Creator의 create(options) 호출
           - isTestOrDebug = process.env.VUE_CLI_TEST || process.env.VUE_CLI_DEBUG  
           - { run, name, context, afterInvokeCbs, afterAnyInvokeCbs } = this
+          - preset이 존재하지 않으면
+            - cliOptions에 프리셋이 존재하면 이를 가지고 resolvePreset
+              - ㅁ
+            - cliOptions에 프리셋이 없지만 cliOptions에 default가 있으면 기본 프리셋
+            - cliOptions에 inlinePreset이 있으면 이걸 사용
+            - 그게 아니라면 prompthAndResolvePreset()
+              - ㅁ
+          - 수정하기 전에 깊은 복사를 해서 원본을 수정하지 않게 하고
+          - preset.plugins['@vue/cli-service'] 에는 프로젝트 이름과 프리셋을 머지하여 할당
+          - cliOptions.bare가 존재하면 preset.plugins['@vue/cli-service'].bare 에 true 할당
+          - preset.router가 존재하면 preset.plugins['@vue/cli-plugin-router'] 에 빈 객체를 할당하고 routerHistoryMode를 사용한다면 flag를 true로 선언 // 레거시를 위함
           - 
     - Promise를 반환하게 되는데, 실패하면 스피너를 멈추고 테스트 에러로그를 남긴 후 process.env.VUE_CLI_TEST 가 아니라면 프로세스를 종료
 
