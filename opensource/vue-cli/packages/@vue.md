@@ -63,7 +63,13 @@ cli
           - preset.plugins['@vue/cli-service'] 에는 프로젝트 이름과 프리셋을 머지하여 할당
           - cliOptions.bare가 존재하면 preset.plugins['@vue/cli-service'].bare 에 true 할당
           - preset.router가 존재하면 preset.plugins['@vue/cli-plugin-router'] 에 빈 객체를 할당하고 routerHistoryMode를 사용한다면 flag를 true로 선언 // 레거시를 위함
-          - 
+          - preset.vuex가 존재하면 preset.plugins['@vue/cli-plugin-vuex']에 빈 객체를 할당 마찬가지로 레거시를 위함
+          - 패키지매니저를 결정하고
+          - 콘솔을 초기화 한 다음
+          - PackageManager 인스턴스 생성
+            - ㅁ
+          - 'creation' - 'creating' 이벤트 발생
+          -  
     - Promise를 반환하게 되는데, 실패하면 스피너를 멈추고 테스트 에러로그를 남긴 후 process.env.VUE_CLI_TEST 가 아니라면 프로세스를 종료
 
 
