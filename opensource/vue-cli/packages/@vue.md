@@ -73,4 +73,8 @@ cli
     - Promise를 반환하게 되는데, 실패하면 스피너를 멈추고 테스트 에러로그를 남긴 후 process.env.VUE_CLI_TEST 가 아니라면 프로세스를 종료
 
 
+vue ui
+
+
+
   
