@@ -74,7 +74,23 @@ cli
 
 
 vue ui
+lib/ui ui()
+- host 지정
+- port 지정
+- process.env.VUE_APP_CLI_UI_URL 초기화
+- 기존 process.env.NODE_ENV는 백업하고 process.env.NODE_ENV 를 'production' 으로 엎어치기
+- options.dev 가 있으면 process.env.VUE_APP_CLI_UI_DEBUG = true
+- process.env.VUE_CLI_IPC 가 존재하지 않으면 process.env.VUE_CLI_IPC = `vue-cli-${shortid()}`
+- options.quiet가 없으면 시작 로그
+- opts 객체 정의
+  - 그래프큐엘에 관련된 기본 설정들..
+- httpServer = server()
+  - a
 
 
-
-  
+@vue/cli-ui/server -> @vue/cli-ui/graphql-server
+(options, callback)
+- 파라미터로 받은 옵션에 {integratedEngine: false} 추가
+- express 구동 후
+- 옵션으로 함께 주입받은 @vue/cli-ui/apollo-server 패키지 하위 모듈들에서 typeDefs, resolvers, context, schemDirectives, pubsub 로드.. // 왜..? 어차피 같은 패키지안에 있는데 vue-cli-plugin-apollo/graphql-server 대신 이걸 사용하도록 변경하였다. cors 이슈가 있었나본데..
+- 
