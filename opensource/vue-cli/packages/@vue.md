@@ -92,5 +92,14 @@ lib/ui ui()
 (options, callback)
 - 파라미터로 받은 옵션에 {integratedEngine: false} 추가
 - express 구동 후
-- 옵션으로 함께 주입받은 @vue/cli-ui/apollo-server 패키지 하위 모듈들에서 typeDefs, resolvers, context, schemDirectives, pubsub 로드.. // 왜..? 어차피 같은 패키지안에 있는데 vue-cli-plugin-apollo/graphql-server 대신 이걸 사용하도록 변경하였다. cors 이슈가 있었나본데..
-- 
+- 옵션으로 함께 주입받은 @vue/cli-ui/apollo-server 패키지 하위 모듈들에서 typeDefs, resolvers, context, schemDirectives, pubsub 로드.. // 왜..? 어차피 같은 패키지안에 있는데 vue-cli-plugin-apollo/graphql-server 대신 이걸 사용하도록 변경하였다. cors 이슈가 있었나본데.. https://github.com/Akryum/vue-cli-plugin-apollo/blob/master/graphql-server/index.js 이걸 그대로 긁어왔네
+- dataSource도 옵션으로 받은거 붙이고
+- 스키마 만들고
+- 아폴로 서버 띄우고.. 아무런 비즈니스 로직이 없다.
+
+@vue/cli-ui/apollo-server/server.js
+- 기본적으로 cli-ui/src 빌드 산출물이 dist로 떨어지고 이걸 우선 라우팅함.
+- /public 은 asset들..
+- /_plugin/:id 는 plugins.serve 에
+- /_plugin-logo/:id 는 plugins.serveLogo에
+- /_addon/:id 는 client-addons에
