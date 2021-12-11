@@ -103,3 +103,17 @@ lib/ui ui()
 - /_plugin/:id 는 plugins.serve 에
 - /_plugin-logo/:id 는 plugins.serveLogo에
 - /_addon/:id 는 client-addons에
+
+tasks
+ProjectTasks
+ProjectTaskDetails
+그래프큐엘에 task로 요청해서 받아온걸 그대로 보여주고..
+선택된 task를 가지고 ProjectTaskDetails
+task 시작시 mutate {TASK_RUN, id}
+
+@vue/cli-ui/apollo-server/connectors/task.js
+run(id, context)
+
+
+
+그래프큐엘이 웹소켓으로도 주고받을수 있구나..
