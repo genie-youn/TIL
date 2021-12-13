@@ -13,3 +13,5 @@ puppeteer 실행시 --no-sandbox, --disable-setuid-sandbox 옵션 추가
 ```javascript
 await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']})
 ```
+
+https://github.com/puppeteer/puppeteer/issues/290
