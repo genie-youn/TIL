@@ -4,10 +4,12 @@ vue는 부모 컴포넌트로부터 주입받은 `props`와 자신의 상태인 
 이 컴포넌트들은 재사용성을 확보하고, 요구사항이 변경되었을 때 기능을 확장하고 변경하기 쉽도록 책임에 따라 최소한의 단위로 작게 나누어진다.
 때로는 하나의 컴포넌트가 여러 자식 컴포넌트를 갖기도 하고, 그 자식 컴포넌트가 또 다시 여러 자식컴포넌트를 갖기도 한다.
 
-이에 따라 많은 정보를 표현해야 하는 웹 페이지는 많은 단계의 깊이를 가진 복잡한 계층구조의 컴포넌트 트리를 갖게되며, 
-이 많은 컴포넌트들이 정보를 표현하는데 필요로 하는 정보는 대개 페이지와 동일한 라이프사이클을 갖는다.
+이에 따라 많은 정보를 표현해야 하는 웹 페이지는 많은 단계의 깊이를 가진 복잡한 계층구조의 컴포넌트 트리를 갖게되며,
+이 많은 컴포넌트들이 정보를 표현하는데 필요로 하는 정보는 대개 페이지와 동일한 라이프사이클을 갖게되고 컴포넌트 트리 전역에서 접근할 수 있어야 한다.
 
 이러한 상황에서 선택할 수 있는 컴포넌트들의 협력을 설계하는 몇가지 방법을 소개한다.
+
+> 일반적인 상황이 아닌, 페이지와 동일한 라이프사이클을 가진 복잡한 정보를 표현하는 페이지를 구현하기 위하여 페이지 단위의 상태관리가 필요하고 깊은 계층의 컴포넌트 트리를 가진 페이지를 구현해야하는 상황이다.
 
 ### Basic
 가장 기본적인 설계로 컴포넌트의 기본 정의에 충실히 각 컴포넌트들은 자신이 필요한 상태를 직접 관리한다. 
@@ -123,13 +125,12 @@ export default {
   },
   created() {
     fetchStateA().then((res) => {
-      console.log(res);
       this.stateA = res;
     });
   },
   provide() {
     return {
-      stateA: computed(() => this.stateA),
+      B: computed(() => this.stateA.B),
     };
   },
 };
@@ -139,17 +140,18 @@ export default {
 ComponentABA.vue
 ```vue
 <template>
-  <span>{{ stateA }}</span>
+  <span>{{ B }}</span>
 </template>
 
 <script>
 export default {
   name: "ComponentABA",
-  inject: ["stateA"],
+  inject: ["B"],
 };
 </script>
+```
 
-```<img width="838" alt="스크린샷 2021-12-16 오전 9 07 56" src="https://user-images.githubusercontent.com/16642635/146284227-50681d62-36cf-4e6e-b0e5-3c8694d231de.png">
+<img width="838" alt="스크린샷 2021-12-16 오전 9 07 56" src="https://user-images.githubusercontent.com/16642635/146284227-50681d62-36cf-4e6e-b0e5-3c8694d231de.png">
 
 pros:
 - 컴포넌트로부터 상태를 관리하는 로직을 제거했기 때문에 컴포넌트는 `UI = f(state)`의 철학에 맞게 주어진 `state`로 UI를 구성하는 순수한 상태를 유지할 수 있다.
@@ -158,3 +160,75 @@ pros:
 cons:
 - provide-inject간 관계가 명시적으로 드러나지는 않기 때문에 코드 가독성이 저하될 수 있다.
 - 상태 관리 로직이 복잡할경우 컨테이너가 가진 다른 관점의 책임들 (레이아웃을 구성하고, 자신의 자식 컴포넌트간의 관계를 설정하고, 자신의 자식 컴포넌트가 참여하는 flow 로직을 처리하는 등) 과 섞여 복잡해진다.
+
+### Page Store
+컴포넌트-컨테이너 구조에서 prop drilling과 컨테이너의 복잡함을 해결하기 위해 페이지의 상태를 관리하는 책임을 페이지 스토어를 정의하고 이에 위임한다.
+
+컨테이너는 더 이상 상태관리의 책임을 지지 않으며, 생성시 스토어에게 메세지를 전달하고 레이아웃을 구성하고, 자식 컴포넌트들의 관계를 설정하며 이들이 참여하는 flow 로직을 처리하는 책임을 갖는다.
+
+`PageA`에 필요한 상태는 전부 `PageAStore`에서 관리되며 각 컴포넌트들은 필요한 상태를 `PageAStore`로부터 `getters`를 통해 접근하고 `actions`를 통하여 side-effect를 발생시킨다.
+
+이때 컴포넌트가 스토어에 대한 의존성을 갖게 되어 더 이상 순수하지 않은 상태가 된다.
+
+따라서 재사용성을 확보해야만 하기 때문에 순수하게 유지할 컴포넌트와 페이지 외의 다른 페이지에서 사용할 가능성이 없어 순수하게 유지할 필요는 없지만, 유지보수성을 확보하기 위해 컴포넌트화한 컴포넌트간의 구분이 필요하며 전자의 경우 `props`와 `event`를 통해 협력에 참여하게 하고, 후자의 경우 스토어를 통해 협력에 참여하게 한다.
+
+ContainerA.vue
+```vue
+<template>
+  <div>
+    <ComponentA />
+    <ComponentB />
+    <ComponentC />
+  </div>
+</template>
+
+<script>
+import { mapActions } from "vuex";
+import ComponentA from "./components/ComponentA";
+import ComponentB from "./components/ComponentB";
+import ComponentC from "./components/ComponentC";
+
+export default {
+  name: "PageAContainer",
+  components: {
+    ComponentA,
+    ComponentB,
+    ComponentC,
+  },
+  created() {
+    this.initialize();
+  },
+  methods: {
+    ...mapActions("PageAStore", ["initialize"]),
+  },
+};
+</script>
+```
+
+ComponentABA.vue
+```vue
+<template>
+  <span>{{ B }}</span>
+</template>
+
+<script>
+import { mapGetters } from "vuex";
+
+export default {
+  name: "ComponentABA",
+  computed: {
+    ...mapGetters("PageAStore", ["B"]),
+  },
+};
+</script>
+```
+
+pros:
+- 컨테이너의 복잡성을 낮출 수 있다.
+- 컨테이너와 컴포넌트 모두에서 상태를 관리하기 위한 로직이 분리된다.
+- 페이지에 필요한 상태에 대한 전역적인 접근 방법을 제공한다.
+cons:
+- 스토어는 기본적으로 특정 페이지를 위한 저장소가 아니고 애플리케이션 전체에서 전역적으로 접근이 필요한 상태들을 관리하는 저장소이다.
+- 그렇기 때문에 페이지 단위로 라이프사이클을 관리할 수 없으며 글로벌 스토어가 이러한 페이지를 위한 스토어들이 모두 등록될 경우 스토어의 네임스페이스가 오염될 가능성이 높다.
+- 이러한 단점은 컨테이너의 인스턴스에 페이지 스토어를 직접 import하여 별개의 접근자로 접근하도록 하면 해결할 수 있다. (`this.$pageStore = PageAStore`)
+- 
