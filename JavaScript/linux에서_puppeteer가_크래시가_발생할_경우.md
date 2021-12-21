@@ -15,3 +15,13 @@ await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']})
 ```
 
 https://github.com/puppeteer/puppeteer/issues/290
+
+
+CentOS에 Puppeteer 실행시 크래시가 발생한다면 다음을 시도해본다.
+
+####  Error: Failed to launch the browser process! : error while loading shared libraries: libatk-1.0.so.0: cannot open shared object file: No such file or directory
+```
+sudo yum install -y chromium 
+```
+
+https://github.com/puppeteer/puppeteer/issues/5361
