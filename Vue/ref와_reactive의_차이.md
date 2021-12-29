@@ -79,4 +79,219 @@ console.log(obj.count) // 1
 console.log(obj.count === count.value) // true
 ```
 
+### `readonly`
+`readonly`는 파라미터로 주어진 객체 (반응형 객체든 평범한 자바스크립트 객체이든) 읽기 전용인 프록시 객체를 반환하며 이는 deep 하게 적용된다.
+
+```javascript
+const original = reactive({ count: 0 })
+
+const copy = readonly(original)
+
+watchEffect(() => {
+  // works for reactivity tracking
+  console.log(copy.count)
+})
+
+// mutating original will trigger watchers relying on the copy
+original.count++
+
+// mutating the copy will fail and result in a warning
+copy.count++ // warning!
+```
+
+마찬가지로 파라미터로 주어진 객체가 `ref`로 반환된 반응형 프록시 객체라면 unwrapped 됨.
+
+```javascript
+const raw = {
+  count: ref(123)
+}
+
+const copy = readonly(raw)
+
+console.log(raw.count.value) // 123
+console.log(copy.count) // 123
+```
+
+`isProxy`
+
+`isReactive`
+
+`isReadonly`
+
+`toRaw`
+`reactive`나 `readonly` 프록시의 원본 객체를 반환.
+
+`markRaw`
+찍어놓으면 `reactive`를 걸어도 반응형이 안걸림
+
+```javascript
+const foo = markRaw({})
+console.log(isReactive(reactive(foo))) // false
+
+// also works when nested inside other reactive objects
+const bar = reactive({ foo })
+console.log(isReactive(bar.foo)) // false
+```
+
+`shallowReactive`
+`reactive`와 다르게 얕은 반응형 프록시 객체를 반환함
+
+```javascript
+const state = shallowReactive({
+  foo: 1,
+  nested: {
+    bar: 2
+  }
+})
+
+// mutating state's own properties is reactive
+state.foo++
+// ...but does not convert nested objects
+isReactive(state.nested) // false
+state.nested.bar++ // non-reactive
+```
+
+`ref`는 벗겨지지 않음
+
+`shallowReadonly`
+마찬가지로 `readonly`와 다르게 얕은 읽기 전용 프록시 객체를 반환함.
+
+```javascript
+const state = shallowReadonly({
+  foo: 1,
+  nested: {
+    bar: 2
+  }
+})
+
+// mutating state's own properties will fail
+state.foo++
+// ...but works on nested objects
+isReadonly(state.nested) // false
+state.nested.bar++ // works
+```
+
+마찬가지로 `ref`는 벗겨지지 않음
+
+
+그럼 ref는 값이 대상이고 reactive는 객체가 대상이다.. 정도인가?
+
+```vue
+<template>
+  <div>hi</div>
+  <div>{{ a.a }}</div>
+  <div>{{ a.b }}</div>
+  <div>{{ a.c.d }}</div>
+  <div>{{ a.c.e.f }}</div>
+  <div>{{ a.c.e.g }}</div>
+  <div>---------------------</div>
+  <div>{{ b.a }}</div>
+  <div>{{ b.b }}</div>
+  <div>{{ b.c.d }}</div>
+  <div>{{ b.c.e.f }}</div>
+  <div>{{ b.c.e.g }}</div>
+</template>
+
+<script>
+import { reactive, ref } from "vue";
+
+export default {
+  name: "PageAContainer",
+  setup() {
+    const a = reactive({
+      a: 0,
+      b: 0,
+      c: {
+        d: 0,
+        e: {
+          f: 0,
+          g: 0,
+        },
+      },
+    });
+    const b = ref({
+      a: 0,
+      b: 0,
+      c: {
+        d: 0,
+        e: {
+          f: 0,
+          g: 0,
+        },
+      },
+    });
+
+    setInterval(() => {
+      a.a++;
+      a.b++;
+      a.c.d++;
+      a.c.e.f++;
+      a.c.e.g++;
+
+      b.value.a++;
+      b.value.b++;
+      b.value.c.d++;
+      b.value.c.e.f++;
+      b.value.c.e.g++;
+    }, 1000);
+    return {
+      a,
+      b,
+    };
+  },
+};
+</script>
+
+<style scoped></style>
+```
+
+로 테스트 해보면 동일하게 동작한다. 즉 value를 접근해야만 한다는것 말곤 차이가 없음 둘다 deep 하게 걸리고..
+reactive가 반응형 프록시를 생성하는 기본이고, ref는 프리미티브 타입은 파라미터로 전달될때 pass by value로 전달되기 때문에 이를 회피하기 위해서 값을 한번 감싸는 wrapper 객체를 생성한다. 맞나? 그래서 참조를 생성한다는 의미로 ref로 정의한거고.?
+
+맞네 ref내부에서 reactive를 호출한다음 이를 value로 갖는 객체를 반환한다.
+
+```typescript
+export function ref(raw?: unknown) {
+  if (isRef(raw)) {
+    return raw
+  }
+
+  const value = reactive({ [RefKey]: raw })
+  return createRef({
+    get: () => value[RefKey] as any,
+    set: (v) => ((value[RefKey] as any) = v),
+  })
+}
+
+export function createRef<T>(
+  options: RefOption<T>,
+  isReadonly = false,
+  isComputed = false
+): RefImpl<T> {
+  const r = new RefImpl<T>(options)
+
+  // add effect to differentiate refs from computed
+  if (isComputed) (r as ComputedRef<T>).effect = true
+
+  // seal the ref, this could prevent ref from being observed
+  // It's safe to seal the ref, since we really shouldn't extend it.
+  // related issues: #79
+  const sealed = Object.seal(r)
+
+  if (isReadonly) readonlySet.set(sealed, true)
+
+  return sealed
+}
+
+export class RefImpl<T> implements Ref<T> {
+  readonly [_refBrand]!: true
+  public value!: T
+  constructor({ get, set }: RefOption<T>) {
+    proxy(this, 'value', {
+      get,
+      set,
+    })
+  }
+}
+```
 
